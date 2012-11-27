@@ -1,4 +1,7 @@
 require 'temple'
+
+require 'slim/indenter'
+require 'slim/scanner'
 require 'slim/parser'
 require 'slim/filter'
 require 'slim/end_inserter'

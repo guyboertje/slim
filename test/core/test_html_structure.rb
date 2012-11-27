@@ -1,19 +1,44 @@
 require 'helper'
 
 class TestSlimHtmlStructure < TestSlim
-  def test_simple_render
-    # Keep the trailing space behind "body "!
+
+
+  # def test_empty_template
+  #   source = ""
+
+  #   assert_html '', source
+  # end
+
+#   def test_simple_render
+#     # Keep the trailing space behind "body "!
+#     source = %q{
+# html
+#   head
+#     title Simple Test Title
+#   body 
+#     p Hello World, meet Slim.
+# }
+
+#     assert_html '<html><head><title>Simple Test Title</title></head><body><p>Hello World, meet Slim.</p></body></html>', source
+#   end
+
+  def test_render_with_html_comments_only
     source = %q{
+/! This is a comment
+
+   Another comment
+     
+   Another comment
+
+   Another comment
 html
-  head
-    title Simple Test Title
-  body 
-    p Hello World, meet Slim.
 }
 
-    assert_html '<html><head><title>Simple Test Title</title></head><body><p>Hello World, meet Slim.</p></body></html>', source
+    assert_html "<!--This is a comment\n\nAnother comment-->", source
   end
+end
 
+__END__
   def test_html_tag_with_text_and_empty_line
     source = %q{
 p Hello
@@ -474,5 +499,11 @@ input[value=succ_x]
     }
 
     assert_html '<html><head><meta content="Hello World from @env" name="keywords" /></head><p>Hello World from @env</p><span>Hello World from @env</span></html>', source
+  end
+
+  def test_empty_template
+    source = ""
+
+    assert_html '', source
   end
 end

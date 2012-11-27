@@ -1,7 +1,7 @@
 module Slim
   # Parses Slim code and transforms it to a Temple expression
   # @api private
-  class Parser < Temple::Parser
+  class Parser < Temple::Parser 
     define_options :file,
                    :default_tag,
                    :escape_quoted_attrs => false,
@@ -54,16 +54,22 @@ module Slim
     #
     # @param [String] str Slim code
     # @return [Array] Temple expression representing the code]]
-    def call(str)
-      str = remove_bom(set_encoding(str))
-
+    def call1(str)
+      str = replace_tabs(remove_bom(set_encoding(str)))
       result = [:multi]
       reset(str.split(/\r?\n/), [result])
-
       parse_line while next_line
-
       reset
       result
+      # .tap{|o| ap result: o}
+    end
+
+    def call(str)
+      str = replace_tabs(remove_bom(set_encoding(str)))
+      scanner = Scanner.new(self)
+      scanner.parse(str)
+      scanner.result
+      # .tap{|o| ap result: o}
     end
 
     protected
@@ -102,6 +108,10 @@ module Slim
       else
         s.gsub(/\A\xEF\xBB\xBF/, '')
       end
+    end
+
+    def replace_tabs(str)
+      str.gsub("\t", @tab)
     end
 
     def reset(lines = nil, stacks = nil)
@@ -144,7 +154,7 @@ module Slim
     def get_indent(line)
       # Figure out the indentation. Kinda ugly/slow way to support tabs,
       # but remember that this is only done at parsing time.
-      line[/\A[ \t]*/].gsub("\t", @tab).size
+      line[/\A */].size
     end
 
     def parse_line
@@ -191,6 +201,16 @@ module Slim
       end
 
       parse_line_indicators
+    end
+
+    
+
+    def append(part)
+      @stacks << part
+    end
+
+    def pop
+      @stacks.pop
     end
 
     def parse_line_indicators
@@ -263,6 +283,7 @@ module Slim
       else
         result << [:slim, :interpolate, first_line]
       end
+
 
       empty_lines = 0
       until @lines.empty?

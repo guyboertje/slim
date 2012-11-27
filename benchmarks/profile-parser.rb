@@ -7,4 +7,5 @@ require 'slim'
 content = File.read(File.dirname(__FILE__) + '/view.slim')
 engine = Slim::Engine.new
 
-1000.times { engine.call(content) }
+# 100.times { engine.call(content) }
+engine.call(content)

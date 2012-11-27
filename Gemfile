@@ -2,6 +2,10 @@ source :rubygems
 
 gemspec
 
+gem 'erubis'
+gem 'haml'
+gem 'awesome_print'
+
 if ENV['TRAVIS'] || ENV['TEMPLE'] == 'master'
   gem 'temple', :github => 'judofyr/temple'
 elsif ENV['TEMPLE_PATH']

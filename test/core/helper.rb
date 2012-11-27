@@ -1,5 +1,5 @@
 # encoding: utf-8
-
+require 'awesome_print'
 require 'minitest/unit'
 require 'slim'
 require 'slim/grammar'
