@@ -35,20 +35,22 @@ class HtmlComment
       rest = input.rest
       input.string = block
       until input.eos? do
-        if line_end(false)
+        if scanner.line_end(false)
           empty_lines << ?\n
         end
-        if line = input.shift_text
-          
-          line.lstrip!
-          if line.empty?
+        if line = scanner.shift_text
+          # ind, txt = line.scan(%r{(\s*)(\S+)*}).first
+          # indent ||= ind.size
+          # if txt.empty?
+          txt = line.strip
+          if txt.empty?
             empty_lines << ?\n
           else
             if !empty_lines.empty?
               @out << [:slim, :interpolate, empty_lines.join('')]
               empty_lines.clear
             end
-            @out << [:slim, :interpolate, (text_indent ? "\n" : '') + (' ' * offset) + line]
+            @out << [:slim, :interpolate, "\n" + txt]
           end
         end
       end

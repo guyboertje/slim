@@ -2,6 +2,7 @@ require 'temple'
 
 require 'slim/indenter'
 require 'slim/scanner'
+require 'slim/syntax_classes/html_comment'
 require 'slim/parser'
 require 'slim/filter'
 require 'slim/end_inserter'

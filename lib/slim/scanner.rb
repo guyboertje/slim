@@ -60,6 +60,7 @@ module Slim
       # embedded_template or
       # doctype_decl or
       # html_tag
+      @input.terminate
     end
 
     def lf_re
@@ -123,60 +124,61 @@ module Slim
       @indenter.current_indent
     end
 
-    def peeked_indent
-      (ind = check_indent) ? ind.size : 0
-    end
+    # def peeked_indent
+    #   (ind = check_indent) ? ind.size : 0
+    # end
 
-    def parse_text_block(first_line = nil, text_indent = nil, in_tag = false)
-      result = [:multi]
-      line_end(false)
-      if !first_line || first_line.empty?
-        text_indent = nil
-      else
-        result << [:slim, :interpolate, first_line]
-      end
+    # def parse_text_block(first_line = nil, text_indent = nil, in_tag = false)
+    #   result = [:multi]
+    #   line_end(false)
+    #   if !first_line || first_line.empty?
+    #     text_indent = nil
+    #   else
+    #     result << [:slim, :interpolate, first_line]
+    #   end
 
-      empty_lines = []
+    #   empty_lines = []
 
-      until @input.eos? do
-        if lf = check_lf # blank line
-          line_end(false)
-          empty_lines << ?\n if text_indent
-        else
-          if peeked_indent <= current_indent
-            line = check_text
-            break unless line.strip.empty?
-            shift_text
-            line_end(false)
-            empty_lines << ?\n if text_indent
-          end
+    #   until @input.eos? do
+    #     if lf = check_lf # blank line
+    #       line_end(false)
+    #       empty_lines << ?\n if text_indent
+    #     else
+    #       if peeked_indent <= current_indent
+    #         line = check_text
+    #         break unless line.strip.empty?
+    #         shift_text
+    #         line_end(false)
+    #         empty_lines << ?\n if text_indent
+    #       end
 
-          if !empty_lines.empty?
-            result << [:slim, :interpolate, empty_lines.join('')]
-            empty_lines.clear
-          end
-          line_end(false)
-          offset, indent = 0, indentation
-          if text_indent && (offset = indent - text_indent) < 0
-            raise "Indentation Error"
-          end
-          line = shift_text
-          result << [:slim, :interpolate, (text_indent ? "\n" : '') + (' ' * offset) + line]
-          text_indent ||= indent
-        end
-      end
-      result
-    end
+    #       if !empty_lines.empty?
+    #         result << [:slim, :interpolate, empty_lines.join('')]
+    #         empty_lines.clear
+    #       end
+    #       line_end(false)
+    #       offset, indent = 0, indentation
+    #       if text_indent && (offset = indent - text_indent) < 0
+    #         raise "Indentation Error"
+    #       end
+    #       line = shift_text
+    #       result << [:slim, :interpolate, (text_indent ? "\n" : '') + (' ' * offset) + line]
+    #       text_indent ||= indent
+    #     end
+    #   end
+    #   result
+    # end
 
     def html_comments
-      comment = @input.scan(%r{/!( ?)}) or return false
-      self.build [:html, :comment,
-        [:slim, :text,
-          parse_text_block(shift_text, current_indent + comment.size)
-        ]
-      ]
-      @input.terminate
-      true
+      HtmlComment.try(self)
+      # comment = @input.scan(%r{/!( ?)}) or return false
+      # self.build [:html, :comment,
+      #   [:slim, :text,
+      #     parse_text_block(shift_text, current_indent + comment.size)
+      #   ]
+      # ]
+      
+      # true
     end
 
     def html_tag

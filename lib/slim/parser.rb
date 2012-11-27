@@ -68,8 +68,7 @@ module Slim
       str = replace_tabs(remove_bom(set_encoding(str)))
       scanner = Scanner.new(self)
       scanner.parse(str)
-      scanner.result
-      # .tap{|o| ap result: o}
+      scanner.result.tap{|o| ap result: o}
     end
 
     protected
