@@ -25,6 +25,19 @@ div
     assert_html '<div><p>The first paragraph</p><p>The second paragraph</p></div>', source
   end
 
+  def test_render_with_broken_line
+    source = %q{
+div
+  - if show_first? or \
+        true == false
+      p The first paragraph
+  - else
+      p The second paragraph
+}
+
+    assert_html '<div><p>The second paragraph</p></div>', source
+  end
+
   def test_render_with_parameterized_conditional
     source = %q{
 div

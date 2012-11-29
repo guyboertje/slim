@@ -1,8 +1,15 @@
 require 'temple'
 
 require 'slim/indenter'
+require 'slim/line_counter'
+require 'slim/scanning_parser'
 require 'slim/scanner'
 require 'slim/syntax_classes/html_comment'
+require 'slim/syntax_classes/html_conditional_comment'
+require 'slim/syntax_classes/slim_comment'
+require 'slim/syntax_classes/text_block'
+require 'slim/syntax_classes/inline_html'
+
 require 'slim/parser'
 require 'slim/filter'
 require 'slim/end_inserter'

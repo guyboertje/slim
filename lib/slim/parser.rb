@@ -54,20 +54,20 @@ module Slim
     #
     # @param [String] str Slim code
     # @return [Array] Temple expression representing the code]]
-    def call1(str)
+    def call(str)
       str = replace_tabs(remove_bom(set_encoding(str)))
       result = [:multi]
       reset(str.split(/\r?\n/), [result])
       parse_line while next_line
       reset
-      result
-      # .tap{|o| ap result: o}
+      result #  .tap{|o| ap result: o}
     end
 
-    def call(str)
+    def call1(str)
       str = replace_tabs(remove_bom(set_encoding(str)))
-      scanner = Scanner.new(self)
+      scanner = ScanningParser.new(self)
       scanner.parse(str)
+      # .tap{|o| ap result: o}
       scanner.result.tap{|o| ap result: o}
     end
 
@@ -200,16 +200,6 @@ module Slim
       end
 
       parse_line_indicators
-    end
-
-    
-
-    def append(part)
-      @stacks << part
-    end
-
-    def pop
-      @stacks.pop
     end
 
     def parse_line_indicators

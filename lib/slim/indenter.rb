@@ -26,6 +26,8 @@ module Slim
         @indents << amount
         return nil
       end
+      
+      ap stacks: @scanner.stacks
 
       unwind = indent_expected? ? 1 : 0
       idx = @indents.index(amount)

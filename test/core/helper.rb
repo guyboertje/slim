@@ -20,7 +20,7 @@ class TestSlim < MiniTest::Unit::TestCase
   end
 
   def assert_html(expected, source, options = {}, &block)
-    assert_equal expected, render(source, options, &block)
+    assert_equal expected, render(source, options, &block).tap{|s| ap s}
   end
 
   def assert_syntax_error(message, source, options = {})

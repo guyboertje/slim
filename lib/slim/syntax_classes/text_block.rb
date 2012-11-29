@@ -1,54 +1,39 @@
-# "\n   Another comment\n     \n   Another comment\n\n   Another comment\n"
+
 module Slim
-module HtmlComment
+module TextBlock
   extend self
 
   def try(parser, scanner)
     scanner.indentation
-    unless comment = scanner.scan(%r{/!( ?)})
+    unless indicator = scanner.scan(%r{(\||') ?})
       return false
     end
     out = [:multi]
 
-    min_indent = scanner.current_indent.succ
-    offset = min_indent.pred + comment.size
+    min_indent = scanner.current_indent + indicator.size
 
     if (part = scanner.shift_text)
       part.strip!
-      out.push [:slim, :interpolate, part] unless part.empty?
+      out.push [:slim, :interpolate, part.concat(?\n)] unless part.empty?
     end
     scanner.line_end
     if block = scanner.scan(%r{((\r?\n)* {#{min_indent},}.*(\r?\n)+)*})
       lines = block.split(/\r?\n/)
       lines.each do |line|
         scanner.liner.inc
-        txt = (line.slice(offset, line.size) || "").prepend(?\n)
+        txt = line.slice(min_indent, line.size)
         out.push [:newline]
-        out.push([:slim, :interpolate, txt])
+        out.push([:slim, :interpolate, txt]) if txt
       end
     end
-    parser.build [:html, :comment, [:slim, :text, out]]
+    parser.build [:slim, :text, out]
+    parser.build [:static, ' '] if indicator.start_with? ?'
     true
   end
 end
 end
 
 __END__
-  def try(parser)
-    parser.scanner.indentation
-    unless comment = parser.scanner.scan(%r{/!( ?)})
-      return false
-    end
-    scanner, out = parser.scanner, [:multi]
-
-    min_indent = scanner.current_indent.succ
-
-    if (part = scanner.shift_text)
-      part.strip!
-      out.push [:slim, :interpolate, part] unless part.empty?
-    end
-    scanner.line_end
-    if block = scanner.scan(%r{((\r?\n)* {#{min_indent},}.*(\r?\n)+)*})
       empty_lines, after_first_line = [], false
       new_scanner = Scanner.new(block, parser)
       until new_scanner.eos? do
@@ -70,8 +55,3 @@ __END__
         end
         new_scanner.line_end(false)
         after_first_line = true
-      end
-    end
-    parser.build [:html, :comment, [:slim, :text, out]]
-    true
-  end
