@@ -3,15 +3,12 @@ module Slim
 module InlineHtml
   extend self
   def try(parser, scanner)
-    scanner.indentation
-    unless indicator = scanner.scan(%r{<})
+    # ap "inline html"
+    unless line = scanner.scan(%r{<.+>})
       return false
     end
-    txt = scanner.scan_text
-    scanner.line_end(false)
-    txt.prepend(indicator)
     block = [:multi]
-    parser.build [:multi, [:slim, :interpolate, txt], block]
+    parser.build [:multi, [:slim, :interpolate, line], block]
     parser.push block
     true
   end

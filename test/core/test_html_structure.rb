@@ -2,6 +2,131 @@ require 'helper'
 
 class TestSlimHtmlStructure < TestSlim
 
+#   def test_render_with_html_comments_only
+#     source = %q{
+# /! This is a html comment1
+
+#    Another comment1
+
+#    Another comment1
+
+# / This is a slim comment 1
+#   more stuff 1
+# }
+#     assert_html "<!--This is a html comment1\n\nAnother comment1\n\nAnother comment1-->", source 
+#   end
+
+#   def test_render_with_slim_comments_only
+#     source = %q{
+# / This is a slim comment2
+#     Another comment2
+#     Another comment2
+# /! This is a html comment2
+#      woohoo
+# }
+#     assert_html "<!--This is a html comment2\n  woohoo-->", source 
+#   end
+
+#   def test_render_with_html_cond_comment_and_text_block
+#     source = %q{
+# /[ if IE ] blah
+#   |
+#     Get a better browser3.
+# }
+#     assert_html "<!--[if IE]>Get a better browser3.<![endif]-->", source 
+#   end
+
+#   def test_render_ruby_code_block
+#     source = %q{
+# - word = true ?\
+#     'surely a' :\
+#     'not a'
+# /! This is #{word} html comment4
+# }
+#     assert_html "<!--This is surely a html comment4-->", source 
+#   end
+
+#   def test_inline_html
+#     source = %q{
+
+
+
+# <p>
+#   | Lorem ipsum
+# </p>
+# }
+
+#     assert_html '<p>Lorem ipsum</p>', source
+#   end
+
+#   def test_captured_code_block_with_conditional
+#     source = %q{
+
+
+# = hello_world "Hello Ruby!" do
+#   - if true
+#      | Hello from within a block!
+# <p>Lorem ipsum</p>
+# }
+
+#     assert_html 'Hello Ruby! Hello from within a block! Hello Ruby!<p>Lorem ipsum</p>', source
+#   end
+
+#     def test_render_with_erb
+#       source = %q{
+# <p>
+# - text = 'before erb block'
+# erb:
+
+#   <b>Hello from <%= text.upcase %>!</b>
+#   Second Line!
+#   <% if true %>
+#     <%= true %>
+#   <% end %>
+# </p>
+# }
+
+#       assert_html "<p><b>Hello from BEFORE ERB BLOCK!</b>\nSecond Line!\n\n  true\n</p>", source
+#     end
+
+#       def test_doctype_new_syntax
+#         source = %q{
+# Doctype 5
+# <html></html>
+# }
+
+#         assert_html '<!DOCTYPE html><html></html>', source, :format => :xhtml
+#       end
+
+
+  def test_html_tags
+    source = %q{
+p.big Hello
+.left
+#right
+.r_block*data_attrs({id: "drhs"})
+div*data_attrs({id: "dlhs"})
+*some_ruby_method({bb: :ddd})
+html:section Hello
+}
+
+    assert_html "<p>Hello</p><div class=\"left\"></div><div id=\"right\"></div><div class=\"r_block\" data-id=\"drhs\"></div><div data-id=\"dlhs\"></div>", source
+  end
+
+
+
+
+
+
+
+
+
+
+
+
+end
+__END__
+
 
   # def test_empty_template
   #   source = ""
@@ -21,44 +146,6 @@ class TestSlimHtmlStructure < TestSlim
 
 #     assert_html '<html><head><title>Simple Test Title</title></head><body><p>Hello World, meet Slim.</p></body></html>', source
 #   end
-  def test_render_with_html_comments_only
-    source = %q{
-/! This is a html comment
-
-   Another comment
-
-   Another comment
-/ This is a slim comment
-  more stuff
-}
-    assert_html "<!--This is a html comment\n\nAnother comment\n\nAnother comment-->", source 
-  end
-
-  def test_render_with_slim_comments_only
-    source = %q{
-/ This is a slim comment
-
-    Another comment
-     
-    Another comment
-}
-    assert_html "", source 
-  end
-
-  def test_render_with_html_cond_comment_and_text_block
-    source = %q{
-/[ if IE]
-  | 
-    Get a better browser.
-
-}
-    assert_html "<!--[if IE]>Get a better browser.<![endif]-->", source 
-  end
-end
-
-
-
-__END__
   def test_html_tag_with_text_and_empty_line
     source = %q{
 p Hello

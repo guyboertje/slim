@@ -3,12 +3,12 @@ module Slim
 module HtmlConditionalComment
   extend self
   def try(parser, scanner)
-    scanner.indentation
-    unless comment = scanner.scan(%r{/\[(?=.+\])})
+    # ap "html conditional comment"
+    unless comment = scanner.scan(%r{/\[\s*(.*?) *\].*(?=\r?\n)})
       return false
     end
-    txt = scanner.scan(%r{.+\].*}).strip.sub(?],'')
-    scanner.line_end(false)
+    ap from: "HtmlConditionalComment", comment: comment
+    txt = scanner.m1
     block = [:multi]
     parser.build [:html, :condcomment, txt, block]
     parser.push block

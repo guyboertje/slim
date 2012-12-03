@@ -1,22 +1,21 @@
-
 module Slim
 module RubyCodeBlock
   extend self
   def try(parser, scanner)
-    scanner.indentation
-    unless indicator = scanner.scan(%r{-})
+    current_indent = scanner.current_indent
+    unless indicator = scanner.scan(%r{- ?})
       return false
     end
-    line = scanner.scan_text
-    scanner.line_end(false)
-    block = [:multi]
-    out = [:multi]
-    # parse broken line
-
-
-
-    parser.build [:multi, [:slim, :interpolate, out], block]
-    parser.push block
+    lines = scanner.shift_broken_lines
+    scanner.liner.advance(lines.count(?\n))
+    
+    if scanner.check_next_indent > current_indent
+      block = [:multi]
+      parser.build [:slim, :control, lines, block]
+      parser.push block
+    else
+      parser.build [:slim, :control, lines, [:multi, [:newline]]]
+    end
     true
   end
 end

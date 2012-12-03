@@ -28,11 +28,10 @@ div
   def test_render_with_broken_line
     source = %q{
 div
-  - if show_first? or \
-        true == false
-      p The first paragraph
-  - else
-      p The second paragraph
+  - word = show_first?(false) ?\
+      'first' :\
+      'second'
+  p The #{word} paragraph
 }
 
     assert_html '<div><p>The second paragraph</p></div>', source

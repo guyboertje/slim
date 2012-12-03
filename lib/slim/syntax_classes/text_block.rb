@@ -4,26 +4,28 @@ module TextBlock
   extend self
 
   def try(parser, scanner)
-    scanner.indentation
-    unless indicator = scanner.scan(%r{(\||') ?})
+    # ap "text block"
+    unless indicator = scanner.scan(%r{(\||')( ?)(.*)})
       return false
     end
     out = [:multi]
 
-    min_indent = scanner.current_indent + indicator.size
+    min_indent = scanner.current_indent + 1 + scanner.m2.size
 
-    if (part = scanner.shift_text)
+    if part = scanner.m3
       part.strip!
-      out.push [:slim, :interpolate, part.concat(?\n)] unless part.empty?
+      out.push [:slim, :interpolate, part] unless part.empty?
     end
-    scanner.line_end
-    if block = scanner.scan(%r{((\r?\n)* {#{min_indent},}.*(\r?\n)+)*})
+
+    if block = scanner.shift_indented_lines(min_indent)
       lines = block.split(/\r?\n/)
+      scanner.liner.inc
+      lines.shift
       lines.each do |line|
         scanner.liner.inc
-        txt = line.slice(min_indent, line.size)
+        txt = line.lstrip
         out.push [:newline]
-        out.push([:slim, :interpolate, txt]) if txt
+        out.push([:slim, :interpolate, txt]) unless txt.empty?
       end
     end
     parser.build [:slim, :text, out]

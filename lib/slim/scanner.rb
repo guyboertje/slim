@@ -29,6 +29,26 @@ module Slim
       @input.terminate
     end
 
+    def rest
+      @input.rest
+    end
+
+    def match index
+      @input[index]
+    end
+
+    def m1
+      @input[1]
+    end
+
+    def m2
+      @input[2]
+    end
+
+    def m3
+      @input[3]
+    end
+
     def lf_re
       @re1 ||= %r{\r?\n}
     end
@@ -39,6 +59,38 @@ module Slim
 
     def txt_re
       @re3 ||= %r{.*}
+    end
+
+    def lf_ind_re
+      @re4 ||= %r{\r?\n +}
+    end
+
+    def lfs_ind_re
+      @re5 ||= %r{\r?\n +}
+    end
+
+    def lfs_ind_char_re
+      @re6 ||= %r{(\r?\n)* +(?=\S)}
+    end
+
+    def ws_until_first_char_re
+      @re7 ||= %r{\s*(?=\S)}
+    end
+
+    def lf_space_plus_re
+      @re8 ||= %r{(\r?)\n +}
+    end
+
+    def broken_line_re
+      @re9 ||= %r{(.*[,\\]\r?\n)*.*(?=\r?\n)}
+    end
+
+    def shift_broken_lines
+      @input.scan(broken_line_re).gsub(lf_space_plus_re, ?\n)
+    end
+
+    def shift_indented_lines(indent)
+      @input.scan(%r{((\r?\n)* {#{indent},}.*(\r?\n)+)*})
     end
 
     def shift_lf
@@ -53,12 +105,28 @@ module Slim
       @input.scan(txt_re)
     end
 
+    def shift_until_char
+      @input.scan_until(ws_until_first_char_re)
+    end
+
     def check_lf
       @input.check(lf_re)
     end
 
+    def check_next_indent
+      if f = @input.check_until(lfs_ind_char_re)
+        f[/ +\z/].size
+      else
+        current_indent
+      end
+    end
+
     def check_indent
-      @input.check(ind_re)
+      if f = @input.check(ind_re)
+        f.size
+      else
+        current_indent
+      end
     end
 
     def check_text
@@ -79,10 +147,9 @@ module Slim
       end
     end
 
-    def indentation
-      if indent = shift_indent
-        @indenter.indent(indent.size)
-      end
+    def indentation(ind = shift_indent)
+      indent = ind || ""
+      @indenter.indent(indent.size)
       current_indent
     end
 

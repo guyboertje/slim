@@ -17,6 +17,7 @@ module Slim
     end
     
     def advance(count)
+      return if count.zero?
       @lineno += count
     end
   end

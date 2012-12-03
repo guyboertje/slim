@@ -94,6 +94,10 @@ class Env
     {:a => 'The letter a', :b => 'The letter b'}
   end
 
+  def data_attrs(hash)
+    hash.inject({}){|m,(k,v)| m["data-#{k}"] = v; m}
+  end
+
   def show_first?(show = false)
     show
   end

@@ -48,28 +48,41 @@ module Slim
       shortcut = "[#{Regexp.escape @shortcut.keys.join}]"
       @shortcut_regex = /\A(#{shortcut})(\w[\w-]*\w|\w+)/
       @tag_regex = /\A(?:#{shortcut}|\*(?=[^\s]+)|(\w[\w:-]*\w|\w+))/
+      @tag_re = /(#{shortcut}|\*(?=\S+)|(\w[\w:-]*\w|\w+))(.*)(?=\r?\n)/
+    end
+    
+    def shortcut_re
+      @shortcut_regex
+    end
+
+    def tag_re
+      @tag_re
+    end
+
+    def shortcut
+      @shortcut
     end
 
     # Compile string to Temple expression
     #
     # @param [String] str Slim code
     # @return [Array] Temple expression representing the code]]
-    def call(str)
+    def call1(str)
       str = replace_tabs(remove_bom(set_encoding(str)))
       result = [:multi]
       reset(str.split(/\r?\n/), [result])
       parse_line while next_line
       reset
-      result #  .tap{|o| ap result: o}
+      result.tap{|o| ap result: o}
     end
 
-    def call1(str)
+    def call(str)
       str = replace_tabs(remove_bom(set_encoding(str)))
       scanner = ScanningParser.new(self)
       scanner.parse(str)
-      # .tap{|o| ap result: o}
       scanner.result.tap{|o| ap result: o}
     end
+      # .tap{|o| ap result: o}
 
     protected
 
@@ -110,7 +123,7 @@ module Slim
     end
 
     def replace_tabs(str)
-      str.gsub("\t", @tab)
+      str.gsub(?\t, @tab)
     end
 
     def reset(lines = nil, stacks = nil)
@@ -251,6 +264,7 @@ module Slim
       when @tag_regex
         # Found a HTML tag.
         @line = $' if $1
+        ap from: "parse line", line: $', match1: $1, tag_param: $&
         parse_tag($&)
       else
         syntax_error! 'Unknown line indicator'

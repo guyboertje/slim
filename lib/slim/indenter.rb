@@ -1,7 +1,7 @@
 module Slim
   class Indenter
-    def initialize(scanner)
-      @scanner = scanner
+    def initialize(parser)
+      @parser = parser
       reset
     end
 
@@ -14,7 +14,7 @@ module Slim
     end
 
     def indent_expected?
-      @scanner.stack_depth > depth
+      @parser.stack_depth > depth
     end
 
     def current_indent
@@ -26,15 +26,21 @@ module Slim
         @indents << amount
         return nil
       end
-      
-      ap stacks: @scanner.stacks
 
       unwind = indent_expected? ? 1 : 0
       idx = @indents.index(amount)
-      raise 'Malformed indentation' unless idx
-      popped = depth - idx
-      @indents.pop(popped)
-      @scanner.pop(unwind + popped)
+      raise "Malformed indentation at line #{@parser.liner.lineno}, amount: #{amount}, current: #{current_indent}" unless idx
+      popped = depth - idx.succ
+      
+      # ap from: ?+*40, amount: amount, popped: popped, unwind: unwind, stacks: @parser.stacks, indents: @indents
+
+      self.pop(popped)
+      @parser.pop(unwind + popped)
+    end
+
+    def pop(amount)
+      return unless amount < @indents.size
+      @indents.pop(amount)
     end
   end
 end
