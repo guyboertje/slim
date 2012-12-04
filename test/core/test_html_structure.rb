@@ -101,20 +101,20 @@ class TestSlimHtmlStructure < TestSlim
 
   def test_html_tags
     source = %q{
-p.big Hello
-.left
-#right
-.r_block*data_attrs({id: "drhs"})
-div*data_attrs({id: "dlhs"})
-*some_ruby_method({bb: :ddd})
-html:section Hello
+p
 }
 
-    assert_html "<p>Hello</p><div class=\"left\"></div><div id=\"right\"></div><div class=\"r_block\" data-id=\"drhs\"></div><div data-id=\"dlhs\"></div>", source
+    assert_html "<p />", source
   end
 
-
-
+# p.big Hello
+# .left
+# #right
+# .r_block*data_attrs({id: "drhs"})
+# div*data_attrs({id: "dlhs"})
+# *some_ruby_method({bb: :ddd})
+# html:section Hello
+# assert_html "<p>Hello</p><div class=\"left\"></div><div id=\"right\"></div><div class=\"r_block\" data-id=\"drhs\"></div><div data-id=\"dlhs\"></div>", source
 
 
 

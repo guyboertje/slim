@@ -1,4 +1,6 @@
 module Slim
+  Re = Regexp
+
   class ScanningParser
 
     attr_reader :parser, :scanner, :indenter, :liner, :stacks
@@ -76,10 +78,18 @@ module Slim
       OutputBlock.try(self, scanner) ||
       EmbeddedTemplate.try(self, scanner) ||
       Doctype.try(self, scanner) ||
-      Tag.try(self, scanner, parser.tag_re)
+      parse_tags
 
       scanner.terminate if i > 20
       i.succ
+    end
+
+    def parse_tags
+      done = false
+      until done
+        done = Tag.try(self, scanner, parser.tag_re)
+      end
+      done
     end
   end
 end

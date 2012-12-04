@@ -47,12 +47,13 @@ module Slim
       end
       shortcut = "[#{Regexp.escape @shortcut.keys.join}]"
       @shortcut_regex = /\A(#{shortcut})(\w[\w-]*\w|\w+)/
+      @shortcut_re = /(#{shortcut})(\w[\w-]*\w|\w+)/
       @tag_regex = /\A(?:#{shortcut}|\*(?=[^\s]+)|(\w[\w:-]*\w|\w+))/
       @tag_re = /(#{shortcut}|\*(?=\S+)|(\w[\w:-]*\w|\w+))(.*)(?=\r?\n)/
     end
     
     def shortcut_re
-      @shortcut_regex
+      @shortcut_re
     end
 
     def tag_re
@@ -340,7 +341,7 @@ module Slim
 
       case @line
       when /\A\s*:\s*/
-        # Block expansion
+        # Block expansion aka inline tags
         @line = $'
         (@line =~ @tag_regex) || syntax_error!('Expected tag')
         @line = $' if $1
