@@ -1,7 +1,7 @@
 module Slim
 module ConsumeWhitespace
   extend self
-  def try(parser, scanner)
+  def try(parser, scanner, current_indent)
     # ap "blank_lines"
     if lines = scanner.shift_until_char
       # ap from: "ConsumeWhitespace", lines: lines

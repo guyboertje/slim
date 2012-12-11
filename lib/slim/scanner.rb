@@ -21,6 +21,22 @@ module Slim
       @input.scan(re)
     end
 
+    def check(re)
+      @input.check(re)
+    end
+
+    def scan_until(re)
+      @input.scan_until(re)
+    end
+
+    def position
+      @input.pos
+    end
+
+    def delegate(action, *args)
+      @input.send(action, *args)
+    end
+
     def eos?
       @input.eos?
     end
@@ -35,6 +51,10 @@ module Slim
 
     def match index
       @input[index]
+    end
+
+    def m0
+      @input[0]
     end
 
     def m1
@@ -111,6 +131,10 @@ module Slim
 
     def check_lf
       @input.check(lf_re)
+    end
+
+    def eol?
+      !!check_lf
     end
 
     def check_next_indent

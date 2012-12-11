@@ -3,14 +3,14 @@ module Slim
 module TextBlock
   extend self
 
-  def try(parser, scanner)
+  def try(parser, scanner, current_indent)
     # ap "text block"
     unless indicator = scanner.scan(%r{(\||')( ?)(.*)})
       return false
     end
     out = [:multi]
 
-    min_indent = scanner.current_indent + 1 + scanner.m2.size
+    min_indent = current_indent + 1 + scanner.m2.size
 
     if part = scanner.m3
       part.strip!

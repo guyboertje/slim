@@ -3,9 +3,8 @@ module Slim
 module HtmlComment
   extend self
 
-  def try(parser, scanner)
+  def try(parser, scanner, current_indent)
     # ap "html comment"
-    current_indent = scanner.current_indent
     unless comment = scanner.scan(%r{/!( ?)(.*)})
       return false
     end

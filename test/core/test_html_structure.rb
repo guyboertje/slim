@@ -101,13 +101,13 @@ class TestSlimHtmlStructure < TestSlim
 
   def test_html_tags
     source = %q{
-p
+html:p.left.top data-id="foo" *{id: 'fred'}.merge({href: 223}) data-ref=show_first?(hash[:a]) = "World"
 }
 
-    assert_html "<p />", source
+    assert_html "<html:p class=\"left top\" data-id=\"foo\" data-ref=\"The letter a\" href=\"223\" id=\"fred\">World</html:p>", source
   end
 
-# p.big Hello
+# p.big Hello html:p
 # .left
 # #right
 # .r_block*data_attrs({id: "drhs"})

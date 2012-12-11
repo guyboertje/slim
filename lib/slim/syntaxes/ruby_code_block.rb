@@ -1,8 +1,8 @@
 module Slim
 module RubyCodeBlock
   extend self
-  def try(parser, scanner)
-    current_indent = scanner.current_indent
+  def try(parser, scanner, current_indent)
+    
     unless indicator = scanner.scan(%r{- ?})
       return false
     end

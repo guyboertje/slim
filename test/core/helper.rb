@@ -91,7 +91,7 @@ class Env
   end
 
   def hash
-    {:a => 'The letter a', :b => 'The letter b'}
+    {:a => 'The letter a', :b => "The letter b"}
   end
 
   def data_attrs(hash)

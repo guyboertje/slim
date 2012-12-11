@@ -49,7 +49,7 @@ module Slim
       @shortcut_regex = /\A(#{shortcut})(\w[\w-]*\w|\w+)/
       @shortcut_re = /(#{shortcut})(\w[\w-]*\w|\w+)/
       @tag_regex = /\A(?:#{shortcut}|\*(?=[^\s]+)|(\w[\w:-]*\w|\w+))/
-      @tag_re = /(#{shortcut}|\*(?=\S+)|(\w[\w:-]*\w|\w+))(.*)(?=\r?\n)/
+      @tag_re = /(#{shortcut}|\*(?=\S+)|(\w[\w:-]*\w|\w+))/
     end
     
     def shortcut_re
@@ -265,7 +265,6 @@ module Slim
       when @tag_regex
         # Found a HTML tag.
         @line = $' if $1
-        ap from: "parse line", line: $', match1: $1, tag_param: $&
         parse_tag($&)
       else
         syntax_error! 'Unknown line indicator'
@@ -400,14 +399,14 @@ module Slim
           # Splat attribute
           @line = $'
           attributes << [:slim, :splat, parse_ruby_code(delimiter)]
-        when QUOTED_ATTR_REGEX
+        when QUOTED_ATTR_REGEX # '\A\s*(\w[:\w-]*)' /\s*(\w[:\w-]*)=(=?)("|')/
           # Value is quoted (static)
           @line = $'
           attributes << [:html, :attr, $1,
                          [:escape, options[:escape_quoted_attrs] && $2.empty?,
                           [:slim, :interpolate, parse_quoted_attribute($3)]]]
-        when CODE_ATTR_REGEX
-          # Value is ruby code
+        when CODE_ATTR_REGEX # /#{ATTR_NAME}=(=?)/
+          # Value is ruby code /#{ATTR_NAME}=(=?)/
           @line = $'
           name = $1
           escape = $2.empty?

@@ -25,7 +25,15 @@ module Slim
     end
 
     def shortcut_re
-      @scre ||= parser.shortcut_re
+      @scre ||= %r~#{shortcuts_quoted_ored}~
+    end
+
+    def tag_re
+      @tagre ||= %r~(\*(?=\S+))|(\w[\w:-]*\w|\w+)~
+    end
+
+    def shortcuts_quoted_ored
+      shortcut.keys.map{ |k| Re.quote(k) }.join(?|)
     end
 
     def push(object)
@@ -50,10 +58,13 @@ module Slim
     end
 
     def result
-      @stacks.shift
+      res = @stacks.shift
+      res.pop if res.last.empty?
+      res
     end
 
     def parse(str)
+      @temp_scanner = nil
       @scanner = Scanner.new(str, self)
       i = 0
       until @scanner.eos?
@@ -62,22 +73,38 @@ module Slim
     end
 
     def scanner
-      @scanner
+      @temp_scanner || @scanner
+    end
+
+    def set_temp_scanner(alt)
+      @temp_scanner = alt
+    end
+
+    def clear_temp_scanner
+      @temp_scanner = nil
+    end
+
+    def line_args(*extras)
+      [self, scanner, indenter.current_indent].concat(extras)
+    end
+
+    def tag_args(*extras)
+      [self, scanner].concat(extras)
     end
 
     def parse_lines(i)
       ap "~>" + scanner.rest
 
-      ConsumeWhitespace.try(self, scanner) &&
-      HtmlComment.try(self, scanner) ||
-      HtmlConditionalComment.try(self, scanner) ||
-      SlimComment.try(self, scanner) ||
-      TextBlock.try(self, scanner) ||
-      InlineHtml.try(self, scanner) ||
-      RubyCodeBlock.try(self, scanner) ||
-      OutputBlock.try(self, scanner) ||
-      EmbeddedTemplate.try(self, scanner) ||
-      Doctype.try(self, scanner) ||
+      ConsumeWhitespace.try( *line_args ) &&
+      HtmlComment.try( *line_args ) ||
+      HtmlConditionalComment.try( *line_args ) ||
+      SlimComment.try( *line_args ) ||
+      TextBlock.try( *line_args ) ||
+      InlineHtml.try( *line_args ) ||
+      RubyCodeBlock.try( *line_args ) ||
+      OutputBlock.try( *line_args ) ||
+      EmbeddedTemplate.try( *line_args ) ||
+      Doctype.try( *line_args ) ||
       parse_tags
 
       scanner.terminate if i > 20
@@ -86,10 +113,34 @@ module Slim
 
     def parse_tags
       done = false
-      until done
-        done = Tag.try(self, scanner, parser.tag_re)
-      end
+      tags = []
+      begin
+        done =  Tag.try( *tag_args(tag_re, shortcut_re, tags) ) ||
+                parse_attributes(tags) ||
+                TagOutput.try( *line_args(tags) ) ||
+                TagClosed.try( *tag_args(tags) ) ||
+                TagNoContent.try( *tag_args(tags) ) ||
+                TagText.try( *tag_args(tags) )
+      end until done
+      build tags
       done
+    end
+
+    def parse_attributes(tags)
+      memo = {}
+      attributes = [:html, :attrs]
+      TagShortcutAttributes.try( *tag_args(attributes) )
+      TagDelimitedAttributes.try( *tag_args(memo) )
+      no_more = false
+      begin
+        pos = scanner.position
+        TagSplatAttributes.try( *tag_args(memo, attributes) )
+        TagQuotedAttributes.try( *tag_args(memo, attributes, parser.options) )
+        TagCodeAttributes.try( *tag_args(memo, attributes, parser.options) )
+        no_more = scanner.position == pos
+      end until no_more
+      tags.push attributes
+      scanner.eol?
     end
   end
 end

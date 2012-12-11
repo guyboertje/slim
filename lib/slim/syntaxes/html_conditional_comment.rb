@@ -2,7 +2,7 @@
 module Slim
 module HtmlConditionalComment
   extend self
-  def try(parser, scanner)
+  def try(parser, scanner, current_indent)
     # ap "html conditional comment"
     unless comment = scanner.scan(%r{/\[\s*(.*?) *\].*(?=\r?\n)})
       return false

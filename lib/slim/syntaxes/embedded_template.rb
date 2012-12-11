@@ -2,8 +2,7 @@ module Slim
 module EmbeddedTemplate
   extend self
 
-  def try(parser, scanner)
-    current_indent = scanner.current_indent
+  def try(parser, scanner, current_indent)
     unless embedded_line = scanner.scan(%r{(\w+):(?=\r?\n)})
       return false
     end

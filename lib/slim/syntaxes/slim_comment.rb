@@ -2,8 +2,8 @@
 module Slim
 module SlimComment
   extend self
-  def try(parser, scanner)
-    # ap "slim comment"
+  def try(parser, scanner, current_indent)
+
     unless comment = scanner.scan(%r{/})
       return false
     end
