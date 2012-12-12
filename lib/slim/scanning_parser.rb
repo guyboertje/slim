@@ -93,7 +93,6 @@ module Slim
     end
 
     def parse_lines(i)
-      ap "~>" + scanner.rest
 
       ConsumeWhitespace.try( *line_args ) &&
       HtmlComment.try( *line_args ) ||
@@ -107,39 +106,53 @@ module Slim
       Doctype.try( *line_args ) ||
       parse_tags
 
+      ap "#{i} ~>" + scanner.rest
+
+      scanner.line_end
       scanner.terminate if i > 20
+
       i.succ
     end
 
     def parse_tags
-      done = false
-      tags = []
+
+      done, i = false, 0
+      tags, memo, attributes = [], {}, [:html, :attrs]
       begin
-        done =  Tag.try( *tag_args(tag_re, shortcut_re, tags) ) ||
-                parse_attributes(tags) ||
+        ap "#{i} ~~> #{scanner.rest}"
+        i += 1
+        done =  Tag.try( *tag_args(tag_re, shortcut_re, tags, attributes) ) ||
+                parse_attributes(tags, memo, attributes) ||
                 TagOutput.try( *line_args(tags) ) ||
                 TagClosed.try( *tag_args(tags) ) ||
                 TagNoContent.try( *tag_args(tags) ) ||
                 TagText.try( *tag_args(tags) )
-      end until done
+      end until done || i > 12
       build tags
+      push tags
+      clear_temp_scanner if memo[:wrapped_attributes]
       done
     end
 
-    def parse_attributes(tags)
-      memo = {}
-      attributes = [:html, :attrs]
+    def parse_attributes(tags, memo, attributes)
       TagShortcutAttributes.try( *tag_args(attributes) )
       TagDelimitedAttributes.try( *tag_args(memo) )
+
       no_more = false
       begin
+        print ?|
         pos = scanner.position
-        TagSplatAttributes.try( *tag_args(memo, attributes) )
-        TagQuotedAttributes.try( *tag_args(memo, attributes, parser.options) )
-        TagCodeAttributes.try( *tag_args(memo, attributes, parser.options) )
-        no_more = scanner.position == pos
+
+        TagSplatAttributes.try( *tag_args(attributes) )
+        TagQuotedAttributes.try( *tag_args(attributes, parser.options) )
+        TagCodeAttributes.try( *tag_args(attributes, parser.options) )
+        TagBooleanAttributes.try( *tag_args(attributes, memo) )
+
+        no_more = (scanner.position == pos)
       end until no_more
+
       tags.push attributes
+      
       scanner.eol?
     end
   end

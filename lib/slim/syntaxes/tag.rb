@@ -2,7 +2,7 @@ module Slim
 module Tag
   extend self
 
-  def try(parser, scanner, tag_re, shortcut_re, tags)
+  def try(parser, scanner, tag_re, shortcut_re, tags, attributes)
 
     tag = if sc = scanner.check(shortcut_re)
             parser.shortcut_sub(sc)
@@ -15,11 +15,17 @@ module Tag
       return true
     end
     
-    ap from: "Tag", tag: tag
+    # ap from: "Tag", tag: tag
 
     tags.concat [:html, :tag, tag]
 
-    scanner.eol?
+    if scanner.eol?
+      tags.push attributes
+      return true
+    end
+
+    false
+    
   end
 end
 end

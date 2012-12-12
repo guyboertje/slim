@@ -2,9 +2,12 @@ module Slim
 module OutputBlock
   extend self
   def try(parser, scanner, current_indent)
+    
     unless indicator = scanner.scan(%r~=(=?)('?)~)
       return false
     end
+
+    # ap "OutputBlock"
 
     single = scanner.m1.empty?
     add_ws = !scanner.m2.empty?

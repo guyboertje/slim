@@ -2,7 +2,7 @@ module Slim
 module TagCodeAttributes
   extend self
 
-  def try(parser, scanner, memo, attributes, options)
+  def try(parser, scanner, attributes, options)
 
     return unless scanner.scan(%r~\s*(\w[:\w-]*)(==?)~)
 
@@ -10,20 +10,21 @@ module TagCodeAttributes
     esc = (scanner.m2 != ?=) && options[:escape_quoted_attrs]
     value = String.new
 
-    expect = 0
+    expect, openings, closings = 0, "({[", "]})"
 
-    openings, closings = "({[", "]})"
     scan_re = %r~ |(?=\r?\n)~
-
     begin
       part = scanner.scan_until(scan_re)
-      value.concat(part) unless part.nil?
-      expect += part.count(openings)
-      expect -= part.count(closings)
-      # ap from: "TagCodeAttributes", part: part, expect: expect, code: code
+      if part
+        value.concat(part) unless part.nil?
+        expect += part.count(openings)
+        expect -= part.count(closings)
+      else
+        break
+      end
     end until expect.zero?
 
-    ap from: "TagCodeAttributes", attr: atbe, esc: esc, quoted: value
+    # ap from: "TagCodeAttributes", attr: atbe, esc: esc, quoted: value
 
     attributes.push [:html, :attr, atbe, [:slim, :attrvalue, esc, value]]
 
@@ -48,7 +49,7 @@ __END__
       pre, atr, val = quoted.partition(section)
       esc = options[:escape_quoted_attrs] && !atr.end_with?('==')
       atrr = atr.squeeze(?=).chop
-      ap from: "TagQuotedAttributes", attr: atrr, val: val, esc: esc, quoted: quoted
+      # ap from: "TagQuotedAttributes", attr: atrr, val: val, esc: esc, quoted: quoted
       collector.unshift [:html, :attr, atrr, [:escape, false, [:slim, :interpolate, val]]]
       quoted = pre
     end

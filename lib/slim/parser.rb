@@ -421,7 +421,7 @@ module Slim
           break unless delimiter
 
           case @line
-          when boolean_attr_regex
+          when boolean_attr_regex # /\A\s*(\w[:\w-]*)(?=(\s|#{Regexp.escape delimiter}|\Z))/
             # Boolean attribute
             @line = $'
             attributes << [:html, :attr, $1, [:slim, :attrvalue, false, 'true']]

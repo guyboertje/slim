@@ -1,6 +1,7 @@
 # encoding: utf-8
 require 'awesome_print'
 require 'minitest/unit'
+require "minitest/pride"
 require 'slim'
 require 'slim/grammar'
 
@@ -20,7 +21,7 @@ class TestSlim < MiniTest::Unit::TestCase
   end
 
   def assert_html(expected, source, options = {}, &block)
-    assert_equal expected, render(source, options, &block).tap{|s| ap s}
+    assert_equal expected, render(source, options, &block)
   end
 
   def assert_syntax_error(message, source, options = {})

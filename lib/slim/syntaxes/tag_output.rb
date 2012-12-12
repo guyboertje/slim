@@ -4,7 +4,7 @@ module TagOutput
 
   def try(parser, scanner, current_indent, tags)
 
-    unless indicator = scanner.scan(%r~=(=?)('?)~)
+    unless indicator = scanner.scan(%r~\s*=(=?)('?)\s?~)
       return false
     end
 

@@ -3,15 +3,16 @@ module TagDelimitedAttributes
   extend self
 
   def try(parser, scanner, memo)
-    unless delim_open = scanner.scan(delim_re)
-      return false
-    end
+    return if memo[:wrapped_attributes]
+    return unless delim_open = scanner.scan(delim_re)
+
     delim_close = delim_map[delim_open]
     end_re = /#{Re.quote(delim_close)}/m
     part, line, expect = "", "", 1
+
     begin
       part = scanner.scan_until(end_re)
-      ap from: "TagDelimitedAttributes", part: part, expect: expect, line: line
+      # ap from: "TagDelimitedAttributes", part: part, expect: expect, line: line
       if (part.nil? || part.empty?) && !expect.zero?
         raise "expecting closing ]"
       end
@@ -19,6 +20,7 @@ module TagDelimitedAttributes
       expect += line.count(delim_open)
       expect -= line.count(delim_close)
     end until expect.zero?
+
     line.chomp!(delim_close) # ignore last closing delimiter
     if line.empty?
       raise "expected to have delimited attributes"
@@ -28,10 +30,11 @@ module TagDelimitedAttributes
     line.gsub!(/\r?\n/, ' ') # behave like a single line
     line.concat(rest)
 
-    ap from: "TagDelimitedAttributes", line: line
+    # ap from: "TagDelimitedAttributes", line: line
+
     temp_scanner = Scanner.new(line, parser)
     parser.set_temp_scanner(temp_scanner)
-    memo[:temp_scanner] = true
+    memo[:wrapped_attributes] = true
     false
   end
 

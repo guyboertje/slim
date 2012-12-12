@@ -4,10 +4,11 @@ module TextBlock
   extend self
 
   def try(parser, scanner, current_indent)
-    # ap "text block"
     unless indicator = scanner.scan(%r{(\||')( ?)(.*)})
       return false
     end
+    # ap "TextBlock"
+    
     out = [:multi]
 
     min_indent = current_indent + 1 + scanner.m2.size

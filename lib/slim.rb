@@ -20,6 +20,7 @@ require 'slim/syntaxes/tag_delimited_attributes'
 require 'slim/syntaxes/tag_splat_attributes'
 require 'slim/syntaxes/tag_quoted_attributes'
 require 'slim/syntaxes/tag_code_attributes'
+require 'slim/syntaxes/tag_boolean_attributes'
 
 require 'slim/syntaxes/tag_output'
 require 'slim/syntaxes/tag_closed'

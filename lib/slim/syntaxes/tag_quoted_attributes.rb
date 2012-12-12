@@ -2,7 +2,7 @@ module Slim
 module TagQuotedAttributes
   extend self
 
-  def try(parser, scanner, memo, attributes, options)
+  def try(parser, scanner, attributes, options)
 
     return unless scanner.scan(%r~\s*(\w[:\w-]*)(==?)("|')~)
 
@@ -22,7 +22,7 @@ module TagQuotedAttributes
 
     value = value[1..-3]
 
-    ap from: "TagQuotedAttributes", attr: atbe, esc: esc, quoted: value, qc: qc
+    # ap from: "TagQuotedAttributes", attr: atbe, esc: esc, quoted: value, qc: qc
 
     attributes.push [:html, :attr, atbe, [:escape, esc, [:slim, :interpolate, value]]]
 
@@ -47,7 +47,7 @@ __END__
       pre, atr, val = quoted.partition(section)
       esc = options[:escape_quoted_attrs] && !atr.end_with?('==')
       atrr = atr.squeeze(?=).chop
-      ap from: "TagQuotedAttributes", attr: atrr, val: val, esc: esc, quoted: quoted
+      # ap from: "TagQuotedAttributes", attr: atrr, val: val, esc: esc, quoted: quoted
       collector.unshift [:html, :attr, atrr, [:escape, false, [:slim, :interpolate, val]]]
       quoted = pre
     end
