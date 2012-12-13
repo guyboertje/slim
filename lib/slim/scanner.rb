@@ -69,6 +69,10 @@ module Slim
       @input[3]
     end
 
+    def qe_lf_re
+      @re0 ||= %r{(?=\r?\n)}
+    end
+
     def lf_re
       @re1 ||= %r{\r?\n}
     end
@@ -127,6 +131,10 @@ module Slim
 
     def shift_until_char
       @input.scan_until(ws_until_first_char_re)
+    end
+
+    def shift_upto_lf
+      @input.scan_until(qe_lf_re)
     end
 
     def check_lf

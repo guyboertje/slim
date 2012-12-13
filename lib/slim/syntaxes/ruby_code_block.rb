@@ -11,10 +11,10 @@ module RubyCodeBlock
     
     if scanner.check_next_indent > current_indent
       block = [:multi]
-      parser.build [:slim, :control, lines, block]
+      parser.last_push [:slim, :control, lines, block]
       parser.push block
     else
-      parser.build [:slim, :control, lines, [:multi, [:newline]]]
+      parser.last_push [:slim, :control, lines, [:multi, [:newline]]]
     end
     true
   end

@@ -28,7 +28,7 @@ module HtmlComment
         out.push([:slim, :interpolate, txt.prepend(?\n)])
       end
     end
-    parser.build [:html, :comment, [:slim, :text, out]]
+    parser.last_push [:html, :comment, [:slim, :text, out]]
     true
   end
 end

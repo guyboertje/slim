@@ -3,17 +3,16 @@ module TagText
   extend self
 
   def try(parser, scanner, tags)
-
-    ap from: "TagText"
-
-    unless tag_txt = scanner.scan(%r{ ?.*(?=\r?\n)})
+    unless scanner.scan(%r{ ?(.*)(?=\r?\n)})
       scanner.scan_until(/(?=\r?\n)/)
       return true
     end
 
-    # ap from: "TagText", tag_line: tag_txt
+    tag_txt = scanner.m1
 
-    out = [:multi, [:slim, :interpolate, tag_txt.lstrip]]
+    ap "TagText:>" + tag_txt
+
+    out = [:multi, [:slim, :interpolate, tag_txt]]
 
     tags.push [:slim, :text, out]
 
@@ -21,3 +20,4 @@ module TagText
   end
 end
 end
+# .lstrip

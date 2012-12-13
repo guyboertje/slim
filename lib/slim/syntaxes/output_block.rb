@@ -19,12 +19,12 @@ module OutputBlock
     
     if next_indent > current_indent
       block = [:multi]
-      parser.build [:slim, :output, single, lines, block]
-      parser.build [:static, ' '] if add_ws
+      parser.last_push [:slim, :output, single, lines, block]
+      parser.last_push [:static, ' '] if add_ws
       parser.push block
     else
-      parser.build [:slim, :output, single, lines, [:multi, [:newline]]]
-      parser.build [:static, ' '] if add_ws
+      parser.last_push [:slim, :output, single, lines, [:multi, [:newline]]]
+      parser.last_push [:static, ' '] if add_ws
     end
 
     true

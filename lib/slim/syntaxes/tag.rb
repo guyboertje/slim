@@ -15,17 +15,11 @@ module Tag
       return true
     end
     
-    # ap from: "Tag", tag: tag
+    ap "Tag"
 
     tags.concat [:html, :tag, tag]
 
-    if scanner.eol?
-      tags.push attributes
-      return true
-    end
-
     false
-    
   end
 end
 end

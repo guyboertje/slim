@@ -8,6 +8,8 @@ module TagOutput
       return false
     end
 
+    ap "TagOutput"
+
     single = scanner.m1.empty?
     add_ws = !scanner.m2.empty?
 
@@ -19,11 +21,11 @@ module TagOutput
     if next_indent > current_indent
       block = [:multi]
       tags.push [:slim, :output, single, lines, block]
-      parser.build [:static, ' '] if add_ws
+      parser.last_push [:static, ' '] if add_ws
       parser.push block
     else
       tags.push [:slim, :output, single, lines, [:multi, [:newline]]]
-      parser.build [:static, ' '] if add_ws
+      parser.last_push [:static, ' '] if add_ws
     end
 
     true

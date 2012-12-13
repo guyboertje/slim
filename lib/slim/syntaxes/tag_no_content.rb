@@ -7,10 +7,11 @@ module TagNoContent
     unless txt = scanner.scan(%r~\s*(?=\r?\n)~)
       return false
     end
+    ap "TagNoContent"
 
     content = [:multi]
     tags.push content
-    # parser.push content # hmm not sure
+    parser.push content
 
     true
   end

@@ -8,7 +8,7 @@ module InlineHtml
       return false
     end
     block = [:multi]
-    parser.build [:multi, [:slim, :interpolate, line], block]
+    parser.last_push [:multi, [:slim, :interpolate, line], block]
     parser.push block
     true
   end

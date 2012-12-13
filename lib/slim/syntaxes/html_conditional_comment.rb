@@ -10,7 +10,7 @@ module HtmlConditionalComment
     # ap from: "HtmlConditionalComment", comment: comment
     txt = scanner.m1
     block = [:multi]
-    parser.build [:html, :condcomment, txt, block]
+    parser.last_push [:html, :condcomment, txt, block]
     parser.push block
     true
   end

@@ -27,7 +27,7 @@ module EmbeddedTemplate
         pre = ?\n if margin && pre.empty?
       end
     end
-    parser.build [:slim, :embedded, engine, out]
+    parser.last_push [:slim, :embedded, engine, out]
     true
   end
 end

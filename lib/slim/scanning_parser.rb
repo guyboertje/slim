@@ -45,8 +45,8 @@ module Slim
       @stacks.pop(amount)
     end
 
-    def build(part)
-      @stacks.last << part
+    def last_push(part)
+      @stacks.last.push part
     end
 
     def stack_depth
@@ -108,7 +108,6 @@ module Slim
 
       ap "#{i} ~>" + scanner.rest
 
-      scanner.line_end
       scanner.terminate if i > 20
 
       i.succ
@@ -128,8 +127,7 @@ module Slim
                 TagNoContent.try( *tag_args(tags) ) ||
                 TagText.try( *tag_args(tags) )
       end until done || i > 12
-      build tags
-      push tags
+
       clear_temp_scanner if memo[:wrapped_attributes]
       done
     end
@@ -140,7 +138,7 @@ module Slim
 
       no_more = false
       begin
-        print ?|
+        print ?^
         pos = scanner.position
 
         TagSplatAttributes.try( *tag_args(attributes) )
@@ -152,8 +150,9 @@ module Slim
       end until no_more
 
       tags.push attributes
-      
-      scanner.eol?
+      last_push tags
+
+      false
     end
   end
 end

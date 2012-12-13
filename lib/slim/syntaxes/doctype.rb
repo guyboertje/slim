@@ -6,7 +6,7 @@ module Doctype
     unless doctype_line = scanner.scan(%r{doctype(.*)(?=\r?\n)}i)
       return false
     end
-    parser.build [:html, :doctype, scanner.m1.strip]
+    parser.last_push [:html, :doctype, scanner.m1.strip]
     true
   end
 end
