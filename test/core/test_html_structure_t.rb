@@ -2,7 +2,16 @@ require 'helper'
 
 class TestSlimHtmlStructure < TestSlim
 
+  def test_render_with_text_block_with_subsequent_markup
+      source = %q{
+  h1
+    |
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  p Some more markup
+  }
 
+      assert_html '<h1>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h1><p>Some more markup</p>', source
+    end
 
   def test_nested_text_with_nested_html_one_same_line2
     source = %q{

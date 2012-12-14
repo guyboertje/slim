@@ -7,7 +7,7 @@ module TextBlock
     unless indicator = scanner.scan(%r{(\||')( ?)(.*)})
       return false
     end
-    
+
     out = [:multi]
 
     ind_count = scanner.m1.size
@@ -18,17 +18,19 @@ module TextBlock
     # first_indent = min_indent
 
     # ap from: "TextBlock", min_indent: min_indent, ind_count: ind_count, ws_count: ws_count, current_indent: current_indent
+    do_prepend = false
 
     if part = scanner.m3
-      _, txt = remove_leading_spaces(part, min_indent)
-      out.push [:slim, :interpolate, txt] unless txt.empty?
-      first_indent = min_indent
+      if part && !part.empty?
+        _, txt = remove_leading_spaces(part, min_indent)
+        out.push [:slim, :interpolate, txt]
+        first_indent = min_indent
+        do_prepend = true
+      end
       # first_indent = nil
     end
 
-    do_prepend = !txt.empty?
-
-    ap from: "TextBlock", min_indent: min_indent, do_prepend: do_prepend, txt: txt, rest: scanner.rest
+    ap from: "TextBlock", min_indent: min_indent, do_prepend: do_prepend, part: part, txt: txt, rest: scanner.rest
 
     if block = scanner.shift_indented_lines(min_indent)
       block.lines.each do |line|
@@ -36,7 +38,7 @@ module TextBlock
         next if line =~ /\A\Z/
         indent, txt = remove_leading_spaces_block(line, first_indent)
         first_indent ||= indent
-        txt.prepend(?\n) if txt.chomp! && do_prepend 
+        txt.prepend(?\n) if txt.chomp! && do_prepend
         out.push [:newline]
         out.push([:slim, :interpolate, txt])
         do_prepend = true
