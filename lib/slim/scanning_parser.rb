@@ -106,7 +106,7 @@ module Slim
       Doctype.try( *line_args ) ||
       parse_tags
 
-      ap "#{i} ~>" + scanner.rest
+      # ap "Parse Lines #{i}>" + scanner.rest
 
       scanner.terminate if i > 20
 
@@ -118,14 +118,14 @@ module Slim
       done, i = false, 0
       tags, memo, attributes = [], {}, [:html, :attrs]
       begin
-        ap "#{i} ~~> #{scanner.rest}"
+        # ap "#{i} ~~> #{scanner.rest}"
         i += 1
-        done =  Tag.try( *tag_args(tag_re, shortcut_re, tags, attributes) ) ||
+        done =  Tag.try( *tag_args(tag_re, shortcut_re, tags, attributes, memo) ) ||
                 parse_attributes(tags, memo, attributes) ||
                 TagOutput.try( *line_args(tags) ) ||
                 TagClosed.try( *tag_args(tags) ) ||
                 TagNoContent.try( *tag_args(tags) ) ||
-                TagText.try( *tag_args(tags) )
+                TagText.try( *tag_args(tags, memo) )
       end until done || i > 12
 
       clear_temp_scanner if memo[:wrapped_attributes]
@@ -138,7 +138,6 @@ module Slim
 
       no_more = false
       begin
-        print ?^
         pos = scanner.position
 
         TagSplatAttributes.try( *tag_args(attributes) )
@@ -148,6 +147,8 @@ module Slim
 
         no_more = (scanner.position == pos)
       end until no_more
+
+      # ap from: "parse_attributes", rest: scanner.rest
 
       tags.push attributes
       last_push tags

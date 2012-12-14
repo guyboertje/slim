@@ -2,8 +2,10 @@ module Slim
 module Tag
   extend self
 
-  def try(parser, scanner, tag_re, shortcut_re, tags, attributes)
-
+  def try(parser, scanner, tag_re, shortcut_re, tags, attributes, memo)
+    memo[:tag_indent] = scanner.current_indent
+    memo[:tag_position] = scanner.position
+    
     tag = if sc = scanner.check(shortcut_re)
             parser.shortcut_sub(sc)
           else
@@ -15,7 +17,7 @@ module Tag
       return true
     end
     
-    ap "Tag"
+    # ap "Tag:>#{tag}"
 
     tags.concat [:html, :tag, tag]
 

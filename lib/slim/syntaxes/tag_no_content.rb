@@ -7,7 +7,6 @@ module TagNoContent
     unless txt = scanner.scan(%r~\s*(?=\r?\n)~)
       return false
     end
-    ap "TagNoContent"
 
     content = [:multi]
     tags.push content

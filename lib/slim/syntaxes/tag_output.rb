@@ -8,12 +8,13 @@ module TagOutput
       return false
     end
 
-    ap "TagOutput"
-
     single = scanner.m1.empty?
     add_ws = !scanner.m2.empty?
 
     lines = scanner.shift_broken_lines
+
+    lines = scanner.shift_text if lines.nil?
+
     scanner.liner.advance(lines.count(?\n))
 
     next_indent = scanner.check_next_indent

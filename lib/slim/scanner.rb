@@ -110,7 +110,8 @@ module Slim
     end
 
     def shift_broken_lines
-      @input.scan(broken_line_re).gsub(lf_space_plus_re, ?\n)
+      bls = @input.scan(broken_line_re)
+      bls ? bls.gsub(lf_space_plus_re, ?\n) : bls
     end
 
     def shift_indented_lines(indent)

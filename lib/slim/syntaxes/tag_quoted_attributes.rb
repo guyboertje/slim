@@ -12,7 +12,7 @@ module TagQuotedAttributes
     value = String.new(qc)
 
     expect = 1
-    scan_re = %r~#{qc} ~
+    scan_re = %r~#{qc}(?= )~
 
     begin
       part = scanner.scan_until(scan_re)
@@ -20,7 +20,7 @@ module TagQuotedAttributes
       expect = value.count(qc) % 2
     end until expect.zero?
 
-    value = value[1..-3]
+    value = value[1..-2]
 
     # ap from: "TagQuotedAttributes", attr: atbe, esc: esc, quoted: value, qc: qc
 
@@ -30,25 +30,3 @@ module TagQuotedAttributes
   end
 end
 end
-
-__END__
-
-    if !(rest.count('{}') % 2).zero?
-      raise "unmatched {}s"
-    end
-    if !(rest.count(%q~"'~) % 2).zero?
-      raise "unmatched quotes"
-    end
-
-    collector = []
-    sections = quoted.scan(%r~\w[:\w-]*==?~)
-    sections.reverse!
-    sections.each do |section|
-      pre, atr, val = quoted.partition(section)
-      esc = options[:escape_quoted_attrs] && !atr.end_with?('==')
-      atrr = atr.squeeze(?=).chop
-      # ap from: "TagQuotedAttributes", attr: atrr, val: val, esc: esc, quoted: quoted
-      collector.unshift [:html, :attr, atrr, [:escape, false, [:slim, :interpolate, val]]]
-      quoted = pre
-    end
-    attributes.push *collector
