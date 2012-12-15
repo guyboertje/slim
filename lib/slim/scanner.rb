@@ -166,6 +166,10 @@ module Slim
       @input.check(txt_re)
     end
 
+    def no_more?
+      eos? || !@input.exist?(/\S/)
+    end
+
     def line_end(interim = nil)
       if shift_lf
         @liner.inc

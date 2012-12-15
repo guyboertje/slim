@@ -10,7 +10,9 @@ module TagDelimitedAttributes
     end_re = /#{Re.quote(delim_close)}/m
     part, line, expect = "", " ", 1
 
+    check = Progress.new(scanner)
     begin
+      check.measure
       part = scanner.scan_until(end_re)
       if (part.nil? || part.empty?) && !expect.zero?
         raise "expecting closing ]"
@@ -18,16 +20,15 @@ module TagDelimitedAttributes
       line.concat(part.squeeze(' '))
       expect += line.count(delim_open)
       expect -= line.count(delim_close)
-    end until expect.zero?
+    end until expect.zero? || check.stuck?
 
     line.chomp!(delim_close) # ignore last closing delimiter
-    if line.empty?
+    if line.empty? || check.stuck?
       raise "expected to have delimited attributes"
     end
     scanner.liner.advance(line.count(?\n))
-    rest = scanner.shift_upto_lf
     line.gsub!(/\r?\n/, ' ') # behave like a single line
-    line.concat(' ').concat(rest)
+    line.concat(' ')
 
     temp_scanner = Scanner.new(line, parser)
     parser.set_temp_scanner(temp_scanner)

@@ -125,10 +125,10 @@ module Slim
                 TagOutput.try( *line_args(tags) ) ||
                 TagClosed.try( *tag_args(tags) ) ||
                 TagNoContent.try( *tag_args(tags) ) ||
-                TagText.try( *tag_args(tags, memo) )
-      end until done || i > 12
+                TagText.try( *tag_args(tags, memo) ) ||
+                i > 12
+      end until done
 
-      clear_temp_scanner if memo[:wrapped_attributes]
       done
     end
 
@@ -137,7 +137,6 @@ module Slim
       TagDelimitedAttributes.try( *tag_args(memo) )
 
       check = Progress.new(scanner)
-
       while check.progress? do
         TagSplatAttributes.try( *tag_args(attributes) )
         TagQuotedAttributes.try( *tag_args(attributes, parser.options) )
@@ -146,6 +145,11 @@ module Slim
       end
 
       ap from: "parse_attributes", rest: scanner.rest
+
+      if memo[:wrapped_attributes] && scanner.no_more?
+        clear_temp_scanner
+        memo[:wrapped_attributes] = false
+      end
 
       tags.push attributes
       last_push tags

@@ -12,10 +12,7 @@ module TagQuotedAttributes
 
     scan_re = %r~#{qc}(?= )~
 
-    ap from: "TagQuotedAttributes", attr: atbe, esc: esc, quoted: value, qc: qc, rest: scanner.rest
-
     check = Progress.new(scanner)
-
     begin
       check.measure
       part = scanner.scan_until(scan_re)
@@ -27,7 +24,7 @@ module TagQuotedAttributes
 
     value = value[1..-2]
 
-    ap from: "TagQuotedAttributes", quoted: value
+    ap from: "TagQuotedAttributes", attr: atbe, value: value, rest: scanner.rest
 
     attributes.push [:html, :attr, atbe, [:escape, esc, [:slim, :interpolate, value]]]
 

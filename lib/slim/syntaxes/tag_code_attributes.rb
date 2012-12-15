@@ -4,7 +4,7 @@ module TagCodeAttributes
 
   def try(parser, scanner, attributes, options)
 
-    return unless scanner.scan(%r~\s*(\w[:\w-]*)(==?)~)
+    return unless scanner.scan(%r~\s*(\w[:\w-]*)(==?)(?=(\s*\w))~)
 
     atbe = scanner.m1
     esc = (scanner.m2 != ?=) && options[:escape_quoted_attrs]
@@ -24,7 +24,7 @@ module TagCodeAttributes
       end
     end until expect.zero?
 
-    # ap from: "TagCodeAttributes", attr: atbe, esc: esc, quoted: value
+    ap from: "TagCodeAttributes", attr: atbe, esc: esc, value: value
 
     attributes.push [:html, :attr, atbe, [:slim, :attrvalue, esc, value]]
 
@@ -32,25 +32,3 @@ module TagCodeAttributes
   end
 end
 end
-
-__END__
-
-    if !(rest.count('{}') % 2).zero?
-      raise "unmatched {}s"
-    end
-    if !(rest.count(%q~"'~) % 2).zero?
-      raise "unmatched quotes"
-    end
-
-    collector = []
-    sections = quoted.scan(%r~\w[:\w-]*==?~)
-    sections.reverse!
-    sections.each do |section|
-      pre, atr, val = quoted.partition(section)
-      esc = options[:escape_quoted_attrs] && !atr.end_with?('==')
-      atrr = atr.squeeze(?=).chop
-      # ap from: "TagQuotedAttributes", attr: atrr, val: val, esc: esc, quoted: quoted
-      collector.unshift [:html, :attr, atrr, [:escape, false, [:slim, :interpolate, val]]]
-      quoted = pre
-    end
-    attributes.push *collector
