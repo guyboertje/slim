@@ -118,7 +118,7 @@ module Slim
       done, i = false, 0
       tags, memo, attributes = [], {}, [:html, :attrs]
       begin
-        # ap "#{i} ~~> #{scanner.rest}"
+        print ?-
         i += 1
         done =  Tag.try( *tag_args(tag_re, shortcut_re, tags, attributes, memo) ) ||
                 parse_attributes(tags, memo, attributes) ||
@@ -136,19 +136,16 @@ module Slim
       TagShortcutAttributes.try( *tag_args(attributes) )
       TagDelimitedAttributes.try( *tag_args(memo) )
 
-      no_more = false
-      begin
-        pos = scanner.position
+      check = Progress.new(scanner)
 
+      while check.progress? do
         TagSplatAttributes.try( *tag_args(attributes) )
         TagQuotedAttributes.try( *tag_args(attributes, parser.options) )
         TagCodeAttributes.try( *tag_args(attributes, parser.options) )
         TagBooleanAttributes.try( *tag_args(attributes, memo) )
+      end
 
-        no_more = (scanner.position == pos)
-      end until no_more
-
-      # ap from: "parse_attributes", rest: scanner.rest
+      ap from: "parse_attributes", rest: scanner.rest
 
       tags.push attributes
       last_push tags

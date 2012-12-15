@@ -2,6 +2,7 @@ require 'temple'
 
 require 'slim/indenter'
 require 'slim/line_counter'
+require 'slim/progress'
 require 'slim/scanning_parser'
 require 'slim/scanner'
 require 'slim/syntaxes/consume_whitespace'

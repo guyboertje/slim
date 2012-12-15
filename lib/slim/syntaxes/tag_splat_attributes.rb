@@ -26,7 +26,7 @@ module TagSplatAttributes
       end
     end until expect.zero?
 
-    # ap from: "TagSplatAttributes", code: code
+    ap from: "TagSplatAttributes", code: code
 
     attributes.push [:slim, :splat, code.strip]
   end

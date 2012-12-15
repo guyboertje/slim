@@ -386,53 +386,32 @@ p[id="marvin" class="martian" data-info="Illudium Q-36"] = output_number
     assert_html '<p class="martian" data-info="Illudium Q-36" id="marvin">1337</p>', source
   end
 
+  def test_parens_around_attributes_with_equal_sign_snug_to_right_paren
+    source = %q{
+p(id="marvin" class="martian" data-info="Illudium Q-36")= output_number
+}
+
+    assert_html '<p class="martian" data-info="Illudium Q-36" id="marvin">1337</p>', source
+  end
 
 
+  def test_closed_tag
+    source = %q{
+closed/
+}
 
+    assert_html '<closed />', source, :format => :xhtml
+  end
 
+  def test_attributs_with_parens_and_spaces
+    source = %q{label{ for='filter' }= hello_world}
+    assert_html '<label for="filter">Hello World from @env</label>', source
+  end
 
-
-
-
-
-
-
-
-# ========================================================================================================
-
-#   def test_parens_around_attributes_with_equal_sign_snug_to_right_paren
-#     source = %q{
-# p(id="marvin" class="martian" data-info="Illudium Q-36")= output_number
-# }
-
-#     assert_html '<p class="martian" data-info="Illudium Q-36" id="marvin">1337</p>', source
-#   end
-
-# ========================================================================================================
-
-
-
-
-
-
-
-#   def test_closed_tag
-#     source = %q{
-# closed/
-# }
-
-#     assert_html '<closed />', source, :format => :xhtml
-#   end
-
-  # def test_attributs_with_parens_and_spaces
-  #   source = %q{label{ for='filter' }= hello_world}
-  #   assert_html '<label for="filter">Hello World from @env</label>', source
-  # end
-
-  # def test_attributs_with_parens_and_spaces2
-  #   source = %q{label{ for='filter' } = hello_world}
-  #   assert_html '<label for="filter">Hello World from @env</label>', source
-  # end
+  def test_attributs_with_parens_and_spaces2
+    source = %q{label{ for='filter' } = hello_world}
+    assert_html '<label for="filter">Hello World from @env</label>', source
+  end
 
   def test_attributs_with_multiple_spaces
     source = %q{label  for='filter'  class="test" = hello_world}

@@ -5,7 +5,7 @@ module Tag
   def try(parser, scanner, tag_re, shortcut_re, tags, attributes, memo)
     memo[:tag_indent] = scanner.current_indent
     memo[:tag_position] = scanner.position
-    
+
     tag = if sc = scanner.check(shortcut_re)
             parser.shortcut_sub(sc)
           else
