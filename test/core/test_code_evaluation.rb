@@ -1,6 +1,7 @@
 require 'helper'
 
 class TestSlimCodeEvaluation < TestSlim
+  
   def test_render_with_call_to_set_attributes
     source = %q{
 p id="#{id_helper}" class="hello world" = hello_world
@@ -80,6 +81,14 @@ div crazy=action_path('[') id="crazy_delimiters"
 }
 
     assert_html '<div crazy="/action-[" id="crazy_delimiters"></div>', source
+  end
+
+  def test_ruby_attribute_with_unbalanced_delimiters2
+    source = %q{
+div crazy=(code_hash["]\"' "].first) id="crazy_delimiters"
+}
+
+    assert_html '<div crazy="r-bracket" id="crazy_delimiters"></div>', source
   end
 
   def test_method_call_in_delimited_attribute_without_quotes

@@ -8,9 +8,10 @@ module TagClosed
       return false
     end
 
-    # do nothing
+    # add nothing - consume to eol
+    scanner.shift_text
 
-    scanner.eol?
+    true
   end
 end
 end

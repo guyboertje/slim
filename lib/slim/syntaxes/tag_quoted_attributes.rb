@@ -3,32 +3,38 @@ module TagQuotedAttributes
   extend self
 
   def try(parser, scanner, attributes, options)
-    return unless scanner.scan(%r~\s*(\w[:\w-]*)(==?)("|')~)
+    return false unless scanner.scan(%r~\s*(\w[:\w-]*)(==?)("|')~)
 
     atbe = scanner.m1
     esc = (scanner.m2 != ?=) && options[:escape_quoted_attrs]
     qc = scanner.m3
     value = String.new(qc)
 
-    scan_re = %r~#{qc}(?= )~
+    scan_re = %r~#{qc}(?=(=| |\r?\n))~
 
-    check = Progress.new(scanner)
+    monitor = Progress.new(scanner)
     begin
-      check.measure
+      monitor.measure
       part = scanner.scan_until(scan_re)
       value.concat(part) if part
       expect = value.count(qc) % 2
-    end until expect.zero? || check.stuck?
+    end until expect.zero? || monitor.stuck?
 
-    # raise if check.stuck?
+    raise "TagQuotedAttributes is stuck" if monitor.stuck?
 
     value = value[1..-2]
 
-    ap from: "TagQuotedAttributes", attr: atbe, value: value, rest: scanner.rest
-
     attributes.push [:html, :attr, atbe, [:escape, esc, [:slim, :interpolate, value]]]
 
-    scanner.eol?
+    true
+  end
+
+  def try_eagerly(parser, scanner, attributes, options)
+    result = true
+    while result
+      result = try(parser, scanner, attributes, options)
+    end
+    result
   end
 end
 end

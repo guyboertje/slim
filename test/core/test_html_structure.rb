@@ -541,12 +541,6 @@ data-info="myinfo">
     end
   end
 
-
-
-
-
-
-
 #   def test_block_expansion_support
 #     source = %q{
 # ul
@@ -571,11 +565,6 @@ data-info="myinfo">
 # }
 #     assert_html %{<html><body><div class=\"content\">Text</div></body></html>}, source
 #   end
-
-
-
-
-
 
   def test_eval_attributes_once
     source = %q{

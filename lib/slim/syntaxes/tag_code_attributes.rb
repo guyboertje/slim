@@ -4,31 +4,44 @@ module TagCodeAttributes
 
   def try(parser, scanner, attributes, options)
 
-    return unless scanner.scan(%r~\s*(\w[:\w-]*)(==?)(?=(\s*\w))~)
+    return false unless scanner.scan(%r~\s*(\w[:\w-]*)(==?)~)
 
     atbe = scanner.m1
     esc = (scanner.m2 != ?=) && options[:escape_quoted_attrs]
-    value = String.new
-
-    expect, openings, closings = 0, "({[", "]})"
 
     scan_re = %r~ |(?=\r?\n)~
-    begin
+    monitor = Progress.new(scanner)
+    monitor.measure
+    part = scanner.scan_until(scan_re)
+    raise "No part" unless part
+
+    finder = CodeFinder.new(part)
+    until finder.done? || monitor.stuck? do
+
+      monitor.measure
       part = scanner.scan_until(scan_re)
       if part
-        value.concat(part) unless part.nil?
-        expect += part.count(openings)
-        expect -= part.count(closings)
+        finder.add(part)
       else
         break
       end
-    end until expect.zero?
+    end
 
-    ap from: "TagCodeAttributes", attr: atbe, esc: esc, value: value
+    raise "No code found" unless finder.done?
+
+    value = finder.code
+    
+    scanner.backup if value.end_with?(' ')
+
+    if finder.enclosed_by_delim?
+      value = value[1,value.size - 3]
+    end
+
+    ap from: "TagCodeAttributes", attr: atbe, value: value, rest: scanner.rest
 
     attributes.push [:html, :attr, atbe, [:slim, :attrvalue, esc, value]]
 
-    scanner.eol?
+    true
   end
 end
 end

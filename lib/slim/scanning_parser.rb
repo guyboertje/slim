@@ -67,7 +67,7 @@ module Slim
       @temp_scanner = nil
       @scanner = Scanner.new(str, self)
       i = 0
-      until @scanner.eos?
+      until @scanner.no_more?
         i = parse_lines(i)
       end
     end
@@ -106,10 +106,7 @@ module Slim
       Doctype.try( *line_args ) ||
       parse_tags
 
-      # ap "Parse Lines #{i}>" + scanner.rest
-
-      scanner.terminate if i > 20
-
+      monitor_raise(i)
       i.succ
     end
 
@@ -117,34 +114,39 @@ module Slim
 
       done, i = false, 0
       tags, memo, attributes = [], {}, [:html, :attrs]
+
       begin
-        print ?-
         i += 1
         done =  Tag.try( *tag_args(tag_re, shortcut_re, tags, attributes, memo) ) ||
                 parse_attributes(tags, memo, attributes) ||
                 TagOutput.try( *line_args(tags) ) ||
                 TagClosed.try( *tag_args(tags) ) ||
                 TagNoContent.try( *tag_args(tags) ) ||
-                TagText.try( *tag_args(tags, memo) ) ||
-                i > 12
+                TagText.try( *tag_args(tags, memo) )
+
+        monitor_raise(i)
+
       end until done
 
       done
+    end
+
+    def monitor_raise(i)
+      return if i < 13
+      syntax_error! "loop limit reached" 
     end
 
     def parse_attributes(tags, memo, attributes)
       TagShortcutAttributes.try( *tag_args(attributes) )
       TagDelimitedAttributes.try( *tag_args(memo) )
 
-      check = Progress.new(scanner)
-      while check.progress? do
-        TagSplatAttributes.try( *tag_args(attributes) )
-        TagQuotedAttributes.try( *tag_args(attributes, parser.options) )
-        TagCodeAttributes.try( *tag_args(attributes, parser.options) )
+      monitor = Progress.new(scanner)
+      while monitor.progress? do
+        TagSplatAttributes.try( *tag_args(attributes) ) ||
+        TagQuotedAttributes.try_eagerly( *tag_args(attributes, parser.options) ) ||
+        TagCodeAttributes.try( *tag_args(attributes, parser.options) ) ||
         TagBooleanAttributes.try( *tag_args(attributes, memo) )
       end
-
-      ap from: "parse_attributes", rest: scanner.rest
 
       if memo[:wrapped_attributes] && scanner.no_more?
         clear_temp_scanner
@@ -155,6 +157,11 @@ module Slim
       last_push tags
 
       false
+    end
+
+    def syntax_error!(message)
+      context = scanner.delegate('string').prepend(?`).concat(?`)
+      raise Parser::SyntaxError.new(message, parser.options[:file], context, liner.lineno, scanner.position.succ)
     end
   end
 end

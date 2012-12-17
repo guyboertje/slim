@@ -4,7 +4,6 @@ module HtmlComment
   extend self
 
   def try(parser, scanner, current_indent)
-    # ap "html comment"
     unless comment = scanner.scan(%r{/!( ?)(.*)})
       return false
     end

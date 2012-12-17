@@ -3,7 +3,6 @@ module Slim
 module InlineHtml
   extend self
   def try(parser, scanner, current_indent)
-    # ap "inline html"
     unless line = scanner.scan(%r{<.+>})
       return false
     end

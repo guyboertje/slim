@@ -15,16 +15,12 @@ module TextBlock
 
     first_indent, do_prepend = nil, false
 
-    # ap from: "TextBlock", min_indent: min_indent, ind_size: ind_size, ws_size: ws_size, current_indent: current_indent
-
     if part = scanner.m3 and !part.empty?
       _, txt = remove_leading_spaces(part, min_indent)
       out.push [:slim, :interpolate, txt]
       first_indent = min_indent
       do_prepend = true
     end
-
-    # ap from: "TextBlock", min_indent: min_indent, do_prepend: do_prepend, part: part, txt: txt, rest: scanner.rest
 
     if block = scanner.shift_indented_lines(min_indent)
       block.lines.each do |line|
@@ -51,8 +47,6 @@ module TextBlock
     elsif count >= amount
       pieces[1] = " " * (count - amount)
     end
-    # ap from: "TextBlock remove_leading_spaces_block", pieces: pieces, amount: amount
-
     [count, pieces.join]
   end
 end

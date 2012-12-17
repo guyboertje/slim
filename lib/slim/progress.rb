@@ -1,5 +1,6 @@
 module Slim
   class Progress
+
     def initialize(scanner)
       @scanner = scanner
     end
@@ -21,6 +22,10 @@ module Slim
         measure
         @scanner.position > was
       end
+    end
+
+    def last
+      @pos
     end
     
   end

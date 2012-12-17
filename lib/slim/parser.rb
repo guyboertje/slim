@@ -64,10 +64,10 @@ module Slim
       @shortcut
     end
 
-    # Compile string to Temple expression
+    # Compile string to Temple expression ------------------------------------------------------------------------------------------
     #
     # @param [String] str Slim code
-    # @return [Array] Temple expression representing the code]]
+    # @return [Array] Temple expression representing the code]] ====================================================================
     def call1(str)
       str = replace_tabs(remove_bom(set_encoding(str)))
       result = [:multi]
@@ -81,7 +81,7 @@ module Slim
       str = replace_tabs(remove_bom(set_encoding(str)))
       scanner = ScanningParser.new(self)
       scanner.parse(str)
-      scanner.result
+      scanner.result.tap{|o| ap result: o}
     end
       # .tap{|o| ap result: o}
 

@@ -3,13 +3,11 @@ module TagBooleanAttributes
   extend self
 
   def try(parser, scanner, attributes, memo)
-    return unless memo[:wrapped_attributes]
-    return unless atbe = scanner.scan(%r~\s*(\w[:\w-]*)(?=\s|\r?\n)~)
-    
-    ap from: "TagBooleanAttributes", attr: atbe, quoted: 'true'
+    return false unless memo[:wrapped_attributes]
+    return false unless atbe = scanner.scan(%r~\s*(\w[:\w-]*)(?=\s|\r?\n)~)
 
-    attributes.push [:html, :attr, atbe, [:slim, :attrvalue, false, 'true']]
-    scanner.eol?
+    attributes.push [:html, :attr, atbe.strip, [:slim, :attrvalue, false, 'true']]
+    true
   end
 end
 end

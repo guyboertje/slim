@@ -15,8 +15,6 @@ module TagText
     tag_indent, tag_pos = memo.values_at(:tag_indent, :tag_position)
     min_indent = tag_indent + 1 + (pos - tag_pos)
 
-    # ap from: "TagText", tag_txt: tag_txt, min_indent: min_indent, tag_indent: tag_indent, tag_pos: tag_pos, pos: pos 
-
     out = [:multi]
     out.push [:slim, :interpolate, tag_txt]
 

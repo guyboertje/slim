@@ -16,8 +16,8 @@ module Tag
       # raise "should be a tag, all other options tried"
       return true
     end
-    
-    # ap "Tag:>#{tag}"
+
+    scanner.backup if tag == ?*
 
     tags.concat [:html, :tag, tag]
 

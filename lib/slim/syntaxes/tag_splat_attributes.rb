@@ -4,31 +4,34 @@ module TagSplatAttributes
 
   def try(parser, scanner, attributes)
     
-    return unless splat = scanner.scan(%r~\s*\*(\S)~)
+    return false unless splat = scanner.scan(%r~\s*\*~)
 
-    code = scanner.m1
-    expect = code[/\(|\{/] ? 1 : 0
-
-    openings, closings = "({", "})"
     scan_re = %r~ |(?=\r?\n)~
+    monitor = Progress.new(scanner)
+    monitor.measure
+    part = scanner.scan_until(scan_re)
+    raise "No part" unless part
 
-    begin
+    finder = CodeFinder.new(part)
+    until finder.done? || monitor.stuck? do
+
+      monitor.measure
       part = scanner.scan_until(scan_re)
-      if (part.nil? || part.empty?) && !expect.zero?
-        raise "expecting closing ) or }"
-      end
       if part
-        code.concat(part)
-        expect += part.count(openings)
-        expect -= part.count(closings)
+        finder.add(part)
       else
         break
       end
-    end until expect.zero?
+    end
 
-    ap from: "TagSplatAttributes", code: code
+    raise "No code found" unless finder.done?
+
+    code = finder.code
+    
+    scanner.backup if code.end_with?(' ')
 
     attributes.push [:slim, :splat, code.strip]
+    true
   end
 end
 end

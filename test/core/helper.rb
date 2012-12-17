@@ -95,6 +95,10 @@ class Env
     {:a => 'The letter a', :b => "The letter b"}
   end
 
+  def code_hash
+    {"]\"' " => ['r-bracket', 'r-brace'], "[ " => ['l-bracket', 'l-brace'], "( " => 'l-parens', ")\"' " => 'r-parens', "{ " => 'l-curly', "} " => 'r-curly'}
+  end
+
   def data_attrs(hash)
     hash.inject({}){|m,(k,v)| m["data-#{k}"] = v; m}
   end

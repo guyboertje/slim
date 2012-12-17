@@ -33,6 +33,11 @@ module Slim
       @input.pos
     end
 
+    def backup(n = 1)
+      pos = position
+      @input.pos = pos - n
+    end
+
     def delegate(action, *args)
       @input.send(action, *args)
     end
@@ -111,7 +116,11 @@ module Slim
 
     def shift_broken_lines
       bls = @input.scan(broken_line_re)
-      bls ? bls.gsub(lf_space_plus_re, ?\n) : bls
+      if bls
+        bls.gsub(lf_space_plus_re, ?\n)
+      else
+        shift_text
+      end
     end
 
     def shift_indented_lines(indent)

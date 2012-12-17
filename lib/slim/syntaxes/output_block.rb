@@ -7,12 +7,13 @@ module OutputBlock
       return false
     end
 
-    # ap "OutputBlock"
-
     single = scanner.m1.empty?
     add_ws = !scanner.m2.empty?
 
     lines = scanner.shift_broken_lines
+
+    ap from: "OutputBlock", lines: lines, rest: scanner.rest
+
     scanner.liner.advance(lines.count(?\n))
 
     next_indent = scanner.check_next_indent
@@ -26,6 +27,8 @@ module OutputBlock
       parser.last_push [:slim, :output, single, lines, [:multi, [:newline]]]
       parser.last_push [:static, ' '] if add_ws
     end
+
+    ap from: "OutputBlock", lines: lines
 
     true
   end

@@ -2,9 +2,7 @@ module Slim
 module ConsumeWhitespace
   extend self
   def try(parser, scanner, current_indent)
-    # ap "blank_lines"
     if lines = scanner.shift_until_char
-      # ap from: "ConsumeWhitespace", lines: lines
       lines.count(?\n).times do
         scanner.liner.inc
         parser.last_push [:newline]

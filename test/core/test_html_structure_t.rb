@@ -1,17 +1,15 @@
 require 'helper'
 
-class TestSlimHtmlStructure < TestSlim
+class TestSlimHtmlStructureT < TestSlim
 
-  def test_multiline_attributes_with_text_on_same_line
-    source = %q{
-p<id="marvin"
-  class="martian"
- data-info="Illudium Q-36"> THE space modulator
+
+  def test_boolean_attribute_shortcut
+    source = %{
+option(class="clazz" selected) Text
+option(selected class="clazz") Text
 }
-    Slim::Parser::DELIMITERS.each do |k,v|
-      str = source.sub('<',k).sub('>',v)
-      assert_html '<p class="martian" data-info="Illudium Q-36" id="marvin">THE space modulator</p>', str
-    end
+
+    assert_html '<option class="clazz" selected="selected">Text</option><option class="clazz" selected="selected">Text</option>', source
   end
 
 # ruby -I"lib:lib:test/core" test/core/test_html_structure.rb --seed 27793

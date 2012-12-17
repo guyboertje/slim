@@ -22,6 +22,9 @@ module Slim
     end
 
     def indent(amount)
+
+      # ap from: "Indenter indent", amount: amount
+
       if amount > current_indent
         @indents << amount
         return nil
@@ -29,10 +32,12 @@ module Slim
 
       unwind = indent_expected? ? 1 : 0
       idx = @indents.index(amount)
+      # unless idx
+
       raise "Malformed indentation at line #{@parser.liner.lineno}, amount: #{amount}, current: #{current_indent}" unless idx
       popped = depth - idx.succ
       
-      # ap from: ?+*40, amount: amount, popped: popped, unwind: unwind, stacks: @parser.stacks, indents: @indents
+      # ap from: "Indenter indent", popped: popped, unwind: unwind, indents: @indents
 
       self.pop(popped)
       @parser.pop(unwind + popped)
