@@ -28,7 +28,7 @@ module TagText
       end
     end
 
-    ap from: "OutputBlock", lines: out, dollarslash: $/
+    # ap from: "OutputBlock", lines: out, dollarslash: $/
 
     tags.push [:slim, :text, out]
 

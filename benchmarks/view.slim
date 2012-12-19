@@ -1,32 +1,17 @@
-
-/! This is a html comment1
-
-   Another comment1
-
-   Another comment1
-
-/ This is a slim comment 1
-  more stuff 1
-/ This is a slim comment2
-    Another comment2
-    Another comment2
-/! This is a html comment2
-     woohoo
-
-/[ if IE ]
-  Get a better browser3.
-
-- word = true ?\
-    'a' :\
-    'not a'
-/! This is #{word} html comment4
-
-<p>
-  | Lorem ipsum
-</p>
-
-= 3.times do
-  - if true
-     | Hello from within a block!
-<p>Lorem ipsum</p>
-
+doctype html
+html
+  head
+    title Simple Benchmark
+  body
+    h1 == header
+    - unless item.empty?
+      ul
+        - for i in item
+          - if i[:current]
+            li
+              strong == i[:name]
+          - else
+            li
+              a href=i[:url] == i[:name]
+    - else
+      p The list is empty.

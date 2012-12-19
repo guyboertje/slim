@@ -18,7 +18,7 @@ class SlimBenchmarks
 
     @erb_code  = File.read(File.dirname(__FILE__) + '/view.erb')
     @haml_code = File.read(File.dirname(__FILE__) + '/view.haml')
-    @slim_code = File.read(File.dirname(__FILE__) + '/view.slim')
+    @slim_code = File.read(File.dirname(__FILE__) + '/view2.slim')
 
     # init_compiled_benches
     # init_tilt_benches
@@ -108,7 +108,7 @@ class SlimBenchmarks
     # bench('(4) erubis')      { Erubis::Eruby.new(@erb_code).result(context_binding) }
     # bench('(4) fast erubis') { Erubis::FastEruby.new(@erb_code).result(context_binding) }
     # bench('(4) temple erb')  { Temple::ERB::Template.new { @erb_code }.render(context) }
-    bench('(4) slim pretty') { Slim::Template.new(:pretty => true) { @slim_code }.render(context) }
+    # bench('(4) slim pretty') { Slim::Template.new(:pretty => true) { @slim_code }.render(context) }
     bench('(4) slim ugly')   { Slim::Template.new { @slim_code }.render(context) }
     # bench('(4) haml pretty') { Haml::Engine.new(@haml_code, :format => :html5).render(context) }
     # bench('(4) haml ugly')   { Haml::Engine.new(@haml_code, :format => :html5, :ugly => true).render(context) }

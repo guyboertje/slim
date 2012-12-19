@@ -24,7 +24,7 @@ module TagQuotedAttributes
 
     value = value[1..-2]
 
-    ap from: "TagQuotedAttributes", value: value if value.end_with? ?\r
+    # ap from: "TagQuotedAttributes", value: value if value.end_with? ?\r
 
     attributes.push [:html, :attr, atbe, [:escape, esc, [:slim, :interpolate, value]]]
 

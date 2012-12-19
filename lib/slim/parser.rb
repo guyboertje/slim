@@ -1,7 +1,7 @@
 module Slim
   # Parses Slim code and transforms it to a Temple expression
   # @api private
-  class Parser < Temple::Parser 
+  class Parser < Temple::Parser
     define_options :file,
                    :default_tag,
                    :escape_quoted_attrs => false,
@@ -51,7 +51,7 @@ module Slim
       @tag_regex = /\A(?:#{shortcut}|\*(?=[^\s]+)|(\w[\w:-]*\w|\w+))/
       @tag_re = /(#{shortcut}|\*(?=\S+)|(\w[\w:-]*\w|\w+))/
     end
-    
+
     def shortcut_re
       @shortcut_re
     end
@@ -68,16 +68,16 @@ module Slim
     #
     # @param [String] str Slim code
     # @return [Array] Temple expression representing the code]] ====================================================================
-    def call1(str)
+    def call(str)
       str = replace_tabs(remove_bom(set_encoding(str)))
       result = [:multi]
       reset(str.split(/\r?\n/), [result])
       parse_line while next_line
       reset
-      result.tap{|o| ap result: o}
+      result
     end
 
-    def call(str)
+    def call1(str)
       str = replace_tabs(remove_bom(set_encoding(str)))
       scanner = ScanningParser.new(self, options)
       scanner.parse(str)
