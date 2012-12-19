@@ -12,10 +12,8 @@ module TagOutput
     add_ws = !scanner.m2.empty?
 
     lines = scanner.shift_broken_lines
-    scanner.liner.advance(lines.count(?\n))
-
     next_indent = scanner.check_next_indent
-    
+
     if next_indent > current_indent
       block = [:multi]
       tags.push [:slim, :output, single, lines, block]
@@ -25,8 +23,6 @@ module TagOutput
       tags.push [:slim, :output, single, lines, [:multi, [:newline]]]
       parser.last_push [:static, ' '] if add_ws
     end
-
-    # ap from: "TagOutput", lines: lines
 
     true
   end

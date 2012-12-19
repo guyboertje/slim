@@ -26,7 +26,6 @@ module TagDelimitedAttributes
     if line.empty? || check.stuck?
       raise "expected to have delimited attributes"
     end
-    scanner.liner.advance(line.count(?\n))
     line.gsub!(/\r?\n/, ' ') # behave like a single line
     line.concat(' ')
 

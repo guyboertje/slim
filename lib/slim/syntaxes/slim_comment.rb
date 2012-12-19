@@ -11,10 +11,8 @@ module SlimComment
     scanner.line_end(false)
     min_indent = scanner.current_indent.succ
 
-    if block = scanner.shift_indented_lines(min_indent)
-      lfs = block.count(?\n)
-      scanner.liner.advance(lfs)
-    end
+    scanner.shift_indented_lines(min_indent)
+
     true
   end
 end

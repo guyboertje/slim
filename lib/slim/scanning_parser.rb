@@ -5,7 +5,8 @@ module Slim
 
     attr_reader :parser, :scanner, :indenter, :liner, :stacks
 
-    def initialize(parser)
+    def initialize(parser, opts)\
+      @options = opts
       @parser = parser
       @indenter = Indenter.new(self)
       @liner = LineCounter.new(self)
@@ -93,7 +94,6 @@ module Slim
     end
 
     def parse_lines(i)
-
       ConsumeWhitespace.try( *line_args ) &&
       HtmlComment.try( *line_args ) ||
       HtmlConditionalComment.try( *line_args ) ||
@@ -111,7 +111,6 @@ module Slim
     end
 
     def parse_tags
-
       done, i = false, 0
       tags, memo, attributes = [], {}, [:html, :attrs]
 
@@ -127,12 +126,11 @@ module Slim
         monitor_raise(i)
 
       end until done
-
       done
     end
 
     def monitor_raise(i)
-      return if i < 13
+      return if i < 113
       syntax_error! "loop limit reached" 
     end
 
@@ -143,8 +141,8 @@ module Slim
       monitor = Progress.new(scanner)
       while monitor.progress? do
         TagSplatAttributes.try( *tag_args(attributes) ) ||
-        TagQuotedAttributes.try_eagerly( *tag_args(attributes, parser.options) ) ||
-        TagCodeAttributes.try( *tag_args(attributes, parser.options) ) ||
+        TagQuotedAttributes.try_eagerly( *tag_args(attributes, @options) ) ||
+        TagCodeAttributes.try( *tag_args(attributes, @options) ) ||
         TagBooleanAttributes.try( *tag_args(attributes, memo) )
       end
 
@@ -160,8 +158,15 @@ module Slim
     end
 
     def syntax_error!(message)
-      context = scanner.delegate('string').prepend(?`).concat(?`)
-      raise Parser::SyntaxError.new(message, parser.options[:file], context, liner.lineno, scanner.position.succ)
+      clear_temp_scanner
+      err_pos = scanner.position
+      next_lf_pos = scanner.delegate('exist?', /\n/) || 2
+      context = scanner.delegate('string')[0, err_pos + next_lf_pos - 1]
+      b, lf, line = context.rpartition(/\r?\n/)
+      lineno = b.count(?\n) + 2
+      column = err_pos - b.size - lf.size - 1
+
+      raise Parser::SyntaxError.new(message, @options[:file], line, lineno, column)
     end
   end
 end

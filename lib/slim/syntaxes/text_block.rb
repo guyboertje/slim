@@ -24,8 +24,7 @@ module TextBlock
 
     if block = scanner.shift_indented_lines(min_indent)
       block.lines.each do |line|
-        scanner.liner.inc
-        next if line =~ /\A\Z/
+        next if line =~ /\A\r?\n\z/
         indent, txt = remove_leading_spaces(line, first_indent)
         first_indent ||= indent
         txt.prepend(?\n) if txt.chomp! && do_prepend

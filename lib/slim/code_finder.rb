@@ -49,7 +49,7 @@ class CodeFinder
       tmp = e.reverse
       qpos = tmp.index(m)
       dpos = tmp.index(delim_close)
-      ap from: "CodeFinder analyse", tmp: tmp, dpos: dpos, qpos: qpos
+      # ap from: "CodeFinder analyse", tmp: tmp, dpos: dpos, qpos: qpos
       if dpos < qpos
         # the closing delim occurs after the closing quote (e is reversed)
         @code = @parts.join

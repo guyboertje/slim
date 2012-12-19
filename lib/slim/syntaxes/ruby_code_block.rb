@@ -7,7 +7,6 @@ module RubyCodeBlock
       return false
     end
     lines = scanner.shift_broken_lines
-    scanner.liner.advance(lines.count(?\n))
     
     if scanner.check_next_indent > current_indent
       block = [:multi]

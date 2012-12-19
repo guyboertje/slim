@@ -19,14 +19,19 @@ module Slim
 
     def scan(re)
       @input.scan(re)
+      # liner.count @input.scan(re)
+    end
+
+    def scan_until(re)
+      @input.scan_until(re)
     end
 
     def check(re)
       @input.check(re)
     end
 
-    def scan_until(re)
-      @input.scan_until(re)
+    def check_until(re)
+      @input.check_until(re)
     end
 
     def position
@@ -36,6 +41,7 @@ module Slim
     def backup(n = 1)
       pos = position
       @input.pos = pos - n
+      # liner.uncount @input.rest[0,n]
     end
 
     def delegate(action, *args)
@@ -115,7 +121,7 @@ module Slim
     end
 
     def shift_broken_lines
-      bls = @input.scan(broken_line_re)
+      bls = scan(broken_line_re)
       if bls
         bls.gsub(lf_space_plus_re, ?\n)
       else
@@ -124,31 +130,31 @@ module Slim
     end
 
     def shift_indented_lines(indent)
-      @input.scan(%r{((\r?\n)* {#{indent},}.*(\r?\n)+)*})
+      scan(%r{((\r?\n)* {#{indent},}.*(\r?\n)+)*})
     end
 
     def shift_lf
-      @input.scan(lf_re)
+      scan(lf_re)
     end
 
     def shift_indent
-      @input.scan(ind_re)
+      scan(ind_re)
     end
 
     def shift_text
-      @input.scan(txt_re)
+      scan(txt_re)
     end
 
     def shift_until_char
-      @input.scan_until(ws_until_first_char_re)
+      scan_until(ws_until_first_char_re)
     end
 
     def shift_upto_lf
-      @input.scan_until(qe_lf_re)
+      scan_until(qe_lf_re)
     end
 
     def check_lf
-      @input.check(lf_re)
+      check(lf_re)
     end
 
     def eol?
@@ -156,7 +162,7 @@ module Slim
     end
 
     def check_next_indent
-      if f = @input.check_until(lfs_ind_char_re)
+      if f = check_until(lfs_ind_char_re)
         f[/ +\z/].size
       else
         current_indent
@@ -164,7 +170,7 @@ module Slim
     end
 
     def check_indent
-      if f = @input.check(ind_re)
+      if f = check(ind_re)
         f.size
       else
         current_indent
@@ -172,7 +178,7 @@ module Slim
     end
 
     def check_text
-      @input.check(txt_re)
+      check(txt_re)
     end
 
     def no_more?

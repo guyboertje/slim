@@ -4,6 +4,8 @@ module HtmlComment
   extend self
 
   def try(parser, scanner, current_indent)
+
+
     unless comment = scanner.scan(%r{/!( ?)(.*)})
       return false
     end
@@ -18,16 +20,18 @@ module HtmlComment
 
     if block = scanner.shift_indented_lines(offset)
       lines = block.split(/\r?\n/)
-      scanner.liner.inc
       lines.shift
       lines.each do |line|
-        scanner.liner.inc
         txt = line.slice(offset, line.size) || ""
         out.push [:newline]
         out.push([:slim, :interpolate, txt.prepend(?\n)])
       end
     end
+
+    scanner.backup if block.end_with?(?\n)
+
     parser.last_push [:html, :comment, [:slim, :text, out]]
+
     true
   end
 end

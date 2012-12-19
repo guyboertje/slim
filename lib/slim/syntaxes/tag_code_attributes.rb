@@ -7,7 +7,8 @@ module TagCodeAttributes
     return false unless scanner.scan(%r~\s*(\w[:\w-]*)(==?)~)
 
     atbe = scanner.m1
-    esc = (scanner.m2 != ?=) && options[:escape_quoted_attrs]
+    esc = !!options[:escape_quoted_attrs] || true
+    esc = false if scanner.m2 == '=='
 
     scan_re = %r~ |(?=\r?\n)~
     monitor = Progress.new(scanner)
@@ -33,11 +34,9 @@ module TagCodeAttributes
     
     scanner.backup if value.end_with?(' ')
 
-    if finder.enclosed_by_delim?
-      value = value[1,value.size - 3]
-    end
+    value = finder.enclosed_by_delim? ? value[1,value.size - 3] : value.strip
 
-    ap from: "TagCodeAttributes", attr: atbe, value: value, rest: scanner.rest
+    parser.syntax_error!('Invalid empty attribute') if value.empty?
 
     attributes.push [:html, :attr, atbe, [:slim, :attrvalue, esc, value]]
 

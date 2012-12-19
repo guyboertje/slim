@@ -14,7 +14,6 @@ module EmbeddedTemplate
     if block = scanner.shift_indented_lines(min_indent)
       margin, pre = nil, ""
       lines = block.split(/\r?\n/)
-      scanner.liner.inc
       lines.shift
       lines.each do |line|
         len = line.size

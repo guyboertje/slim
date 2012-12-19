@@ -6,7 +6,7 @@ module TagQuotedAttributes
     return false unless scanner.scan(%r~\s*(\w[:\w-]*)(==?)("|')~)
 
     atbe = scanner.m1
-    esc = (scanner.m2 != ?=) && options[:escape_quoted_attrs]
+    esc = options[:escape_quoted_attrs] && scanner.m2 == ?=
     qc = scanner.m3
     value = String.new(qc)
 
@@ -23,6 +23,8 @@ module TagQuotedAttributes
     raise "TagQuotedAttributes is stuck" if monitor.stuck?
 
     value = value[1..-2]
+
+    ap from: "TagQuotedAttributes", value: value if value.end_with? ?\r
 
     attributes.push [:html, :attr, atbe, [:escape, esc, [:slim, :interpolate, value]]]
 

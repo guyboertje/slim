@@ -4,7 +4,7 @@ module TagClosed
 
   def try(parser, scanner, tags)
 
-    unless txt = scanner.scan(%r~\s*/~)
+    unless txt = scanner.scan(%r~\s*/(?=(\s|\r?\n))~)
       return false
     end
 

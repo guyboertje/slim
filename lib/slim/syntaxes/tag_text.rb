@@ -20,14 +20,15 @@ module TagText
 
     if block = scanner.shift_indented_lines(min_indent)
       block.lines.each do |line|
-        scanner.liner.inc
-        next if line =~ /\A\Z/
+        next if line =~ /\A\r?\n\z/
         txt = remove_leading_spaces(line, min_indent)
         txt.prepend(?\n) if txt.chomp!
         out.push [:newline]
         out.push([:slim, :interpolate, txt])
       end
     end
+
+    ap from: "OutputBlock", lines: out, dollarslash: $/
 
     tags.push [:slim, :text, out]
 

@@ -20,5 +20,16 @@ module Slim
       return if count.zero?
       @lineno += count
     end
+
+    def count(string)
+      return unless string
+      advance string.count(?\n)
+      string
+    end
+
+    def uncount(string)
+      @lineno -= string.count(?\n)
+      string
+    end
   end
 end
