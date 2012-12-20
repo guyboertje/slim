@@ -165,6 +165,7 @@ module Slim
       b, lf, line = context.rpartition(/\r?\n/)
       lineno = b.count(?\n) + 2
       column = err_pos - b.size - lf.size - 1
+      column = 1 if column < 1
 
       raise Parser::SyntaxError.new(message, @options[:file], line, lineno, column)
     end
