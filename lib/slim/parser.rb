@@ -68,7 +68,7 @@ module Slim
     #
     # @param [String] str Slim code
     # @return [Array] Temple expression representing the code]] ====================================================================
-    def call(str)
+    def call1(str)
       str = replace_tabs(remove_bom(set_encoding(str)))
       result = [:multi]
       reset(str.split(/\r?\n/), [result])
@@ -77,7 +77,7 @@ module Slim
       result
     end
 
-    def call1(str)
+    def call(str)
       str = replace_tabs(remove_bom(set_encoding(str)))
       scanner = ScanningParser.new(self, options)
       scanner.parse(str)
