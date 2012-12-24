@@ -9,6 +9,7 @@ module Slim
       @options = opts
       @parser = parser
       @indenter = Indenter.new(self)
+      @eqa = !!@options[:escape_quoted_attrs]
       reset
     end
 
@@ -55,6 +56,7 @@ module Slim
 
     def reset
       @stacks = [[:multi]]
+      @doctype_done = false
     end
 
     def result
@@ -66,6 +68,8 @@ module Slim
     def parse(str)
       @temp_scanner = nil
       @scanner = Scanner.new(str, self)
+      ConsumeWhitespace.try( self, scanner, indenter.current_indent ) &&
+      Doctype.try( self, scanner, indenter.current_indent )
       i = 0
       until @scanner.no_more?
         i = parse_lines(i)
@@ -85,7 +89,7 @@ module Slim
     end
 
     def escape_quoted_attrs
-      @eqa ||= @options[:escape_quoted_attrs]
+      @eqa
     end
 
     def parse_lines(i)
@@ -98,7 +102,6 @@ module Slim
       RubyCodeBlock.try( self, scanner, indenter.current_indent ) ||
       OutputBlock.try( self, scanner, indenter.current_indent ) ||
       EmbeddedTemplate.try( self, scanner, indenter.current_indent ) ||
-      Doctype.try( self, scanner, indenter.current_indent ) ||
       parse_tags
 
       monitor_raise(i)
@@ -149,7 +152,7 @@ module Slim
         TagSplatAttributes.try( self, scanner, attributes ) ||
         TagQuotedAttributes.try_eagerly( self, scanner, attributes, escape_quoted_attrs ) ||
         TagCodeAttributes.try( self, scanner, attributes, escape_quoted_attrs ) ||
-        TagBooleanAttributes.try( self, scanner, attributes, memo )
+        TagBooleanAttributes.try( self, scanner, attributes, memo[:wrapped_attributes] )
       end
 
       if memo[:wrapped_attributes] && scanner.no_more?
