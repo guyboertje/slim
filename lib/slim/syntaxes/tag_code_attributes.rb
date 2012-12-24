@@ -2,12 +2,16 @@ module Slim
 module TagCodeAttributes
   extend self
 
-  def try(parser, scanner, attributes, options)
+  def code_re
+    @cre ||= %r~\s*(\w[:\w-]*)(==?)~
+  end
 
-    return false unless scanner.scan(%r~\s*(\w[:\w-]*)(==?)~)
+  def try(parser, scanner, attributes, escape_quoted_attrs)
+
+    return false unless scanner.scan(code_re)
 
     atbe = scanner.m1
-    esc = !!options[:escape_quoted_attrs] || true
+    esc = !!escape_quoted_attrs || true
     esc = false if scanner.m2 == '=='
 
     scan_re = %r~ |(?=\r?\n)~

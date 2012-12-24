@@ -2,11 +2,15 @@ module Slim
 module TagQuotedAttributes
   extend self
 
-  def try(parser, scanner, attributes, options)
-    return false unless scanner.scan(%r~\s*(\w[:\w-]*)(==?)("|')~)
+  def quoted_re
+    @qre ||= %r~\s*(\w[:\w-]*)(==?)("|')~
+  end
+
+  def try(parser, scanner, attributes, escape_quoted_attrs)
+    return false unless scanner.scan(quoted_re)
 
     atbe = scanner.m1
-    esc = options[:escape_quoted_attrs] && scanner.m2 == ?=
+    esc = escape_quoted_attrs && scanner.m2 == ?=
     qc = scanner.m3
     value = String.new(qc)
 
@@ -31,10 +35,10 @@ module TagQuotedAttributes
     true
   end
 
-  def try_eagerly(parser, scanner, attributes, options)
+  def try_eagerly(parser, scanner, attributes, escape_quoted_attrs)
     result = true
     while result
-      result = try(parser, scanner, attributes, options)
+      result = try(parser, scanner, attributes, escape_quoted_attrs)
     end
     result
   end

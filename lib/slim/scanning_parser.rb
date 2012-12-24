@@ -3,13 +3,12 @@ module Slim
 
   class ScanningParser
 
-    attr_reader :parser, :scanner, :indenter, :liner, :stacks
+    attr_reader :parser, :scanner, :indenter, :stacks
 
     def initialize(parser, opts)\
       @options = opts
       @parser = parser
       @indenter = Indenter.new(self)
-      @liner = LineCounter.new(self)
       reset
     end
 
@@ -85,25 +84,21 @@ module Slim
       @temp_scanner = nil
     end
 
-    def line_args(*extras)
-      [self, scanner, indenter.current_indent].concat(extras)
-    end
-
-    def tag_args(*extras)
-      [self, scanner].concat(extras)
+    def escape_quoted_attrs
+      @eqa ||= @options[:escape_quoted_attrs]
     end
 
     def parse_lines(i)
-      ConsumeWhitespace.try( *line_args ) &&
-      HtmlComment.try( *line_args ) ||
-      HtmlConditionalComment.try( *line_args ) ||
-      SlimComment.try( *line_args ) ||
-      TextBlock.try( *line_args ) ||
-      InlineHtml.try( *line_args ) ||
-      RubyCodeBlock.try( *line_args ) ||
-      OutputBlock.try( *line_args ) ||
-      EmbeddedTemplate.try( *line_args ) ||
-      Doctype.try( *line_args ) ||
+      ConsumeWhitespace.try( self, scanner, indenter.current_indent ) &&
+      HtmlComment.try( self, scanner, indenter.current_indent ) ||
+      HtmlConditionalComment.try( self, scanner, indenter.current_indent ) ||
+      SlimComment.try( self, scanner, indenter.current_indent ) ||
+      TextBlock.try( self, scanner, indenter.current_indent ) ||
+      InlineHtml.try( self, scanner, indenter.current_indent ) ||
+      RubyCodeBlock.try( self, scanner, indenter.current_indent ) ||
+      OutputBlock.try( self, scanner, indenter.current_indent ) ||
+      EmbeddedTemplate.try( self, scanner, indenter.current_indent ) ||
+      Doctype.try( self, scanner, indenter.current_indent ) ||
       parse_tags
 
       monitor_raise(i)
@@ -118,18 +113,20 @@ module Slim
     def parse_tags
 
       # ap ["parse_tags", scanner.rest]
-      
+
       done, i = false, 0
       tags, memo, attributes = [], {}, [:html, :attrs]
 
       begin
         i += 1
-        done =  Tag.try( *tag_args(tag_re, shortcut_re, tags, attributes, memo) ) ||
-                parse_attributes(tags, memo, attributes) ||
-                TagOutput.try( *line_args(tags) ) ||
-                TagClosed.try( *tag_args(tags) ) ||
-                TagNoContent.try( *tag_args(tags) ) ||
-                TagText.try( *tag_args(tags, memo) )
+        Tag.try( self, scanner, tag_re, shortcut_re, tags, attributes, memo )
+        parse_attributes(memo, attributes)
+        tags.push attributes
+        last_push tags
+        done =  TagOutput.try( self, scanner, indenter.current_indent, tags ) ||
+                TagClosed.try( self, scanner, tags ) ||
+                TagNoContent.try( self, scanner, tags ) ||
+                TagText.try( self, scanner, tags, memo )
 
         monitor_tag_raise(i)
 
@@ -142,28 +139,23 @@ module Slim
       syntax_error! "tag loop limit reached" 
     end
 
-    def parse_attributes(tags, memo, attributes)
-      TagShortcutAttributes.try( *tag_args(attributes) )
-      TagDelimitedAttributes.try( *tag_args(memo) )
+    def parse_attributes(memo, attributes)
+      TagShortcutAttributes.try( self, scanner, attributes )
+      TagDelimitedAttributes.try( self, scanner, memo )
 
       monitor = Progress.new(scanner)
       while monitor.progress? do
         break if scanner.eol?
-        TagSplatAttributes.try( *tag_args(attributes) ) ||
-        TagQuotedAttributes.try_eagerly( *tag_args(attributes, @options) ) ||
-        TagCodeAttributes.try( *tag_args(attributes, @options) ) ||
-        TagBooleanAttributes.try( *tag_args(attributes, memo) )
+        TagSplatAttributes.try( self, scanner, attributes ) ||
+        TagQuotedAttributes.try_eagerly( self, scanner, attributes, escape_quoted_attrs ) ||
+        TagCodeAttributes.try( self, scanner, attributes, escape_quoted_attrs ) ||
+        TagBooleanAttributes.try( self, scanner, attributes, memo )
       end
 
       if memo[:wrapped_attributes] && scanner.no_more?
         clear_temp_scanner
         memo[:wrapped_attributes] = false
       end
-
-      tags.push attributes
-      last_push tags
-
-      false
     end
 
     def syntax_error!(message)
