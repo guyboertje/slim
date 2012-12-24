@@ -34,7 +34,7 @@ module Slim
       idx = @indents.index(amount)
       # unless idx
 
-      raise "Malformed indentation at line #{@parser.liner.lineno}, amount: #{amount}, current: #{current_indent}" unless idx
+      raise "Malformed indentation, amount: #{amount}, current: #{current_indent}" unless idx
       popped = depth - idx.succ
       
       # ap from: "Indenter indent", popped: popped, unwind: unwind, indents: @indents

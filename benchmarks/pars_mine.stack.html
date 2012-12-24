@@ -1,0 +1,994 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>ruby-prof call tree</title>
+<style type="text/css">
+<!--
+body {
+    font-size:70%;
+    padding:0px;
+    margin:5px;
+    margin-right:0px;
+    margin-left:0px;
+    background: #ffffff;
+}
+ul {
+    margin-left:0px;
+    margin-top:0px;
+    margin-bottom:0px;
+    padding-left:0px;
+    list-style-type:none;
+}
+li {
+    margin-left:11px;
+    padding:0px;
+    white-space:nowrap;
+    border-top:1px solid #cccccc;
+    border-left:1px solid #cccccc;
+    border-bottom:none;
+}
+.thread {
+    margin-left:11px;
+    background:#708090;
+    padding-top:3px;
+    padding-left:12px;
+    padding-bottom:2px;
+    border-left:1px solid #CCCCCC;
+    border-top:1px solid #CCCCCC;
+    font-weight:bold;
+}
+.hidden {
+    display:none;
+    width:0px;
+    height:0px;
+    margin:0px;
+    padding:0px;
+    border-style:none;
+}
+.color01 { background:#adbdeb }
+.color05 { background:#9daddb }
+.color0 { background:#8d9dcb }
+.color1 { background:#89bccb }
+.color2 { background:#56e3e7 }
+.color3 { background:#32cd70 }
+.color4 { background:#a3d53c }
+.color5 { background:#c4cb34 }
+.color6 { background:#dcb66d }
+.color7 { background:#cda59e }
+.color8 { background:#be9d9c }
+.color9 { background:#cf947a }
+#commands {
+    font-size:10pt;
+    padding:10px;
+    margin-left:11px;
+    margin-bottom:0px;
+    margin-top:0px;
+    background:#708090;
+    border-top:1px solid #cccccc;
+    border-left:1px solid #cccccc;
+    border-bottom:none;
+}
+#titlebar {
+    font-size:10pt;
+    padding:10px;
+    margin-left:11px;
+    margin-bottom:0px;
+    margin-top:10px;
+    background:#8090a0;
+    border-top:1px solid #cccccc;
+    border-left:1px solid #cccccc;
+    border-bottom:none;
+}
+#help {
+    font-size:10pt;
+    padding:10px;
+    margin-left:11px;
+    margin-bottom:0px;
+    margin-top:0px;
+    background:#8090a0;
+    display:none;
+    border-top:1px solid #cccccc;
+    border-left:1px solid #cccccc;
+    border-bottom:none;
+}
+#sentinel {
+    height: 400px;
+    margin-left:11px;
+    background:#8090a0;
+    border-top:1px solid #cccccc;
+    border-left:1px solid #cccccc;
+    border-bottom:none;
+ }
+input { margin-left:10px; }
+-->
+</style>
+<script type="text/javascript">
+/*
+   Copyright (C) 2005,2009  Stefan Kaes
+   skaes@railsexpress.de
+*/
+
+function rootNode() {
+  return currentThread;
+}
+
+function hideUL(node) {
+  var lis = node.childNodes
+  var l = lis.length;
+  for (var i=0; i < l ; i++ ) {
+    hideLI(lis[i]);
+  }
+}
+
+function showUL(node) {
+  var lis = node.childNodes;
+  var l = lis.length;
+  for (var i=0; i < l ; i++ ) {
+    showLI(lis[i]);
+  }
+}
+
+function findUlChild(li){
+  var ul = li.childNodes[2];
+  while (ul && ul.nodeName != "UL") {
+    ul = ul.nextSibling;
+  }
+  return ul;
+}
+
+function isLeafNode(li) {
+  var img = li.firstChild;
+  return (img.src.indexOf('empty.png') > -1);
+}
+
+function hideLI(li) {
+  if (isLeafNode(li))
+    return;
+
+  var img = li.firstChild;
+  img.src = 'plus.png';
+
+  var ul = findUlChild(li);
+  if (ul) {
+    ul.style.display = 'none';
+    hideUL(ul);
+  }
+}
+
+function showLI(li) {
+  if (isLeafNode(li))
+    return;
+
+  var img = li.firstChild;
+  img.src = 'minus.png';
+
+  var ul = findUlChild(li);
+  if (ul) {
+    ul.style.display = 'block';
+    showUL(ul);
+  }
+}
+
+function toggleLI(li) {
+  var img = li.firstChild;
+  if (img.src.indexOf("minus.png")>-1)
+    hideLI(li);
+  else {
+    if (img.src.indexOf("plus.png")>-1)
+      showLI(li);
+  }
+}
+
+function aboveThreshold(text, threshold) {
+  var match = text.match(/\d+[.,]\d+/);
+  return (match && parseFloat(match[0].replace(/,/, '.'))>=threshold);
+}
+
+function setThresholdLI(li, threshold) {
+  var img = li.firstChild;
+  var text = img.nextSibling;
+  var ul = findUlChild(li);
+
+  var visible = aboveThreshold(text.nodeValue, threshold) ? 1 : 0;
+
+  var count = 0;
+  if (ul) {
+    count = setThresholdUL(ul, threshold);
+  }
+  if (count>0) {
+    img.src = 'minus.png';
+  }
+  else {
+    img.src = 'empty.png';
+  }
+  if (visible) {
+    li.style.display = 'block'
+  }
+  else {
+    li.style.display = 'none'
+  }
+  return visible;
+}
+
+function setThresholdUL(node, threshold) {
+  var lis = node.childNodes;
+  var l = lis.length;
+
+  var count = 0;
+  for ( var i = 0; i < l ; i++ ) {
+    count = count + setThresholdLI(lis[i], threshold);
+  }
+
+  var visible = (count > 0) ? 1 : 0;
+  if (visible) {
+    node.style.display = 'block';
+  }
+  else {
+    node.style.display = 'none';
+  }
+  return visible;
+}
+
+function toggleChildren(img, event) {
+  event.cancelBubble=true;
+
+  if (img.src.indexOf('empty.png') > -1)
+    return;
+
+  var minus = (img.src.indexOf('minus.png') > -1);
+
+  if (minus) {
+    img.src = 'plus.png';
+  }
+  else
+    img.src = 'minus.png';
+
+  var li = img.parentNode;
+  var ul = findUlChild(li);
+  if (ul) {
+    if (minus)
+      ul.style.display = 'none';
+    else
+      ul.style.display = 'block';
+  }
+  if (minus)
+    moveSelectionIfNecessary(li);
+}
+
+function showChildren(li) {
+  var img = li.firstChild;
+  if (img.src.indexOf('empty.png') > -1)
+    return;
+  img.src = 'minus.png';
+
+  var ul = findUlChild(li);
+  if (ul) {
+    ul.style.display = 'block';
+  }
+}
+
+function setThreshold() {
+ var tv = document.getElementById("threshold").value;
+ if (tv.match(/[0-9]+([.,][0-9]+)?/)) {
+   var f = parseFloat(tv.replace(/,/, '.'));
+   var threads = document.getElementsByName("thread");
+   var l = threads.length;
+   for ( var i = 0; i < l ; i++ ) {
+     setThresholdUL(threads[i], f);
+   }
+   var p = selectedNode;
+   while (p && p.style.display=='none')
+     p=p.parentNode.parentNode;
+   if (p && p.nodeName=="LI")
+    selectNode(p);
+ }
+ else {
+   alert("Please specify a decimal number as threshold value!");
+ }
+}
+
+function collapseAll(event) {
+  event.cancelBubble=true;
+  var threads = document.getElementsByName("thread");
+  var l = threads.length;
+  for ( var i = 0; i < l ; i++ ) {
+    hideUL(threads[i]);
+  }
+  selectNode(rootNode(), null);
+}
+
+function expandAll(event) {
+  event.cancelBubble=true;
+  var threads = document.getElementsByName("thread");
+  var l = threads.length;
+  for ( var i = 0; i < l ; i++ ) {
+    showUL(threads[i]);
+  }
+}
+
+function toggleHelp(node) {
+  var help = document.getElementById("help");
+  if (node.value == "Show Help") {
+    node.value = "Hide Help";
+    help.style.display = 'block';
+  }
+  else {
+    node.value = "Show Help";
+    help.style.display = 'none';
+  }
+}
+
+var selectedNode = null;
+var selectedColor = null;
+var selectedThread = null;
+
+function descendentOf(a,b){
+  while (a!=b && b!=null)
+    b=b.parentNode;
+  return (a==b);
+}
+
+function moveSelectionIfNecessary(node){
+  if (descendentOf(node, selectedNode))
+    selectNode(node, null);
+}
+
+function selectNode(node, event) {
+  if (event) {
+    event.cancelBubble = true;
+    thread = findThread(node);
+    selectThread(thread);
+  }
+  if (selectedNode) {
+    selectedNode.style.background = selectedColor;
+  }
+  selectedNode = node;
+  selectedColor = node.style.background;
+  selectedNode.style.background = "red";
+  selectedNode.scrollIntoView();
+  window.scrollBy(0,-400);
+}
+
+function moveUp(){
+  var p = selectedNode.previousSibling;
+  while (p && p.style.display == 'none')
+    p = p.previousSibling;
+  if (p && p.nodeName == "LI") {
+    selectNode(p, null);
+  }
+}
+
+function moveDown(){
+  var p = selectedNode.nextSibling;
+  while (p && p.style.display == 'none')
+    p = p.nextSibling;
+  if (p && p.nodeName == "LI") {
+    selectNode(p, null);
+  }
+}
+
+function moveLeft(){
+  var p = selectedNode.parentNode.parentNode;
+  if (p && p.nodeName=="LI") {
+    selectNode(p, null);
+  }
+}
+
+function moveRight(){
+  if (!isLeafNode(selectedNode)) {
+    showChildren(selectedNode);
+    var ul = findUlChild(selectedNode);
+    if (ul) {
+      selectNode(ul.firstChild, null);
+    }
+  }
+}
+
+function moveForward(){
+  if (isLeafNode(selectedNode)) {
+    var p = selectedNode;
+    while ((p.nextSibling == null || p.nextSibling.style.display=='none') && p.nodeName=="LI") {
+      p = p.parentNode.parentNode;
+    }
+    if (p.nodeName=="LI")
+      selectNode(p.nextSibling, null);
+  }
+  else {
+    moveRight();
+  }
+}
+
+function isExpandedNode(li){
+  var img = li.firstChild;
+  return(img.src.indexOf('minus.png')>-1);
+}
+
+function moveBackward(){
+  var p = selectedNode;
+  var q = p.previousSibling;
+  while (q != null && q.style.display=='none')
+    q = q.previousSibling;
+  if (q == null) {
+    p = p.parentNode.parentNode;
+  } else {
+    while (!isLeafNode(q) && isExpandedNode(q)) {
+      q = findUlChild(q).lastChild;
+      while (q.style.display=='none')
+        q = q.previousSibling;
+    }
+    p = q;
+  }
+  if (p.nodeName=="LI")
+    selectNode(p, null);
+}
+
+function moveHome() {
+  selectNode(currentThread);
+}
+
+var currentThreadIndex = null;
+
+function findThread(node){
+  while (node && node.parentNode.nodeName!="BODY") {
+    node = node.parentNode;
+  }
+  return node.firstChild;
+}
+
+function selectThread(node){
+  var threads = document.getElementsByName("thread");
+  currentThread = node;
+  for (var i=0; i<threads.length; i++) {
+    if (threads[i]==currentThread.parentNode)
+      currentThreadIndex = i;
+  }
+}
+
+function nextThread(){
+  var threads = document.getElementsByName("thread");
+  if (currentThreadIndex==threads.length-1)
+    currentThreadIndex = 0;
+  else
+    currentThreadIndex += 1
+  currentThread = threads[currentThreadIndex].firstChild;
+  selectNode(currentThread, null);
+}
+
+function previousThread(){
+  var threads = document.getElementsByName("thread");
+  if (currentThreadIndex==0)
+    currentThreadIndex = threads.length-1;
+  else
+    currentThreadIndex -= 1
+  currentThread = threads[currentThreadIndex].firstChild;
+  selectNode(currentThread, null);
+}
+
+function switchThread(node, event){
+  event.cancelBubble = true;
+  selectThread(node.nextSibling.firstChild);
+  selectNode(currentThread, null);
+}
+
+function handleKeyEvent(event){
+  var code = event.charCode ? event.charCode : event.keyCode;
+  var str = String.fromCharCode(code);
+  switch (str) {
+    case "a": moveLeft();  break;
+    case "s": moveDown();  break;
+    case "d": moveRight(); break;
+    case "w": moveUp();    break;
+    case "f": moveForward(); break;
+    case "b": moveBackward(); break;
+    case "x": toggleChildren(selectedNode.firstChild, event); break;
+    case "*": toggleLI(selectedNode); break;
+    case "n": nextThread(); break;
+    case "h": moveHome(); break;
+    case "p": previousThread(); break;
+  }
+}
+document.onkeypress=function(event){ handleKeyEvent(event) };
+
+window.onload=function(){
+  var images = document.getElementsByTagName("img");
+  for (var i=0; i<images.length; i++) {
+    var img = images[i];
+    if (img.className == "toggle") {
+      img.onclick = function(event){ toggleChildren(this, event); };
+    }
+  }
+  var divs = document.getElementsByTagName("div");
+  for (i=0; i<divs.length; i++) {
+    var div = divs[i];
+    if (div.className == "thread")
+      div.onclick = function(event){ switchThread(this, event) };
+  }
+  var lis = document.getElementsByTagName("li");
+  for (var i=0; i<lis.length; i++) {
+    lis[i].onclick = function(event){ selectNode(this, event); };
+  }
+  var threads = document.getElementsByName("thread");
+  currentThreadIndex = 0;
+  currentThread = threads[0].firstChild;
+  selectNode(currentThread, null);
+}
+</script>
+</head><body>
+<div id="titlebar">
+Call tree for application <b>./profile-parser.rb </b><br/>
+Generated on 2012-12-23 07:19:41 +0000 with options {}<br/>
+</div>
+<div id="commands">
+<span style="font-size: 11pt; font-weight: bold;">Threshold:</span>
+<input value="1.0" size="3" id="threshold" type="text">
+<input value="Apply" onclick="setThreshold();" type="submit">
+<input value="Expand All" onclick="expandAll(event);" type="submit">
+<input value="Collapse All" onclick="collapseAll(event);" type="submit">
+<input value="Show Help" onclick="toggleHelp(this);" type="submit">
+</div>
+<div style="display: none;" id="help">
+<img src="empty.png"> Enter a decimal value <i>d</i> into the threshold field and click "Apply"
+to hide all nodes marked with time values lower than <i>d</i>.<br>
+<img src="empty.png"> Click on "Expand All" for full tree expansion.<br>
+<img src="empty.png"> Click on "Collapse All" to show only top level nodes.<br>
+<img src="empty.png"> Use a, s, d, w as in Quake or Urban Terror to navigate the tree.<br>
+<img src="empty.png"> Use f and b to navigate the tree in preorder forward and backwards.<br>
+<img src="empty.png"> Use x to toggle visibility of a subtree.<br>
+<img src="empty.png"> Use * to expand/collapse a whole subtree.<br>
+<img src="empty.png"> Use h to navigate to thread root.<br>
+<img src="empty.png"> Use n and p to navigate between threads.<br>
+<img src="empty.png"> Click on background to move focus to a subtree.<br>
+</div>
+<div class="thread">Thread: 20088680 (100.00% ~ 0.043136041)</div><ul name="thread"><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 100.00% (100.00%) <a href="file:///home/guy/dev/slim/benchmarks/profile-parser.rb#22">Global#[No method]</a> [1 calls, <a href='pars_mine.graph.html#Global_[No method]_20088680'>1</a> total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 99.92% (99.92%) <a href="file:///home/guy/dev/slim/lib/slim/parser.rb#80">Slim::Parser#call</a> [1 calls, <a href='pars_mine.graph.html#Slim__Parser_call_20088680'>1</a> total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 99.50% (99.58%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#67">Slim::ScanningParser#parse</a> [1 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_parse_20088680'>1</a> total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.40% (97.89%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#96">Slim::ScanningParser#parse_lines</a> [89 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_parse_lines_20088680'>89</a> total]
+<ul><li class="color4" style="display:block"><img class="toggle" src="minus.png"> 48.47% (49.77%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#118">Slim::ScanningParser#parse_tags</a> [59 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_parse_tags_20088680'>59</a> total]
+<ul><li class="color3" style="display:block"><img class="toggle" src="minus.png"> 33.67% (69.45%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#145">Slim::ScanningParser#parse_attributes</a> [59 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_parse_attributes_20088680'>59</a> total]
+<ul><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 6.42% (19.08%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/tag_shortcut_attributes.rb#5">Slim::TagShortcutAttributes#try</a> [59 calls, <a href='pars_mine.graph.html#Slim__TagShortcutAttributes_try_20088680'>59</a> total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.67% (26.05%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [59 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:block"><img src="empty.png"> 1.36% (81.14%) StringScanner#scan [59 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.49% (7.64%) String#scan [16 calls, <a href='pars_mine.graph.html#String_scan_20088680'>16</a> total]
+</li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.44% (6.78%) Array#each [16 calls, <a href='pars_mine.graph.html#Array_each_20088680'>54</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.20% (45.00%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#24">Slim::ScanningParser#shortcut_lookup</a> [19 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_shortcut_lookup_20088680'>19</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.08% (39.40%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#16">Slim::ScanningParser#shortcut</a> [19 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_shortcut_20088680'>79</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.06% (12.76%) Array#push [19 calls, <a href='pars_mine.graph.html#Array_push_20088680'>398</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.27% (4.15%) Array#join [59 calls, <a href='pars_mine.graph.html#Array_join_20088680'>68</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.24% (3.70%) String#prepend [59 calls, <a href='pars_mine.graph.html#String_prepend_20088680'>59</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.23% (3.51%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#16">Slim::ScanningParser#shortcut</a> [59 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_shortcut_20088680'>79</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.19% (2.98%) Hash#keys [59 calls, <a href='pars_mine.graph.html#Hash_keys_20088680'>61</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.19% (2.89%) String#concat [59 calls, <a href='pars_mine.graph.html#String_concat_20088680'>102</a> total]
+</li></ul></li><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 6.32% (18.76%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/tag_quoted_attributes.rb#34">Slim::TagQuotedAttributes#try_eagerly</a> [40 calls, <a href='pars_mine.graph.html#Slim__TagQuotedAttributes_try_eagerly_20088680'>40</a> total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 5.84% (92.51%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/tag_quoted_attributes.rb#5">Slim::TagQuotedAttributes#try</a> [67 calls, <a href='pars_mine.graph.html#Slim__TagQuotedAttributes_try_20088680'>67</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.71% (12.07%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [67 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.37% (52.33%) StringScanner#scan [67 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.67% (11.51%) Class#new [54 calls, <a href='pars_mine.graph.html#Class_new_20088680'>144</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.11% (16.85%) <a href="file:///home/guy/dev/slim/lib/slim/progress.rb#4">Slim::Progress#initialize</a> [27 calls, <a href='pars_mine.graph.html#Slim__Progress_initialize_20088680'>97</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.09% (13.44%) String#initialize [27 calls, <a href='pars_mine.graph.html#String_initialize_20088680'>27</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.08% (11.58%) &lt;Class::BasicObject&gt;#allocate [27 calls, <a href='pars_mine.graph.html#_Class__BasicObject__allocate_20088680'>112</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.08% (11.46%) &lt;Class::String&gt;#allocate [27 calls, <a href='pars_mine.graph.html#_Class__String__allocate_20088680'>27</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.55% (9.49%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#25">Slim::Scanner#scan_until</a> [27 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_until_20088680'>139</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.41% (74.50%) StringScanner#scan_until [27 calls, <a href='pars_mine.graph.html#StringScanner_scan_until_20088680'>139</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.39% (6.75%) <a href="file:///home/guy/.rvm/gems/ruby-1.9.3-p327-fast/gems/temple-0.5.5/lib/temple/hash.rb#15">Temple::ImmutableHash#[]</a> [27 calls, <a href='pars_mine.graph.html#Temple__ImmutableHash_[]_20088680'>38</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.25% (63.52%) Array#each [27 calls, <a href='pars_mine.graph.html#Array_each_20088680'>54</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.07% (29.44%) Hash#include? [27 calls, <a href='pars_mine.graph.html#Hash_include__20088680'>38</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.35% (5.96%) <a href="file:///home/guy/dev/slim/lib/slim/progress.rb#8">Slim::Progress#measure</a> [27 calls, <a href='pars_mine.graph.html#Slim__Progress_measure_20088680'>149</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.21% (59.27%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#37">Slim::Scanner#position</a> [27 calls, <a href='pars_mine.graph.html#Slim__Scanner_position_20088680'>292</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.07% (35.03%) StringScanner#pos [27 calls, <a href='pars_mine.graph.html#StringScanner_pos_20088680'>292</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.34% (5.87%) <a href="file:///home/guy/dev/slim/lib/slim/progress.rb#12">Slim::Progress#stuck?</a> [27 calls, <a href='pars_mine.graph.html#Slim__Progress_stuck__20088680'>41</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.20% (58.75%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#37">Slim::Scanner#position</a> [27 calls, <a href='pars_mine.graph.html#Slim__Scanner_position_20088680'>292</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.07% (34.38%) StringScanner#pos [27 calls, <a href='pars_mine.graph.html#StringScanner_pos_20088680'>292</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.22% (3.69%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#79">Slim::Scanner#m3</a> [27 calls, <a href='pars_mine.graph.html#Slim__Scanner_m3_20088680'>28</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.08% (35.60%) StringScanner#[] [27 calls, <a href='pars_mine.graph.html#StringScanner_[]_20088680'>167</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.21% (3.65%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#71">Slim::Scanner#m1</a> [27 calls, <a href='pars_mine.graph.html#Slim__Scanner_m1_20088680'>84</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.08% (35.57%) StringScanner#[] [27 calls, <a href='pars_mine.graph.html#StringScanner_[]_20088680'>167</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.09% (1.61%) String#concat [27 calls, <a href='pars_mine.graph.html#String_concat_20088680'>102</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.09% (1.55%) Array#push [27 calls, <a href='pars_mine.graph.html#Array_push_20088680'>398</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.09% (1.50%) String#count [27 calls, <a href='pars_mine.graph.html#String_count_20088680'>156</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.08% (1.30%) Fixnum#zero? [27 calls, <a href='pars_mine.graph.html#Fixnum_zero__20088680'>29</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 5.48% (16.27%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/tag_code_attributes.rb#5">Slim::TagCodeAttributes#try</a> [40 calls, <a href='pars_mine.graph.html#Slim__TagCodeAttributes_try_20088680'>40</a> total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.51% (27.51%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#38">Slim::CodeFinder#add</a> [12 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_add_20088680'>12</a> total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.23% (81.77%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#44">Slim::CodeFinder#analyse</a> [12 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_analyse_20088680'>18</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.38% (31.18%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#71">Slim::CodeFinder#net_delim_count</a> [12 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_net_delim_count_20088680'>18</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.09% (22.57%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#32">Slim::CodeFinder#rest</a> [24 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_rest_20088680'>87</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.07% (17.70%) String#count [24 calls, <a href='pars_mine.graph.html#String_count_20088680'>156</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.05% (12.31%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#79">Slim::CodeFinder#delim_close</a> [12 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_delim_close_20088680'>29</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.04% (11.52%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#30">Slim::CodeFinder#delim</a> [12 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_delim_20088680'>33</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.12% (9.48%) String#gsub [24 calls, <a href='pars_mine.graph.html#String_gsub_20088680'>85</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.11% (8.53%) String#empty? [40 calls, <a href='pars_mine.graph.html#String_empty__20088680'>182</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.10% (8.45%) String#partition [12 calls, <a href='pars_mine.graph.html#String_partition_20088680'>28</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.09% (6.94%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#32">Slim::CodeFinder#rest</a> [24 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_rest_20088680'>87</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.04% (3.13%) String#index [11 calls, <a href='pars_mine.graph.html#String_index_20088680'>21</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (1.21%) Array#join [3 calls, <a href='pars_mine.graph.html#Array_join_20088680'>68</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (0.77%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#79">Slim::CodeFinder#delim_close</a> [2 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_delim_close_20088680'>29</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (0.64%) String#reverse [2 calls, <a href='pars_mine.graph.html#String_reverse_20088680'>5</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.05% (3.11%) String#concat [12 calls, <a href='pars_mine.graph.html#String_concat_20088680'>102</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.04% (2.95%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#34">Slim::CodeFinder#done?</a> [12 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_done__20088680'>42</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.04% (2.93%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#32">Slim::CodeFinder#rest</a> [12 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_rest_20088680'>87</a> total]
+</li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.32% (24.05%) Class#new [18 calls, <a href='pars_mine.graph.html#Class_new_20088680'>144</a> total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.12% (85.29%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#4">Slim::CodeFinder#initialize</a> [9 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_initialize_20088680'>9</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.86% (76.89%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#44">Slim::CodeFinder#analyse</a> [6 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_analyse_20088680'>18</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.32% (37.41%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#71">Slim::CodeFinder#net_delim_count</a> [6 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_net_delim_count_20088680'>18</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.15% (45.56%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#79">Slim::CodeFinder#delim_close</a> [6 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_delim_close_20088680'>29</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.07% (48.65%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#75">Slim::CodeFinder#delim_map</a> [6 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_delim_map_20088680'>6</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.03% (44.01%) &lt;Class::Hash&gt;#[] [6 calls, <a href='pars_mine.graph.html#_Class__Hash__[]_20088680'>7</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.02% (15.88%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#30">Slim::CodeFinder#delim</a> [6 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_delim_20088680'>33</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.04% (13.53%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#32">Slim::CodeFinder#rest</a> [12 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_rest_20088680'>87</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.04% (11.53%) String#count [12 calls, <a href='pars_mine.graph.html#String_count_20088680'>156</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.02% (6.97%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#30">Slim::CodeFinder#delim</a> [6 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_delim_20088680'>33</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.07% (7.86%) String#gsub [12 calls, <a href='pars_mine.graph.html#String_gsub_20088680'>85</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.05% (6.34%) String#empty? [20 calls, <a href='pars_mine.graph.html#String_empty__20088680'>182</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.04% (5.20%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#32">Slim::CodeFinder#rest</a> [12 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_rest_20088680'>87</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.04% (4.93%) String#partition [6 calls, <a href='pars_mine.graph.html#String_partition_20088680'>28</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.04% (4.36%) String#index [10 calls, <a href='pars_mine.graph.html#String_index_20088680'>21</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.02% (1.76%) Array#join [3 calls, <a href='pars_mine.graph.html#Array_join_20088680'>68</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (1.55%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#79">Slim::CodeFinder#delim_close</a> [3 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_delim_close_20088680'>29</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (1.43%) String#reverse [3 calls, <a href='pars_mine.graph.html#String_reverse_20088680'>5</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.07% (6.50%) String#partition [9 calls, <a href='pars_mine.graph.html#String_partition_20088680'>28</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.04% (3.40%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#30">Slim::CodeFinder#delim</a> [9 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_delim_20088680'>33</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.02% (2.22%) String#empty? [9 calls, <a href='pars_mine.graph.html#String_empty__20088680'>182</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.05% (3.80%) &lt;Class::BasicObject&gt;#allocate [18 calls, <a href='pars_mine.graph.html#_Class__BasicObject__allocate_20088680'>112</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.04% (2.78%) <a href="file:///home/guy/dev/slim/lib/slim/progress.rb#4">Slim::Progress#initialize</a> [9 calls, <a href='pars_mine.graph.html#Slim__Progress_initialize_20088680'>97</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.40% (7.37%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [40 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.20% (50.53%) StringScanner#scan [40 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.26% (4.74%) <a href="file:///home/guy/dev/slim/lib/slim/progress.rb#8">Slim::Progress#measure</a> [21 calls, <a href='pars_mine.graph.html#Slim__Progress_measure_20088680'>149</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.15% (58.82%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#37">Slim::Scanner#position</a> [21 calls, <a href='pars_mine.graph.html#Slim__Scanner_position_20088680'>292</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.05% (33.96%) StringScanner#pos [21 calls, <a href='pars_mine.graph.html#StringScanner_pos_20088680'>292</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.22% (4.09%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#25">Slim::Scanner#scan_until</a> [21 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_until_20088680'>139</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.12% (52.75%) StringScanner#scan_until [21 calls, <a href='pars_mine.graph.html#StringScanner_scan_until_20088680'>139</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.21% (3.85%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#14">Slim::CodeFinder#enclosed_by_delim?</a> [9 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_enclosed_by_delim__20088680'>9</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.04% (19.10%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#32">Slim::CodeFinder#rest</a> [3 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_rest_20088680'>87</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.03% (16.38%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#28">Slim::CodeFinder#first</a> [9 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_first_20088680'>9</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.02% (11.59%) String#empty? [9 calls, <a href='pars_mine.graph.html#String_empty__20088680'>182</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.02% (11.14%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#79">Slim::CodeFinder#delim_close</a> [6 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_delim_close_20088680'>29</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (4.75%) String#end_with? [3 calls, <a href='pars_mine.graph.html#String_end_with__20088680'>12</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.16% (2.95%) <a href="file:///home/guy/dev/slim/lib/slim/progress.rb#12">Slim::Progress#stuck?</a> [12 calls, <a href='pars_mine.graph.html#Slim__Progress_stuck__20088680'>41</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.09% (55.50%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#37">Slim::Scanner#position</a> [12 calls, <a href='pars_mine.graph.html#Slim__Scanner_position_20088680'>292</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.03% (34.46%) StringScanner#pos [12 calls, <a href='pars_mine.graph.html#StringScanner_pos_20088680'>292</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.13% (2.36%) <a href="file:///home/guy/.rvm/gems/ruby-1.9.3-p327-fast/gems/temple-0.5.5/lib/temple/hash.rb#15">Temple::ImmutableHash#[]</a> [9 calls, <a href='pars_mine.graph.html#Temple__ImmutableHash_[]_20088680'>38</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.08% (64.09%) Array#each [9 calls, <a href='pars_mine.graph.html#Array_each_20088680'>54</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.02% (29.70%) Hash#include? [9 calls, <a href='pars_mine.graph.html#Hash_include__20088680'>38</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.11% (2.07%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#34">Slim::CodeFinder#done?</a> [30 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_done__20088680'>42</a> total]
+</li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.07% (1.31%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#71">Slim::Scanner#m1</a> [9 calls, <a href='pars_mine.graph.html#Slim__Scanner_m1_20088680'>84</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.03% (35.28%) StringScanner#[] [9 calls, <a href='pars_mine.graph.html#StringScanner_[]_20088680'>167</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.07% (1.28%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#75">Slim::Scanner#m2</a> [9 calls, <a href='pars_mine.graph.html#Slim__Scanner_m2_20088680'>55</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.02% (35.50%) StringScanner#[] [9 calls, <a href='pars_mine.graph.html#StringScanner_[]_20088680'>167</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.06% (1.12%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#41">Slim::Scanner#backup</a> [3 calls, <a href='pars_mine.graph.html#Slim__Scanner_backup_20088680'>3</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.02% (38.15%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#37">Slim::Scanner#position</a> [3 calls, <a href='pars_mine.graph.html#Slim__Scanner_position_20088680'>292</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.01% (34.21%) StringScanner#pos [3 calls, <a href='pars_mine.graph.html#StringScanner_pos_20088680'>292</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (18.81%) StringScanner#pos= [3 calls, <a href='pars_mine.graph.html#StringScanner_pos__20088680'>3</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.04% (0.73%) String#strip [9 calls, <a href='pars_mine.graph.html#String_strip_20088680'>10</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.04% (0.70%) <a href="file:///home/guy/dev/slim/lib/slim/code_finder.rb#36">Slim::CodeFinder#code</a> [9 calls, <a href='pars_mine.graph.html#Slim__CodeFinder_code_20088680'>9</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.04% (0.67%) Array#push [9 calls, <a href='pars_mine.graph.html#Array_push_20088680'>398</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.03% (0.57%) String#end_with? [9 calls, <a href='pars_mine.graph.html#String_end_with__20088680'>12</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.03% (0.48%) String#empty? [9 calls, <a href='pars_mine.graph.html#String_empty__20088680'>182</a> total]
+</li></ul></li><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 3.51% (10.44%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#92">Slim::ScanningParser#tag_args</a> [269 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_tag_args_20088680'>404</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.97% (27.73%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#76">Slim::ScanningParser#scanner</a> [269 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_scanner_20088680'>1418</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.82% (23.31%) Array#concat [269 calls, <a href='pars_mine.graph.html#Array_concat_20088680'>1340</a> total]
+</li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.85% (8.46%) <a href="file:///home/guy/dev/slim/lib/slim/progress.rb#16">Slim::Progress#progress?</a> [99 calls, <a href='pars_mine.graph.html#Slim__Progress_progress__20088680'>99</a> total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.24% (43.54%) <a href="file:///home/guy/dev/slim/lib/slim/progress.rb#8">Slim::Progress#measure</a> [99 calls, <a href='pars_mine.graph.html#Slim__Progress_measure_20088680'>149</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.74% (59.80%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#37">Slim::Scanner#position</a> [99 calls, <a href='pars_mine.graph.html#Slim__Scanner_position_20088680'>292</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.26% (34.71%) StringScanner#pos [99 calls, <a href='pars_mine.graph.html#StringScanner_pos_20088680'>292</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.29% (10.09%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#37">Slim::Scanner#position</a> [40 calls, <a href='pars_mine.graph.html#Slim__Scanner_position_20088680'>292</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.10% (33.35%) StringScanner#pos [40 calls, <a href='pars_mine.graph.html#StringScanner_pos_20088680'>292</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.15% (5.32%) NilClass#nil? [59 calls, <a href='pars_mine.graph.html#NilClass_nil__20088680'>59</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.10% (3.64%) Kernel#nil? [40 calls, <a href='pars_mine.graph.html#Kernel_nil__20088680'>44</a> total]
+</li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.80% (5.35%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#160">Slim::Scanner#eol?</a> [76 calls, <a href='pars_mine.graph.html#Slim__Scanner_eol__20088680'>76</a> total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.40% (77.85%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#156">Slim::Scanner#check_lf</a> [76 calls, <a href='pars_mine.graph.html#Slim__Scanner_check_lf_20088680'>76</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.65% (46.48%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#29">Slim::Scanner#check</a> [76 calls, <a href='pars_mine.graph.html#Slim__Scanner_check_20088680'>135</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.28% (42.96%) StringScanner#check [76 calls, <a href='pars_mine.graph.html#StringScanner_check_20088680'>135</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.29% (20.40%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#87">Slim::Scanner#lf_re</a> [76 calls, <a href='pars_mine.graph.html#Slim__Scanner_lf_re_20088680'>77</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.80% (5.33%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/tag_delimited_attributes.rb#5">Slim::TagDelimitedAttributes#try</a> [59 calls, <a href='pars_mine.graph.html#Slim__TagDelimitedAttributes_try_20088680'>59</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.50% (27.68%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [59 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.21% (41.48%) StringScanner#scan [59 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.32% (18.09%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/tag_delimited_attributes.rb#43">Slim::TagDelimitedAttributes#delim_re</a> [59 calls, <a href='pars_mine.graph.html#Slim__TagDelimitedAttributes_delim_re_20088680'>59</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.02% (7.12%) Array#map [1 calls, <a href='pars_mine.graph.html#Array_map_20088680'>2</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.01% (43.36%) &lt;Class::Regexp&gt;#quote [3 calls, <a href='pars_mine.graph.html#_Class__Regexp__quote_20088680'>7</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.02% (6.80%) Class#new [1 calls, <a href='pars_mine.graph.html#Class_new_20088680'>144</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.01% (56.71%) Regexp#initialize [1 calls, <a href='pars_mine.graph.html#Regexp_initialize_20088680'>2</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.00% (14.06%) &lt;Class::Regexp&gt;#allocate [1 calls, <a href='pars_mine.graph.html#_Class__Regexp__allocate_20088680'>2</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.02% (5.05%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/tag_delimited_attributes.rb#39">Slim::TagDelimitedAttributes#delim_map</a> [1 calls, <a href='pars_mine.graph.html#Slim__TagDelimitedAttributes_delim_map_20088680'>3</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.01% (38.92%) &lt;Class::Hash&gt;#[] [1 calls, <a href='pars_mine.graph.html#_Class__Hash__[]_20088680'>7</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (1.61%) Array#join [1 calls, <a href='pars_mine.graph.html#Array_join_20088680'>68</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.00% (1.49%) Hash#keys [1 calls, <a href='pars_mine.graph.html#Hash_keys_20088680'>61</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.09% (5.06%) Class#new [4 calls, <a href='pars_mine.graph.html#Class_new_20088680'>144</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.04% (47.20%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#8">Slim::Scanner#initialize</a> [2 calls, <a href='pars_mine.graph.html#Slim__Scanner_initialize_20088680'>3</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.02% (57.50%) Class#new [2 calls, <a href='pars_mine.graph.html#Class_new_20088680'>144</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.01% (28.59%) &lt;Class::StringScanner&gt;#allocate [2 calls, <a href='pars_mine.graph.html#_Class__StringScanner__allocate_20088680'>3</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (27.22%) StringScanner#initialize [2 calls, <a href='pars_mine.graph.html#StringScanner_initialize_20088680'>3</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (13.39%) &lt;Class::BasicObject&gt;#allocate [4 calls, <a href='pars_mine.graph.html#_Class__BasicObject__allocate_20088680'>112</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (10.46%) <a href="file:///home/guy/dev/slim/lib/slim/progress.rb#4">Slim::Progress#initialize</a> [2 calls, <a href='pars_mine.graph.html#Slim__Progress_initialize_20088680'>97</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.04% (2.15%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#25">Slim::Scanner#scan_until</a> [2 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_until_20088680'>139</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.03% (69.91%) StringScanner#scan_until [2 calls, <a href='pars_mine.graph.html#StringScanner_scan_until_20088680'>139</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.03% (1.56%) <a href="file:///home/guy/dev/slim/lib/slim/progress.rb#12">Slim::Progress#stuck?</a> [2 calls, <a href='pars_mine.graph.html#Slim__Progress_stuck__20088680'>41</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.02% (59.32%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#37">Slim::Scanner#position</a> [2 calls, <a href='pars_mine.graph.html#Slim__Scanner_position_20088680'>292</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.01% (35.27%) StringScanner#pos [2 calls, <a href='pars_mine.graph.html#StringScanner_pos_20088680'>292</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.03% (1.49%) <a href="file:///home/guy/dev/slim/lib/slim/progress.rb#8">Slim::Progress#measure</a> [2 calls, <a href='pars_mine.graph.html#Slim__Progress_measure_20088680'>149</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.02% (59.50%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#37">Slim::Scanner#position</a> [2 calls, <a href='pars_mine.graph.html#Slim__Scanner_position_20088680'>292</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.01% (35.99%) StringScanner#pos [2 calls, <a href='pars_mine.graph.html#StringScanner_pos_20088680'>292</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.02% (1.21%) String#squeeze [2 calls, <a href='pars_mine.graph.html#String_squeeze_20088680'>2</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.02% (0.85%) String#concat [4 calls, <a href='pars_mine.graph.html#String_concat_20088680'>102</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (0.83%) String#count [4 calls, <a href='pars_mine.graph.html#String_count_20088680'>156</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (0.79%) String#gsub! [2 calls, <a href='pars_mine.graph.html#String_gsub!_20088680'>2</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (0.68%) String#empty? [4 calls, <a href='pars_mine.graph.html#String_empty__20088680'>182</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (0.58%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#80">Slim::ScanningParser#set_temp_scanner</a> [2 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_set_temp_scanner_20088680'>2</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (0.53%) String#chomp! [2 calls, <a href='pars_mine.graph.html#String_chomp!_20088680'>2</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (0.50%) &lt;Class::Regexp&gt;#quote [2 calls, <a href='pars_mine.graph.html#_Class__Regexp__quote_20088680'>7</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (0.49%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/tag_delimited_attributes.rb#39">Slim::TagDelimitedAttributes#delim_map</a> [2 calls, <a href='pars_mine.graph.html#Slim__TagDelimitedAttributes_delim_map_20088680'>3</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (0.42%) Hash#[]= [2 calls, <a href='pars_mine.graph.html#Hash_[]__20088680'>122</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (0.35%) Fixnum#zero? [2 calls, <a href='pars_mine.graph.html#Fixnum_zero__20088680'>29</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (0.35%) Kernel#nil? [2 calls, <a href='pars_mine.graph.html#Kernel_nil__20088680'>44</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.76% (2.25%) Class#new [59 calls, <a href='pars_mine.graph.html#Class_new_20088680'>144</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.24% (31.78%) <a href="file:///home/guy/dev/slim/lib/slim/progress.rb#4">Slim::Progress#initialize</a> [59 calls, <a href='pars_mine.graph.html#Slim__Progress_initialize_20088680'>97</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.16% (21.42%) &lt;Class::BasicObject&gt;#allocate [59 calls, <a href='pars_mine.graph.html#_Class__BasicObject__allocate_20088680'>112</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.67% (1.99%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#49">Slim::ScanningParser#last_push</a> [59 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_last_push_20088680'>179</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.15% (22.93%) Array#push [59 calls, <a href='pars_mine.graph.html#Array_push_20088680'>398</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.15% (21.92%) Array#last [59 calls, <a href='pars_mine.graph.html#Array_last_20088680'>1296</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.56% (1.66%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/tag_splat_attributes.rb#5">Slim::TagSplatAttributes#try</a> [40 calls, <a href='pars_mine.graph.html#Slim__TagSplatAttributes_try_20088680'>40</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.35% (62.51%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [40 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.15% (43.88%) StringScanner#scan [40 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.50% (1.49%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#76">Slim::ScanningParser#scanner</a> [137 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_scanner_20088680'>1418</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.21% (0.61%) Array#push [59 calls, <a href='pars_mine.graph.html#Array_push_20088680'>398</a> total]
+</li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.17% (0.51%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/tag_boolean_attributes.rb#5">Slim::TagBooleanAttributes#try</a> [31 calls, <a href='pars_mine.graph.html#Slim__TagBooleanAttributes_try_20088680'>31</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.03% (20.06%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [4 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.01% (39.67%) StringScanner#scan [4 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.05% (0.14%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#184">Slim::Scanner#no_more?</a> [2 calls, <a href='pars_mine.graph.html#Slim__Scanner_no_more__20088680'>92</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.02% (34.43%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#51">Slim::Scanner#eos?</a> [2 calls, <a href='pars_mine.graph.html#Slim__Scanner_eos__20088680'>92</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.01% (34.76%) StringScanner#eos? [2 calls, <a href='pars_mine.graph.html#StringScanner_eos__20088680'>92</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.02% (34.06%) StringScanner#exist? [2 calls, <a href='pars_mine.graph.html#StringScanner_exist__20088680'>92</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (0.03%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#84">Slim::ScanningParser#clear_temp_scanner</a> [2 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_clear_temp_scanner_20088680'>2</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (0.02%) Hash#[]= [2 calls, <a href='pars_mine.graph.html#Hash_[]__20088680'>122</a> total]
+</li></ul></li><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 4.16% (8.59%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/tag.rb#5">Slim::Tag#try</a> [59 calls, <a href='pars_mine.graph.html#Slim__Tag_try_20088680'>59</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.73% (17.49%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#207">Slim::Scanner#current_indent</a> [59 calls, <a href='pars_mine.graph.html#Slim__Scanner_current_indent_20088680'>150</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.43% (58.98%) <a href="file:///home/guy/dev/slim/lib/slim/indenter.rb#20">Slim::Indenter#current_indent</a> [59 calls, <a href='pars_mine.graph.html#Slim__Indenter_current_indent_20088680'>1116</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.14% (33.64%) Array#last [59 calls, <a href='pars_mine.graph.html#Array_last_20088680'>1296</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.57% (13.61%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [59 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.28% (48.68%) StringScanner#scan [59 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.48% (11.49%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#29">Slim::Scanner#check</a> [59 calls, <a href='pars_mine.graph.html#Slim__Scanner_check_20088680'>135</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.19% (39.05%) StringScanner#check [59 calls, <a href='pars_mine.graph.html#StringScanner_check_20088680'>135</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.44% (10.59%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#37">Slim::Scanner#position</a> [59 calls, <a href='pars_mine.graph.html#Slim__Scanner_position_20088680'>292</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.15% (34.17%) StringScanner#pos [59 calls, <a href='pars_mine.graph.html#StringScanner_pos_20088680'>292</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.38% (9.13%) Hash#[]= [118 calls, <a href='pars_mine.graph.html#Hash_[]__20088680'>122</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.18% (4.29%) Array#concat [59 calls, <a href='pars_mine.graph.html#Array_concat_20088680'>1340</a> total]
+</li></ul></li><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 3.24% (6.69%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/tag_output.rb#5">Slim::TagOutput#try</a> [59 calls, <a href='pars_mine.graph.html#Slim__TagOutput_try_20088680'>59</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.77% (23.85%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#123">Slim::Scanner#shift_broken_lines</a> [21 calls, <a href='pars_mine.graph.html#Slim__Scanner_shift_broken_lines_20088680'>47</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.24% (31.61%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [21 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.14% (57.81%) StringScanner#scan [21 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.12% (15.79%) String#gsub [21 calls, <a href='pars_mine.graph.html#String_gsub_20088680'>85</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.08% (10.66%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#115">Slim::Scanner#lf_space_plus_re</a> [21 calls, <a href='pars_mine.graph.html#Slim__Scanner_lf_space_plus_re_20088680'>47</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.08% (10.13%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#119">Slim::Scanner#broken_line_re</a> [21 calls, <a href='pars_mine.graph.html#Slim__Scanner_broken_line_re_20088680'>47</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.67% (20.60%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#164">Slim::Scanner#check_next_indent</a> [21 calls, <a href='pars_mine.graph.html#Slim__Scanner_check_next_indent_20088680'>47</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.21% (32.05%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#33">Slim::Scanner#check_until</a> [21 calls, <a href='pars_mine.graph.html#Slim__Scanner_check_until_20088680'>47</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.11% (51.88%) StringScanner#check_until [21 calls, <a href='pars_mine.graph.html#StringScanner_check_until_20088680'>47</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.08% (12.02%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#107">Slim::Scanner#lfs_ind_char_re</a> [21 calls, <a href='pars_mine.graph.html#Slim__Scanner_lfs_ind_char_re_20088680'>47</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.51% (15.76%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [59 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.22% (42.72%) StringScanner#scan [59 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.17% (5.10%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#71">Slim::Scanner#m1</a> [21 calls, <a href='pars_mine.graph.html#Slim__Scanner_m1_20088680'>84</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.06% (36.02%) StringScanner#[] [21 calls, <a href='pars_mine.graph.html#StringScanner_[]_20088680'>167</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.16% (4.97%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#75">Slim::Scanner#m2</a> [21 calls, <a href='pars_mine.graph.html#Slim__Scanner_m2_20088680'>55</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.06% (36.01%) StringScanner#[] [21 calls, <a href='pars_mine.graph.html#StringScanner_[]_20088680'>167</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.11% (3.43%) String#empty? [42 calls, <a href='pars_mine.graph.html#String_empty__20088680'>182</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.06% (1.91%) Array#push [21 calls, <a href='pars_mine.graph.html#Array_push_20088680'>398</a> total]
+</li></ul></li><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.76% (3.63%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#92">Slim::ScanningParser#tag_args</a> [135 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_tag_args_20088680'>404</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.49% (27.60%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#76">Slim::ScanningParser#scanner</a> [135 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_scanner_20088680'>1418</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.42% (23.77%) Array#concat [135 calls, <a href='pars_mine.graph.html#Array_concat_20088680'>1340</a> total]
+</li></ul></li><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.33% (2.74%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#88">Slim::ScanningParser#line_args</a> [59 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_line_args_20088680'>877</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.44% (32.97%) <a href="file:///home/guy/dev/slim/lib/slim/indenter.rb#20">Slim::Indenter#current_indent</a> [59 calls, <a href='pars_mine.graph.html#Slim__Indenter_current_indent_20088680'>1116</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.15% (33.61%) Array#last [59 calls, <a href='pars_mine.graph.html#Array_last_20088680'>1296</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.21% (15.97%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#76">Slim::ScanningParser#scanner</a> [59 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_scanner_20088680'>1418</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.20% (14.89%) Array#concat [59 calls, <a href='pars_mine.graph.html#Array_concat_20088680'>1340</a> total]
+</li></ul></li><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.26% (2.60%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/tag_no_content.rb#5">Slim::TagNoContent#try</a> [38 calls, <a href='pars_mine.graph.html#Slim__TagNoContent_try_20088680'>38</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.37% (29.64%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [38 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.19% (49.96%) StringScanner#scan [38 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.29% (22.80%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#40">Slim::ScanningParser#push</a> [38 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_push_20088680'>45</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.10% (33.97%) Array#push [38 calls, <a href='pars_mine.graph.html#Array_push_20088680'>398</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.11% (8.34%) Array#push [38 calls, <a href='pars_mine.graph.html#Array_push_20088680'>398</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.59% (1.21%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/tag_closed.rb#5">Slim::TagClosed#try</a> [38 calls, <a href='pars_mine.graph.html#Slim__TagClosed_try_20088680'>38</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.35% (59.33%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [38 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.16% (46.48%) StringScanner#scan [38 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.30% (0.62%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#28">Slim::ScanningParser#shortcut_re</a> [59 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_shortcut_re_20088680'>59</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.06% (20.56%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#36">Slim::ScanningParser#shortcuts_quoted_ored</a> [1 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_shortcuts_quoted_ored_20088680'>1</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.02% (31.70%) Array#map [1 calls, <a href='pars_mine.graph.html#Array_map_20088680'>2</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.01% (40.30%) &lt;Class::Regexp&gt;#quote [2 calls, <a href='pars_mine.graph.html#_Class__Regexp__quote_20088680'>7</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.02% (30.88%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#16">Slim::ScanningParser#shortcut</a> [1 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_shortcut_20088680'>79</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.01% (57.70%) <a href="file:///home/guy/dev/slim/lib/slim/parser.rb#63">Slim::Parser#shortcut</a> [1 calls, <a href='pars_mine.graph.html#Slim__Parser_shortcut_20088680'>1</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (9.51%) Array#join [1 calls, <a href='pars_mine.graph.html#Array_join_20088680'>68</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (8.60%) Hash#keys [1 calls, <a href='pars_mine.graph.html#Hash_keys_20088680'>61</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.23% (0.48%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#32">Slim::ScanningParser#tag_re</a> [59 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_tag_re_20088680'>59</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.22% (0.46%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#140">Slim::ScanningParser#monitor_tag_raise</a> [59 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_monitor_tag_raise_20088680'>59</a> total]
+</li></ul></li><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 17.66% (18.13%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#88">Slim::ScanningParser#line_args</a> [818 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_line_args_20088680'>877</a> total]
+<ul><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 5.96% (33.76%) <a href="file:///home/guy/dev/slim/lib/slim/indenter.rb#20">Slim::Indenter#current_indent</a> [818 calls, <a href='pars_mine.graph.html#Slim__Indenter_current_indent_20088680'>1116</a> total]
+<ul style="display:none"><li class="color01" style="display:block"><img src="empty.png"> 1.99% (33.40%) Array#last [818 calls, <a href='pars_mine.graph.html#Array_last_20088680'>1296</a> total]
+</li></ul></li><li class="color01" style="display:block"><img src="empty.png"> 2.99% (16.91%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#76">Slim::ScanningParser#scanner</a> [818 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_scanner_20088680'>1418</a> total]
+</li><li class="color01" style="display:block"><img src="empty.png"> 2.05% (11.61%) Array#concat [818 calls, <a href='pars_mine.graph.html#Array_concat_20088680'>1340</a> total]
+</li></ul></li><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 12.89% (13.23%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/consume_whitespace.rb#4">Slim::ConsumeWhitespace#try</a> [89 calls, <a href='pars_mine.graph.html#Slim__ConsumeWhitespace_try_20088680'>89</a> total]
+<ul><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 7.34% (56.91%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#201">Slim::Scanner#indentation</a> [89 calls, <a href='pars_mine.graph.html#Slim__Scanner_indentation_20088680'>89</a> total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 5.38% (73.32%) <a href="file:///home/guy/dev/slim/lib/slim/indenter.rb#24">Slim::Indenter#indent</a> [89 calls, <a href='pars_mine.graph.html#Slim__Indenter_indent_20088680'>89</a> total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.03% (19.19%) Array#index [57 calls, <a href='pars_mine.graph.html#Array_index_20088680'>57</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.57% (55.37%) Fixnum#== [231 calls, <a href='pars_mine.graph.html#Fixnum____20088680'>231</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.82% (15.33%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#44">Slim::ScanningParser#pop</a> [57 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_pop_20088680'>57</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.20% (24.53%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#53">Slim::ScanningParser#stack_depth</a> [57 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_stack_depth_20088680'>114</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.20% (24.26%) Array#pop [57 calls, <a href='pars_mine.graph.html#Array_pop_20088680'>114</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.76% (14.22%) <a href="file:///home/guy/dev/slim/lib/slim/indenter.rb#16">Slim::Indenter#indent_expected?</a> [57 calls, <a href='pars_mine.graph.html#Slim__Indenter_indent_expected__20088680'>57</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.20% (26.75%) <a href="file:///home/guy/dev/slim/lib/slim/indenter.rb#12">Slim::Indenter#depth</a> [57 calls, <a href='pars_mine.graph.html#Slim__Indenter_depth_20088680'>114</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.20% (26.64%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#53">Slim::ScanningParser#stack_depth</a> [57 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_stack_depth_20088680'>114</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.66% (12.35%) <a href="file:///home/guy/dev/slim/lib/slim/indenter.rb#20">Slim::Indenter#current_indent</a> [89 calls, <a href='pars_mine.graph.html#Slim__Indenter_current_indent_20088680'>1116</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.23% (34.82%) Array#last [89 calls, <a href='pars_mine.graph.html#Array_last_20088680'>1296</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.52% (9.67%) <a href="file:///home/guy/dev/slim/lib/slim/indenter.rb#46">Slim::Indenter#pop</a> [57 calls, <a href='pars_mine.graph.html#Slim__Indenter_pop_20088680'>57</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.16% (31.02%) Array#pop [57 calls, <a href='pars_mine.graph.html#Array_pop_20088680'>114</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.21% (3.87%) <a href="file:///home/guy/dev/slim/lib/slim/indenter.rb#12">Slim::Indenter#depth</a> [57 calls, <a href='pars_mine.graph.html#Slim__Indenter_depth_20088680'>114</a> total]
+</li></ul></li><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.15% (15.71%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#207">Slim::Scanner#current_indent</a> [89 calls, <a href='pars_mine.graph.html#Slim__Scanner_current_indent_20088680'>150</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.65% (56.83%) <a href="file:///home/guy/dev/slim/lib/slim/indenter.rb#20">Slim::Indenter#current_indent</a> [89 calls, <a href='pars_mine.graph.html#Slim__Indenter_current_indent_20088680'>1116</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.22% (33.62%) Array#last [89 calls, <a href='pars_mine.graph.html#Array_last_20088680'>1296</a> total]
+</li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.75% (13.56%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#148">Slim::Scanner#shift_until_char</a> [89 calls, <a href='pars_mine.graph.html#Slim__Scanner_shift_until_char_20088680'>89</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.86% (49.46%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#25">Slim::Scanner#scan_until</a> [89 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_until_20088680'>139</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.39% (44.75%) StringScanner#scan_until [89 calls, <a href='pars_mine.graph.html#StringScanner_scan_until_20088680'>139</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.34% (19.25%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#111">Slim::Scanner#ws_until_first_char_re</a> [89 calls, <a href='pars_mine.graph.html#Slim__Scanner_ws_until_first_char_re_20088680'>89</a> total]
+</li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.62% (12.59%) Integer#times [89 calls, <a href='pars_mine.graph.html#Integer_times_20088680'>89</a> total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.05% (64.50%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#49">Slim::ScanningParser#last_push</a> [91 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_last_push_20088680'>179</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.26% (24.40%) Array#push [91 calls, <a href='pars_mine.graph.html#Array_push_20088680'>398</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.23% (21.62%) Array#last [91 calls, <a href='pars_mine.graph.html#Array_last_20088680'>1296</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.28% (2.14%) String#count [89 calls, <a href='pars_mine.graph.html#String_count_20088680'>156</a> total]
+</li></ul></li><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 4.22% (4.33%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/output_block.rb#4">Slim::OutputBlock#try</a> [84 calls, <a href='pars_mine.graph.html#Slim__OutputBlock_try_20088680'>84</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.95% (22.58%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#123">Slim::Scanner#shift_broken_lines</a> [24 calls, <a href='pars_mine.graph.html#Slim__Scanner_shift_broken_lines_20088680'>47</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.32% (33.51%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [24 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.20% (62.95%) StringScanner#scan [24 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.17% (17.81%) String#gsub [24 calls, <a href='pars_mine.graph.html#String_gsub_20088680'>85</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.09% (9.74%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#115">Slim::Scanner#lf_space_plus_re</a> [24 calls, <a href='pars_mine.graph.html#Slim__Scanner_lf_space_plus_re_20088680'>47</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.09% (9.51%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#119">Slim::Scanner#broken_line_re</a> [24 calls, <a href='pars_mine.graph.html#Slim__Scanner_broken_line_re_20088680'>47</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.74% (17.62%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#164">Slim::Scanner#check_next_indent</a> [24 calls, <a href='pars_mine.graph.html#Slim__Scanner_check_next_indent_20088680'>47</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.23% (31.32%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#33">Slim::Scanner#check_until</a> [24 calls, <a href='pars_mine.graph.html#Slim__Scanner_check_until_20088680'>47</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.12% (49.46%) StringScanner#check_until [24 calls, <a href='pars_mine.graph.html#StringScanner_check_until_20088680'>47</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.09% (12.30%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#107">Slim::Scanner#lfs_ind_char_re</a> [24 calls, <a href='pars_mine.graph.html#Slim__Scanner_lfs_ind_char_re_20088680'>47</a> total]
+</li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.01% (1.96%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#207">Slim::Scanner#current_indent</a> [1 calls, <a href='pars_mine.graph.html#Slim__Scanner_current_indent_20088680'>150</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.01% (57.11%) <a href="file:///home/guy/dev/slim/lib/slim/indenter.rb#20">Slim::Indenter#current_indent</a> [1 calls, <a href='pars_mine.graph.html#Slim__Indenter_current_indent_20088680'>1116</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.00% (34.97%) Array#last [1 calls, <a href='pars_mine.graph.html#Array_last_20088680'>1296</a> total]
+</li></ul></li></ul></li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.69% (16.38%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [84 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.27% (39.55%) StringScanner#scan [84 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.28% (6.72%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#49">Slim::ScanningParser#last_push</a> [24 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_last_push_20088680'>179</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.07% (23.09%) Array#push [24 calls, <a href='pars_mine.graph.html#Array_push_20088680'>398</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.06% (21.75%) Array#last [24 calls, <a href='pars_mine.graph.html#Array_last_20088680'>1296</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.19% (4.40%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#71">Slim::Scanner#m1</a> [24 calls, <a href='pars_mine.graph.html#Slim__Scanner_m1_20088680'>84</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.07% (35.83%) StringScanner#[] [24 calls, <a href='pars_mine.graph.html#StringScanner_[]_20088680'>167</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.18% (4.33%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#75">Slim::Scanner#m2</a> [24 calls, <a href='pars_mine.graph.html#Slim__Scanner_m2_20088680'>55</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.06% (35.55%) StringScanner#[] [24 calls, <a href='pars_mine.graph.html#StringScanner_[]_20088680'>167</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.13% (2.99%) String#empty? [48 calls, <a href='pars_mine.graph.html#String_empty__20088680'>182</a> total]
+</li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.03% (0.75%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#40">Slim::ScanningParser#push</a> [4 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_push_20088680'>45</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.01% (33.85%) Array#push [4 calls, <a href='pars_mine.graph.html#Array_push_20088680'>398</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.57% (1.61%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/ruby_code_block.rb#4">Slim::RubyCodeBlock#try</a> [86 calls, <a href='pars_mine.graph.html#Slim__RubyCodeBlock_try_20088680'>86</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.71% (45.46%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [86 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.30% (41.73%) StringScanner#scan [86 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.13% (8.40%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#164">Slim::Scanner#check_next_indent</a> [2 calls, <a href='pars_mine.graph.html#Slim__Scanner_check_next_indent_20088680'>47</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.04% (32.93%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#33">Slim::Scanner#check_until</a> [2 calls, <a href='pars_mine.graph.html#Slim__Scanner_check_until_20088680'>47</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.03% (70.90%) StringScanner#check_until [2 calls, <a href='pars_mine.graph.html#StringScanner_check_until_20088680'>47</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (8.00%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#107">Slim::Scanner#lfs_ind_char_re</a> [2 calls, <a href='pars_mine.graph.html#Slim__Scanner_lfs_ind_char_re_20088680'>47</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.11% (7.12%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#123">Slim::Scanner#shift_broken_lines</a> [2 calls, <a href='pars_mine.graph.html#Slim__Scanner_shift_broken_lines_20088680'>47</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.04% (35.67%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [2 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.03% (72.41%) StringScanner#scan [2 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.02% (19.92%) String#gsub [2 calls, <a href='pars_mine.graph.html#String_gsub_20088680'>85</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (10.22%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#115">Slim::Scanner#lf_space_plus_re</a> [2 calls, <a href='pars_mine.graph.html#Slim__Scanner_lf_space_plus_re_20088680'>47</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (9.56%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#119">Slim::Scanner#broken_line_re</a> [2 calls, <a href='pars_mine.graph.html#Slim__Scanner_broken_line_re_20088680'>47</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.03% (1.77%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#49">Slim::ScanningParser#last_push</a> [2 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_last_push_20088680'>179</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.01% (25.73%) Array#push [2 calls, <a href='pars_mine.graph.html#Array_push_20088680'>398</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (23.37%) Array#last [2 calls, <a href='pars_mine.graph.html#Array_last_20088680'>1296</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.02% (1.07%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#40">Slim::ScanningParser#push</a> [2 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_push_20088680'>45</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.01% (36.78%) Array#push [2 calls, <a href='pars_mine.graph.html#Array_push_20088680'>398</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.56% (1.60%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/text_block.rb#6">Slim::TextBlock#try</a> [87 calls, <a href='pars_mine.graph.html#Slim__TextBlock_try_20088680'>87</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.71% (45.55%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [87 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.28% (39.48%) StringScanner#scan [87 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.08% (5.42%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#132">Slim::Scanner#shift_indented_lines</a> [1 calls, <a href='pars_mine.graph.html#Slim__Scanner_shift_indented_lines_20088680'>2</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.04% (43.04%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [1 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.03% (80.94%) StringScanner#scan [1 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (6.07%) Fixnum#to_s [1 calls, <a href='pars_mine.graph.html#Fixnum_to_s_20088680'>2</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.06% (3.57%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/text_block.rb#41">Slim::TextBlock#remove_leading_spaces</a> [1 calls, <a href='pars_mine.graph.html#Slim__TextBlock_remove_leading_spaces_20088680'>1</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.01% (26.39%) String#partition [1 calls, <a href='pars_mine.graph.html#String_partition_20088680'>28</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (9.43%) Array#join [1 calls, <a href='pars_mine.graph.html#Array_join_20088680'>68</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.00% (7.24%) Kernel#nil? [1 calls, <a href='pars_mine.graph.html#Kernel_nil__20088680'>44</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.01% (0.89%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#49">Slim::ScanningParser#last_push</a> [1 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_last_push_20088680'>179</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.00% (27.48%) Array#push [1 calls, <a href='pars_mine.graph.html#Array_push_20088680'>398</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.00% (21.71%) Array#last [1 calls, <a href='pars_mine.graph.html#Array_last_20088680'>1296</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (0.76%) String#lines [1 calls, <a href='pars_mine.graph.html#String_lines_20088680'>2</a> total]
+</li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.01% (0.72%) Enumerator#each [1 calls, <a href='pars_mine.graph.html#Enumerator_each_20088680'>1</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.00% (40.52%) String#lines [1 calls, <a href='pars_mine.graph.html#String_lines_20088680'>2</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.01% (0.63%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#71">Slim::Scanner#m1</a> [1 calls, <a href='pars_mine.graph.html#Slim__Scanner_m1_20088680'>84</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.00% (36.70%) StringScanner#[] [1 calls, <a href='pars_mine.graph.html#StringScanner_[]_20088680'>167</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.01% (0.62%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#75">Slim::Scanner#m2</a> [1 calls, <a href='pars_mine.graph.html#Slim__Scanner_m2_20088680'>55</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.00% (36.26%) StringScanner#[] [1 calls, <a href='pars_mine.graph.html#StringScanner_[]_20088680'>167</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.01% (0.57%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#79">Slim::Scanner#m3</a> [1 calls, <a href='pars_mine.graph.html#Slim__Scanner_m3_20088680'>28</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.00% (37.03%) StringScanner#[] [1 calls, <a href='pars_mine.graph.html#StringScanner_[]_20088680'>167</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (0.36%) String#start_with? [1 calls, <a href='pars_mine.graph.html#String_start_with__20088680'>1</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.00% (0.27%) Array#push [1 calls, <a href='pars_mine.graph.html#Array_push_20088680'>398</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.00% (0.21%) String#empty? [1 calls, <a href='pars_mine.graph.html#String_empty__20088680'>182</a> total]
+</li></ul></li><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.41% (1.45%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/slim_comment.rb#5">Slim::SlimComment#try</a> [88 calls, <a href='pars_mine.graph.html#Slim__SlimComment_try_20088680'>88</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.69% (49.12%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [88 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.26% (38.21%) StringScanner#scan [88 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.07% (4.74%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#132">Slim::Scanner#shift_indented_lines</a> [1 calls, <a href='pars_mine.graph.html#Slim__Scanner_shift_indented_lines_20088680'>2</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.03% (42.73%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [1 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.02% (76.94%) StringScanner#scan [1 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.00% (5.14%) Fixnum#to_s [1 calls, <a href='pars_mine.graph.html#Fixnum_to_s_20088680'>2</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.04% (2.71%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#188">Slim::Scanner#line_end</a> [1 calls, <a href='pars_mine.graph.html#Slim__Scanner_line_end_20088680'>1</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.02% (58.73%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#136">Slim::Scanner#shift_lf</a> [1 calls, <a href='pars_mine.graph.html#Slim__Scanner_shift_lf_20088680'>1</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.01% (44.50%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [1 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.00% (41.26%) StringScanner#scan [1 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.00% (20.13%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#87">Slim::Scanner#lf_re</a> [1 calls, <a href='pars_mine.graph.html#Slim__Scanner_lf_re_20088680'>77</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.00% (9.58%) Kernel#nil? [1 calls, <a href='pars_mine.graph.html#Kernel_nil__20088680'>44</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.03% (2.14%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#144">Slim::Scanner#shift_text</a> [1 calls, <a href='pars_mine.graph.html#Slim__Scanner_shift_text_20088680'>1</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.01% (49.33%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [1 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.01% (59.95%) StringScanner#scan [1 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (19.69%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#95">Slim::Scanner#txt_re</a> [1 calls, <a href='pars_mine.graph.html#Slim__Scanner_txt_re_20088680'>1</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.01% (1.05%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#207">Slim::Scanner#current_indent</a> [1 calls, <a href='pars_mine.graph.html#Slim__Scanner_current_indent_20088680'>150</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.01% (57.02%) <a href="file:///home/guy/dev/slim/lib/slim/indenter.rb#20">Slim::Indenter#current_indent</a> [1 calls, <a href='pars_mine.graph.html#Slim__Indenter_current_indent_20088680'>1116</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.00% (34.80%) Array#last [1 calls, <a href='pars_mine.graph.html#Array_last_20088680'>1296</a> total]
+</li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.36% (1.40%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/html_conditional_comment.rb#5">Slim::HtmlConditionalComment#try</a> [89 calls, <a href='pars_mine.graph.html#Slim__HtmlConditionalComment_try_20088680'>89</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.76% (56.08%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [89 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.33% (43.15%) StringScanner#scan [89 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.01% (0.96%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#49">Slim::ScanningParser#last_push</a> [1 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_last_push_20088680'>179</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.00% (26.15%) Array#push [1 calls, <a href='pars_mine.graph.html#Array_push_20088680'>398</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.00% (21.20%) Array#last [1 calls, <a href='pars_mine.graph.html#Array_last_20088680'>1296</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.01% (0.69%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#71">Slim::Scanner#m1</a> [1 calls, <a href='pars_mine.graph.html#Slim__Scanner_m1_20088680'>84</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.00% (35.21%) StringScanner#[] [1 calls, <a href='pars_mine.graph.html#StringScanner_[]_20088680'>167</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.01% (0.66%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#40">Slim::ScanningParser#push</a> [1 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_push_20088680'>45</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.00% (33.50%) Array#push [1 calls, <a href='pars_mine.graph.html#Array_push_20088680'>398</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.30% (1.34%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/html_comment.rb#6">Slim::HtmlComment#try</a> [89 calls, <a href='pars_mine.graph.html#Slim__HtmlComment_try_20088680'>89</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.74% (56.94%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [89 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.31% (41.38%) StringScanner#scan [89 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.22% (1.25%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/inline_html.rb#5">Slim::InlineHtml#try</a> [86 calls, <a href='pars_mine.graph.html#Slim__InlineHtml_try_20088680'>86</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.67% (55.01%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [86 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.26% (38.03%) StringScanner#scan [86 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.20% (1.23%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/doctype.rb#5">Slim::Doctype#try</a> [60 calls, <a href='pars_mine.graph.html#Slim__Doctype_try_20088680'>60</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.77% (64.23%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [60 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.48% (62.13%) StringScanner#scan [60 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.02% (1.44%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#49">Slim::ScanningParser#last_push</a> [1 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_last_push_20088680'>179</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.00% (26.01%) Array#push [1 calls, <a href='pars_mine.graph.html#Array_push_20088680'>398</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.00% (18.63%) Array#last [1 calls, <a href='pars_mine.graph.html#Array_last_20088680'>1296</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.01% (1.22%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#71">Slim::Scanner#m1</a> [1 calls, <a href='pars_mine.graph.html#Slim__Scanner_m1_20088680'>84</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.01% (35.12%) StringScanner#[] [1 calls, <a href='pars_mine.graph.html#StringScanner_[]_20088680'>167</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (0.55%) String#strip [1 calls, <a href='pars_mine.graph.html#String_strip_20088680'>10</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.90% (0.92%) <a href="file:///home/guy/dev/slim/lib/slim/syntaxes/embedded_template.rb#5">Slim::EmbeddedTemplate#try</a> [60 calls, <a href='pars_mine.graph.html#Slim__EmbeddedTemplate_try_20088680'>60</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.51% (57.16%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#20">Slim::Scanner#scan</a> [60 calls, <a href='pars_mine.graph.html#Slim__Scanner_scan_20088680'>1243</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.22% (43.24%) StringScanner#scan [60 calls, <a href='pars_mine.graph.html#StringScanner_scan_20088680'>1243</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.32% (0.33%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#113">Slim::ScanningParser#monitor_raise</a> [89 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_monitor_raise_20088680'>89</a> total]
+</li></ul></li><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.67% (1.68%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#184">Slim::Scanner#no_more?</a> [90 calls, <a href='pars_mine.graph.html#Slim__Scanner_no_more__20088680'>92</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.68% (40.71%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#51">Slim::Scanner#eos?</a> [90 calls, <a href='pars_mine.graph.html#Slim__Scanner_eos__20088680'>92</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.24% (35.26%) StringScanner#eos? [90 calls, <a href='pars_mine.graph.html#StringScanner_eos__20088680'>92</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.40% (23.91%) StringScanner#exist? [90 calls, <a href='pars_mine.graph.html#StringScanner_exist__20088680'>92</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.05% (0.05%) Class#new [1 calls, <a href='pars_mine.graph.html#Class_new_20088680'>144</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.04% (77.49%) <a href="file:///home/guy/dev/slim/lib/slim/scanner.rb#8">Slim::Scanner#initialize</a> [1 calls, <a href='pars_mine.graph.html#Slim__Scanner_initialize_20088680'>3</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.02% (63.33%) Class#new [1 calls, <a href='pars_mine.graph.html#Class_new_20088680'>144</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.01% (38.44%) &lt;Class::StringScanner&gt;#allocate [1 calls, <a href='pars_mine.graph.html#_Class__StringScanner__allocate_20088680'>3</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (32.26%) StringScanner#initialize [1 calls, <a href='pars_mine.graph.html#StringScanner_initialize_20088680'>3</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.00% (7.33%) &lt;Class::BasicObject&gt;#allocate [1 calls, <a href='pars_mine.graph.html#_Class__BasicObject__allocate_20088680'>112</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.10% (0.10%) <a href="file:///home/guy/dev/slim/lib/slim/parser.rb#114">Slim::Parser#remove_bom</a> [1 calls, <a href='pars_mine.graph.html#Slim__Parser_remove_bom_20088680'>1</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.03% (28.90%) Class#new [1 calls, <a href='pars_mine.graph.html#Class_new_20088680'>144</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.02% (57.14%) Regexp#initialize [1 calls, <a href='pars_mine.graph.html#Regexp_initialize_20088680'>2</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.00% (15.23%) &lt;Class::Regexp&gt;#allocate [1 calls, <a href='pars_mine.graph.html#_Class__Regexp__allocate_20088680'>2</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (13.62%) String#encode [1 calls, <a href='pars_mine.graph.html#String_encode_20088680'>1</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (7.37%) String#gsub [1 calls, <a href='pars_mine.graph.html#String_gsub_20088680'>85</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (7.24%) Encoding#name [2 calls, <a href='pars_mine.graph.html#Encoding_name_20088680'>2</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (6.21%) String#encoding [2 calls, <a href='pars_mine.graph.html#String_encoding_20088680'>3</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.00% (3.39%) Kernel#respond_to? [1 calls, <a href='pars_mine.graph.html#Kernel_respond_to__20088680'>2</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.10% (0.10%) Class#new [1 calls, <a href='pars_mine.graph.html#Class_new_20088680'>144</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.09% (87.60%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#8">Slim::ScanningParser#initialize</a> [1 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_initialize_20088680'>1</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.06% (67.54%) Class#new [2 calls, <a href='pars_mine.graph.html#Class_new_20088680'>144</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.02% (36.05%) <a href="file:///home/guy/dev/slim/lib/slim/line_counter.rb#6">Slim::LineCounter#initialize</a> [1 calls, <a href='pars_mine.graph.html#Slim__LineCounter_initialize_20088680'>1</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.01% (28.05%) <a href="file:///home/guy/dev/slim/lib/slim/line_counter.rb#11">Slim::LineCounter#reset</a> [1 calls, <a href='pars_mine.graph.html#Slim__LineCounter_reset_20088680'>1</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.02% (27.18%) <a href="file:///home/guy/dev/slim/lib/slim/indenter.rb#3">Slim::Indenter#initialize</a> [1 calls, <a href='pars_mine.graph.html#Slim__Indenter_initialize_20088680'>1</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.01% (40.14%) <a href="file:///home/guy/dev/slim/lib/slim/indenter.rb#8">Slim::Indenter#reset</a> [1 calls, <a href='pars_mine.graph.html#Slim__Indenter_reset_20088680'>1</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (10.32%) &lt;Class::BasicObject&gt;#allocate [2 calls, <a href='pars_mine.graph.html#_Class__BasicObject__allocate_20088680'>112</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (7.59%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#57">Slim::ScanningParser#reset</a> [1 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_reset_20088680'>1</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.00% (4.23%) &lt;Class::BasicObject&gt;#allocate [1 calls, <a href='pars_mine.graph.html#_Class__BasicObject__allocate_20088680'>112</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.09% (0.09%) <a href="file:///home/guy/dev/slim/lib/slim/parser.rb#102">Slim::Parser#set_encoding</a> [1 calls, <a href='pars_mine.graph.html#Slim__Parser_set_encoding_20088680'>1</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.04% (40.19%) <a href="file:///home/guy/.rvm/gems/ruby-1.9.3-p327-fast/gems/temple-0.5.5/lib/temple/hash.rb#15">Temple::ImmutableHash#[]</a> [2 calls, <a href='pars_mine.graph.html#Temple__ImmutableHash_[]_20088680'>38</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.02% (64.50%) Array#each [2 calls, <a href='pars_mine.graph.html#Array_each_20088680'>54</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.01% (30.09%) Hash#include? [2 calls, <a href='pars_mine.graph.html#Hash_include__20088680'>38</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (7.23%) Kernel#respond_to? [1 calls, <a href='pars_mine.graph.html#Kernel_respond_to__20088680'>2</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (6.65%) String#valid_encoding? [1 calls, <a href='pars_mine.graph.html#String_valid_encoding__20088680'>1</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (6.39%) String#force_encoding [1 calls, <a href='pars_mine.graph.html#String_force_encoding_20088680'>1</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.00% (5.20%) String#encoding [1 calls, <a href='pars_mine.graph.html#String_encoding_20088680'>3</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.00% (4.39%) Kernel#frozen? [1 calls, <a href='pars_mine.graph.html#Kernel_frozen__20088680'>1</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.08% (0.08%) <a href="file:///home/guy/dev/slim/lib/slim/parser.rb#126">Slim::Parser#replace_tabs</a> [1 calls, <a href='pars_mine.graph.html#Slim__Parser_replace_tabs_20088680'>1</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.07% (89.60%) String#gsub [1 calls, <a href='pars_mine.graph.html#String_gsub_20088680'>85</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.03% (0.03%) <a href="file:///home/guy/dev/slim/lib/slim/scanning_parser.rb#61">Slim::ScanningParser#result</a> [1 calls, <a href='pars_mine.graph.html#Slim__ScanningParser_result_20088680'>1</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.00% (18.25%) Array#shift [1 calls, <a href='pars_mine.graph.html#Array_shift_20088680'>1</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.00% (15.74%) Array#empty? [1 calls, <a href='pars_mine.graph.html#Array_empty__20088680'>1</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.00% (13.58%) Array#last [1 calls, <a href='pars_mine.graph.html#Array_last_20088680'>1296</a> total]
+</li></ul></li></ul></li></ul></li></ul><div id="sentinel"></div></body></html>

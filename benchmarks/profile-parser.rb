@@ -3,9 +3,26 @@
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'), File.dirname(__FILE__))
 
 require 'slim'
+require 'ruby-prof'
 
-content = File.read(File.dirname(__FILE__) + '/view.slim')
-engine = Slim::Engine.new
+content = File.read(File.dirname(__FILE__) + '/view2.slim')
+# engine = Slim::Engine.new
 
-# 100.times { engine.call(content) }
-engine.call(content)
+# # 100.times { engine.call(content) }
+# engine.call(content)
+
+parser = Slim::Parser.new
+# parser.call(content)
+
+# PerfTools::CpuProfiler.start("~/tmp/slim_parser") do
+#   10.times { parser.call(content)}
+# end
+RubyProf.start
+
+parser.call(content)
+
+result = RubyProf.stop
+result.eliminate_methods!([/String#\[\]/, /Regexp#===/])
+
+printer = RubyProf::MultiPrinter.new(result)
+printer.print(:path => ".", :profile => "pars_mine")

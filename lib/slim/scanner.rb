@@ -3,13 +3,12 @@ require "strscan"
 module Slim
   class Scanner
 
-    attr_reader :parser, :indenter, :liner, :input
+    attr_reader :parser, :indenter, :input
 
     def initialize(src, parser)
       @parser = parser
       @input = StringScanner.new(src)
       @indenter = parser.indenter
-      @liner = parser.liner
     end
 
     def reset
@@ -19,7 +18,6 @@ module Slim
 
     def scan(re)
       @input.scan(re)
-      # liner.count @input.scan(re)
     end
 
     def scan_until(re)
@@ -41,7 +39,6 @@ module Slim
     def backup(n = 1)
       pos = position
       @input.pos = pos - n
-      # liner.uncount @input.rest[0,n]
     end
 
     def delegate(action, *args)
@@ -120,6 +117,26 @@ module Slim
       @re9 ||= %r{(.*[,\\]\r?\n)*.*(?=\r?\n)}
     end
 
+    def any_char_re
+      @re10 ||= %r~\S~
+    end
+
+    def delim_map
+      @h1 ||= Hash[?(,?),?[,?],?{,?}]
+    end
+
+    def delim_re
+      @re11 ||= Re.new( delim_map.keys.map{|k| Re.quote(k)}.join(?|) )
+    end
+
+    def just_spaces_re
+      @re13 ||= %r~ +\z~
+    end
+
+    def shift_delim
+      scan(delim_re)
+    end
+
     def shift_broken_lines
       bls = scan(broken_line_re)
       if bls
@@ -130,7 +147,7 @@ module Slim
     end
 
     def shift_indented_lines(indent)
-      scan(%r{((\r?\n)* {#{indent},}.*(\r?\n)+)*})
+      scan(%r~((\r?\n)* {#{indent},}.*(\r?\n)+)*~)
     end
 
     def shift_lf
@@ -163,7 +180,7 @@ module Slim
 
     def check_next_indent
       if f = check_until(lfs_ind_char_re)
-        f[/ +\z/].size
+        f[just_spaces_re].size
       else
         current_indent
       end
@@ -182,12 +199,11 @@ module Slim
     end
 
     def no_more?
-      eos? || !@input.exist?(/\S/)
+      eos? || !@input.exist?(any_char_re)
     end
 
     def line_end(interim = nil)
       if shift_lf
-        @liner.inc
         if interim.nil?
           @parser.build [:newline]
         elsif interim

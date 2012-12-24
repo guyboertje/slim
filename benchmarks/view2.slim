@@ -3,7 +3,7 @@ html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ogp.me/ns#"
   head
     title
       - if @title
-        == "#{@title}#{' · ' if @title}#{t('site.name')}"
+        == "#{@title}#{' . ' if @title}#{t('site.name')}"
       - else
         | some title
     meta charset='utf-8'
@@ -34,13 +34,13 @@ html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ogp.me/ns#"
     = render 'layouts/locales'
 
     = render 'layouts/header'
-    #main_content[data-controller-class=controller.class.name.downcase data-controller-name=controller.controller_name.downcase data-action=controller.action_name.downcase data-locale="#{I18n.locale}" data-user="#{current_user.to_json}"]
+    div#main_content[data-controller-class=controller.class.name.downcase data-controller-name=controller.controller_name.downcase data-action=controller.action_name.downcase data-locale="#{I18n.locale}" data-user="#{current_user.to_json}"]
       =yeild
-    #myModal.modal.fade
-    #footer
-      .container.footer
-        .content
-          .info
+    div#myModal.modal.fade
+    div#footer
+      div.container.footer
+        div.content
+          div.info
             h3= t('footer.titles.info')
             ul
               li= link_to t('footer.links.how_works'), guidelines_start_path, data: {toggle: 'modal', target: '#myModal'}, id: 'guidelines_modal'
@@ -49,7 +49,7 @@ html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ogp.me/ns#"
               li= link_to t('footer.links.policy'), privacy_path
               li= mail_to t('site.email.contact'), t('footer.links.contact'), :target => :_blank
 
-          .opendata
+          div.opendata
             h3= t('footer.titles.opendata')
             ul
               li
@@ -71,25 +71,25 @@ html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ogp.me/ns#"
                 h5= statistics.total_projects_online
                 p= t('footer.stats.active_projects')
 
-          .social
+          div.social
             h3= t('footer.titles.social')
-            .twitter
+            div.twitter
               = link_to "Follow @#{t('site.twitter')}", "http://twitter.com/#{t('site.twitter')}", :class => 'twitter-follow-button', :"data-button"=>"blue", :"data-text-color" => "#ffffff", :"data-link-color"=>"#fffffff", :"data-width" => "224px"
-            .facebook
+            div.facebook
               = render_facebook_like href: "http://facebook.com/catarse.me", width: "171"
             h3.newsletter= t('footer.titles.newsletter')
             = form_tag 'http://catarse.us5.list-manage.com/subscribe/post?u=ebfcd0d16dbb0001a0bea3639&amp;id=149c39709e', id: 'mailee-form', method: 'post' do
               = text_field_tag 'EMAIL', nil, placeholder: 'email@email.com', label: 'email'
               = submit_tag 'assinar'
-          .clearfix
-    #logos
-      .multide
+          div.clearfix
+    div#logos
+      div.multide
         = link_to '#' do
           = image_tag('catarse/multide_logo55x36.png', :target => '_blank', :alt => 'MULTIDE')
-      .comum
+      div.comum
         = link_to 'http://comum.cc', :target => '_blank' do
           = image_tag('catarse/comum_logo127x27.png', :alt => 'COMUM')
-      .power
+      div.power
         = link_to 'http://engage.is', :target => '_blank' do
           = image_tag('catarse/power_logo200x43.png', :alt => 'POWER TO THE CROWD')
 

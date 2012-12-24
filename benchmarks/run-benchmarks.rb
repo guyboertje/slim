@@ -10,6 +10,7 @@ require 'tilt'
 require 'erubis'
 require 'erb'
 require 'haml'
+require 'awesome_print'
 
 class SlimBenchmarks
   def initialize(slow, iterations)
@@ -109,13 +110,15 @@ class SlimBenchmarks
     # bench('(4) fast erubis') { Erubis::FastEruby.new(@erb_code).result(context_binding) }
     # bench('(4) temple erb')  { Temple::ERB::Template.new { @erb_code }.render(context) }
     # bench('(4) slim pretty') { Slim::Template.new(:pretty => true) { @slim_code }.render(context) }
-    bench('(4) slim ugly')   { Slim::Template.new { @slim_code }.render(context) }
+    bench('(4) slim ugly')   { Slim::Parser.new.call(@slim_code) }
+    # bench('(4) slim ugly')   { Slim::Template.new { @slim_code }.render(context) }
     # bench('(4) haml pretty') { Haml::Engine.new(@haml_code, :format => :html5).render(context) }
     # bench('(4) haml ugly')   { Haml::Engine.new(@haml_code, :format => :html5, :ugly => true).render(context) }
   end
 
   def run
     puts "#{@iterations} Iterations"
+    GC.disable
     Benchmark.bmbm do |x|
       @benches.each do |name, block|
         x.report name.to_s do
@@ -123,6 +126,7 @@ class SlimBenchmarks
         end
       end
     end
+    GC.enable
 #     puts "
 # (1) Compiled benchmark. Template is parsed before the benchmark and
 #     generated ruby code is compiled into a method.

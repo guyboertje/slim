@@ -110,7 +110,15 @@ module Slim
       i.succ
     end
 
+    def monitor_raise(i)
+      return if i < 113
+      syntax_error! "line loop limit reached" 
+    end
+
     def parse_tags
+
+      # ap ["parse_tags", scanner.rest]
+      
       done, i = false, 0
       tags, memo, attributes = [], {}, [:html, :attrs]
 
@@ -123,15 +131,15 @@ module Slim
                 TagNoContent.try( *tag_args(tags) ) ||
                 TagText.try( *tag_args(tags, memo) )
 
-        monitor_raise(i)
+        monitor_tag_raise(i)
 
       end until done
       done
     end
 
-    def monitor_raise(i)
-      return if i < 113
-      syntax_error! "loop limit reached" 
+    def monitor_tag_raise(i)
+      return if i < 13
+      syntax_error! "tag loop limit reached" 
     end
 
     def parse_attributes(tags, memo, attributes)
@@ -140,6 +148,7 @@ module Slim
 
       monitor = Progress.new(scanner)
       while monitor.progress? do
+        break if scanner.eol?
         TagSplatAttributes.try( *tag_args(attributes) ) ||
         TagQuotedAttributes.try_eagerly( *tag_args(attributes, @options) ) ||
         TagCodeAttributes.try( *tag_args(attributes, @options) ) ||
@@ -160,14 +169,20 @@ module Slim
     def syntax_error!(message)
       clear_temp_scanner
       err_pos = scanner.position
-      next_lf_pos = scanner.delegate('exist?', /\n/) || 2
+      next_lf_pos = scanner.delegate('exist?', /\n/) || 1
       context = scanner.delegate('string')[0, err_pos + next_lf_pos - 1]
       b, lf, line = context.rpartition(/\r?\n/)
+      line.strip!
       lineno = b.count(?\n) + 2
-      column = err_pos - b.size - lf.size - 1
+      column = err_pos - b.size - lf.size
       column = 1 if column < 1
+      column = line.size if column > line.size
 
-      raise Parser::SyntaxError.new(message, @options[:file], line, lineno, column)
+
+      # ap from: "syntax_error", rest: scanner.rest, err_pos: err_pos, next_lf_pos: next_lf_pos, context: context, b:b, lf:lf, line: line, lineno: lineno, column: column
+
+      raise Parser::SyntaxError.new(message, @options[:file], line.strip, lineno, column)
     end
   end
 end
+

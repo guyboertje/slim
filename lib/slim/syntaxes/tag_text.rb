@@ -5,7 +5,8 @@ module TagText
   def try(parser, scanner, tags, memo)
     pos = scanner.position
 
-    unless scanner.scan(%r{\s(.*)(?=\r?\n)})
+    # unless scanner.scan(%r{\s(.*)(?=\r?\n)})
+    unless scanner.scan(%r~\s(.*)~)
       scanner.scan_until(/(?=\r?\n)/)
       return true
     end

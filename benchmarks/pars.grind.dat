@@ -1,0 +1,502 @@
+events: process_time
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=String#to_s
+0 5
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=<Class::Regexp>#escape
+0 20
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=NilClass#to_s
+0 8
+
+fl=/home/guy/dev/slim/lib/slim/parser.rb
+fn=Slim::Parser#parse_ruby_code
+448 3092
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=NilClass#to_s
+calls=6 452
+452 8
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=<Class::Regexp>#escape
+calls=9 452
+452 13
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#empty?
+calls=361 465
+465 425
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#=~
+calls=213 465
+465 399
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#slice!
+calls=352 465
+465 664
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#to_s
+calls=3 452
+452 5
+
+fl=/home/guy/dev/slim/lib/slim/parser.rb
+fn=Slim::Parser#parse_comment_block
+275 11
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#empty?
+calls=1 276
+276 2
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#first
+calls=2 276
+276 3
+cfl=/home/guy/dev/slim/lib/slim/parser.rb
+cfn=Slim::Parser#get_indent
+calls=1 276
+276 5
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#last
+calls=1 276
+276 2
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=Array#first
+0 8
+
+fl=/home/guy/dev/slim/lib/slim/parser.rb
+fn=Slim::Parser#parse_text_block
+282 17
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#empty?
+calls=1 284
+284 1
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#empty?
+calls=1 292
+292 2
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#first
+calls=2 298
+298 5
+cfl=/home/guy/dev/slim/lib/slim/parser.rb
+cfn=Slim::Parser#get_indent
+calls=1 298
+298 6
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#last
+calls=1 299
+299 1
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=Array#pop
+0 124
+
+fl=/home/guy/dev/slim/lib/slim/parser.rb
+fn=Slim::Parser#parse_broken_line
+328 192
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#strip
+calls=26 329
+329 40
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#strip
+calls=21 329
+329 33
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=String#slice!
+0 1368
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=String#empty?
+0 955
+
+fl=/home/guy/dev/slim/lib/slim/parser.rb
+fn=Slim::Parser#parse_quoted_attribute
+471 2706
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#empty?
+calls=363 485
+485 415
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#slice!
+calls=370 490
+490 696
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=String#=~
+0 717
+
+fl=/home/guy/dev/slim/lib/slim/parser.rb
+fn=Slim::Parser#parse_attributes
+373 1525
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#=~
+calls=146 386
+386 318
+cfl=/home/guy/.rvm/gems/ruby-1.9.3-p327-fast/gems/temple-0.5.5/lib/temple/hash.rb
+cfn=Temple::ImmutableHash#[]
+calls=27 407
+407 167
+cfl=/home/guy/dev/slim/lib/slim/parser.rb
+cfn=Slim::Parser#parse_quoted_attribute
+calls=27 407
+407 3817
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#empty?
+calls=18 418
+418 25
+cfl=/home/guy/dev/slim/lib/slim/parser.rb
+cfn=Slim::Parser#parse_ruby_code
+calls=9 413
+413 4605
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#slice!
+calls=2 388
+388 5
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=<Class::Regexp>#escape
+calls=4 393
+393 7
+
+fl=/home/guy/dev/slim/lib/slim/parser.rb
+fn=Slim::Parser#parse_tag
+337 961
+cfl=/home/guy/dev/slim/lib/slim/parser.rb
+cfn=Slim::Parser#parse_attributes
+calls=59 338
+338 10468
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#last
+calls=59 339
+339 66
+cfl=/home/guy/dev/slim/lib/slim/parser.rb
+cfn=Slim::Parser#parse_broken_line
+calls=21 357
+357 117
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#empty?
+calls=21 358
+358 26
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=String#strip
+0 76
+
+fl=/home/guy/dev/slim/lib/slim/parser.rb
+fn=Slim::Parser#parse_line_indicators
+219 2631
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#last
+calls=119 272
+272 164
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#strip
+calls=1 264
+264 3
+cfl=/home/guy/dev/slim/lib/slim/parser.rb
+cfn=Slim::Parser#parse_tag
+calls=59 268
+268 11638
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#slice!
+calls=2 246
+246 4
+cfl=/home/guy/dev/slim/lib/slim/parser.rb
+cfn=Slim::Parser#parse_broken_line
+calls=26 256
+256 148
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#empty?
+calls=48 257
+257 62
+cfl=/home/guy/dev/slim/lib/slim/parser.rb
+cfn=Slim::Parser#parse_text_block
+calls=1 235
+235 33
+cfl=/home/guy/dev/slim/lib/slim/parser.rb
+cfn=Slim::Parser#parse_comment_block
+calls=1 231
+231 23
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=Array#last
+0 491
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=String#lstrip!
+0 147
+
+fl=/home/guy/dev/slim/lib/slim/parser.rb
+fn=Slim::Parser#get_indent
+167 425
+
+fl=/home/guy/dev/slim/lib/slim/parser.rb
+fn=Slim::Parser#parse_line
+173 1058
+cfl=/home/guy/dev/slim/lib/slim/parser.rb
+cfn=Slim::Parser#get_indent
+calls=89 179
+179 414
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#lstrip!
+calls=89 182
+182 147
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#last
+calls=235 188
+188 258
+cfl=/home/guy/dev/slim/lib/slim/parser.rb
+cfn=Slim::Parser#parse_line_indicators
+calls=89 216
+216 14706
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#pop
+calls=107 204
+204 124
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=String#initialize_copy
+0 120
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=Kernel#initialize_dup
+0 153
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#initialize_copy
+calls=94 163
+163 120
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=<Class::String>#allocate
+0 107
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=Kernel#dup
+0 218
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=<Class::String>#allocate
+calls=94 163
+163 107
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Kernel#initialize_dup
+calls=94 163
+163 273
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=Array#shift
+0 114
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=Array#empty?
+0 107
+
+fl=/home/guy/dev/slim/lib/slim/parser.rb
+fn=Slim::Parser#next_line
+157 515
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#empty?
+calls=95 158
+158 104
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#shift
+calls=94 161
+161 114
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Kernel#dup
+calls=94 163
+163 599
+
+fl=/home/guy/dev/slim/lib/slim/parser.rb
+fn=Slim::Parser#reset
+130 11
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=String#split
+0 108
+
+fl=/home/guy/dev/slim/lib/slim/parser.rb
+fn=Slim::Parser#replace_tabs
+126 3
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#gsub
+calls=1 127
+127 30
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=String#gsub
+0 36
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=Regexp#initialize
+0 5
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=<Class::Regexp>#allocate
+0 2
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=Class#new
+0 3
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=<Class::Regexp>#allocate
+calls=1 117
+117 2
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Regexp#initialize
+calls=1 117
+117 5
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=String#encode
+0 6
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=Encoding#name
+0 3
+
+fl=/home/guy/dev/slim/lib/slim/parser.rb
+fn=Slim::Parser#remove_bom
+114 15
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Kernel#respond_to?
+calls=1 115
+115 2
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#encoding
+calls=2 117
+117 3
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Encoding#name
+calls=2 117
+117 3
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#encode
+calls=1 117
+117 6
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Class#new
+calls=1 117
+117 10
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#gsub
+calls=1 117
+117 6
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=String#valid_encoding?
+0 2
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=String#force_encoding
+0 2
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=Kernel#frozen?
+0 2
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=String#encoding
+0 5
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=Kernel#respond_to?
+0 4
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=Hash#include?
+0 36
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=Array#each
+0 81
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Hash#include?
+calls=2 16
+16 3
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Hash#include?
+calls=27 16
+16 32
+
+fl=/home/guy/.rvm/gems/ruby-1.9.3-p327-fast/gems/temple-0.5.5/lib/temple/hash.rb
+fn=Temple::ImmutableHash#[]
+15 66
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#each
+calls=2 16
+16 10
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#each
+calls=27 16
+16 106
+
+fl=/home/guy/dev/slim/lib/slim/parser.rb
+fn=Slim::Parser#set_encoding
+102 11
+cfl=/home/guy/.rvm/gems/ruby-1.9.3-p327-fast/gems/temple-0.5.5/lib/temple/hash.rb
+cfn=Temple::ImmutableHash#[]
+calls=2 106
+106 15
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Kernel#respond_to?
+calls=1 103
+103 3
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#encoding
+calls=1 104
+104 2
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Kernel#frozen?
+calls=1 105
+105 2
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#force_encoding
+calls=1 106
+106 2
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#valid_encoding?
+calls=1 108
+108 2
+
+fl=/home/guy/dev/slim/lib/slim/parser.rb
+fn=Slim::Parser#call
+71 132
+cfl=/home/guy/dev/slim/lib/slim/parser.rb
+cfn=Slim::Parser#set_encoding
+calls=1 72
+72 38
+cfl=/home/guy/dev/slim/lib/slim/parser.rb
+cfn=Slim::Parser#remove_bom
+calls=1 72
+72 44
+cfl=/home/guy/dev/slim/lib/slim/parser.rb
+cfn=Slim::Parser#replace_tabs
+calls=1 72
+72 34
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#split
+calls=1 74
+74 108
+cfl=/home/guy/dev/slim/lib/slim/parser.rb
+cfn=Slim::Parser#reset
+calls=2 76
+76 11
+cfl=/home/guy/dev/slim/lib/slim/parser.rb
+cfn=Slim::Parser#next_line
+calls=95 75
+75 1332
+cfl=/home/guy/dev/slim/lib/slim/parser.rb
+cfn=Slim::Parser#parse_line
+calls=94 75
+75 16707
+
+fl=/home/guy/dev/slim/benchmarks/profile-parser.rb
+fn=Global#[No method]
+22 35
+cfl=/home/guy/dev/slim/lib/slim/parser.rb
+cfn=Slim::Parser#call
+calls=1 22
+22 18406
+

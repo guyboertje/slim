@@ -1,0 +1,618 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>ruby-prof call tree</title>
+<style type="text/css">
+<!--
+body {
+    font-size:70%;
+    padding:0px;
+    margin:5px;
+    margin-right:0px;
+    margin-left:0px;
+    background: #ffffff;
+}
+ul {
+    margin-left:0px;
+    margin-top:0px;
+    margin-bottom:0px;
+    padding-left:0px;
+    list-style-type:none;
+}
+li {
+    margin-left:11px;
+    padding:0px;
+    white-space:nowrap;
+    border-top:1px solid #cccccc;
+    border-left:1px solid #cccccc;
+    border-bottom:none;
+}
+.thread {
+    margin-left:11px;
+    background:#708090;
+    padding-top:3px;
+    padding-left:12px;
+    padding-bottom:2px;
+    border-left:1px solid #CCCCCC;
+    border-top:1px solid #CCCCCC;
+    font-weight:bold;
+}
+.hidden {
+    display:none;
+    width:0px;
+    height:0px;
+    margin:0px;
+    padding:0px;
+    border-style:none;
+}
+.color01 { background:#adbdeb }
+.color05 { background:#9daddb }
+.color0 { background:#8d9dcb }
+.color1 { background:#89bccb }
+.color2 { background:#56e3e7 }
+.color3 { background:#32cd70 }
+.color4 { background:#a3d53c }
+.color5 { background:#c4cb34 }
+.color6 { background:#dcb66d }
+.color7 { background:#cda59e }
+.color8 { background:#be9d9c }
+.color9 { background:#cf947a }
+#commands {
+    font-size:10pt;
+    padding:10px;
+    margin-left:11px;
+    margin-bottom:0px;
+    margin-top:0px;
+    background:#708090;
+    border-top:1px solid #cccccc;
+    border-left:1px solid #cccccc;
+    border-bottom:none;
+}
+#titlebar {
+    font-size:10pt;
+    padding:10px;
+    margin-left:11px;
+    margin-bottom:0px;
+    margin-top:10px;
+    background:#8090a0;
+    border-top:1px solid #cccccc;
+    border-left:1px solid #cccccc;
+    border-bottom:none;
+}
+#help {
+    font-size:10pt;
+    padding:10px;
+    margin-left:11px;
+    margin-bottom:0px;
+    margin-top:0px;
+    background:#8090a0;
+    display:none;
+    border-top:1px solid #cccccc;
+    border-left:1px solid #cccccc;
+    border-bottom:none;
+}
+#sentinel {
+    height: 400px;
+    margin-left:11px;
+    background:#8090a0;
+    border-top:1px solid #cccccc;
+    border-left:1px solid #cccccc;
+    border-bottom:none;
+ }
+input { margin-left:10px; }
+-->
+</style>
+<script type="text/javascript">
+/*
+   Copyright (C) 2005,2009  Stefan Kaes
+   skaes@railsexpress.de
+*/
+
+function rootNode() {
+  return currentThread;
+}
+
+function hideUL(node) {
+  var lis = node.childNodes
+  var l = lis.length;
+  for (var i=0; i < l ; i++ ) {
+    hideLI(lis[i]);
+  }
+}
+
+function showUL(node) {
+  var lis = node.childNodes;
+  var l = lis.length;
+  for (var i=0; i < l ; i++ ) {
+    showLI(lis[i]);
+  }
+}
+
+function findUlChild(li){
+  var ul = li.childNodes[2];
+  while (ul && ul.nodeName != "UL") {
+    ul = ul.nextSibling;
+  }
+  return ul;
+}
+
+function isLeafNode(li) {
+  var img = li.firstChild;
+  return (img.src.indexOf('empty.png') > -1);
+}
+
+function hideLI(li) {
+  if (isLeafNode(li))
+    return;
+
+  var img = li.firstChild;
+  img.src = 'plus.png';
+
+  var ul = findUlChild(li);
+  if (ul) {
+    ul.style.display = 'none';
+    hideUL(ul);
+  }
+}
+
+function showLI(li) {
+  if (isLeafNode(li))
+    return;
+
+  var img = li.firstChild;
+  img.src = 'minus.png';
+
+  var ul = findUlChild(li);
+  if (ul) {
+    ul.style.display = 'block';
+    showUL(ul);
+  }
+}
+
+function toggleLI(li) {
+  var img = li.firstChild;
+  if (img.src.indexOf("minus.png")>-1)
+    hideLI(li);
+  else {
+    if (img.src.indexOf("plus.png")>-1)
+      showLI(li);
+  }
+}
+
+function aboveThreshold(text, threshold) {
+  var match = text.match(/\d+[.,]\d+/);
+  return (match && parseFloat(match[0].replace(/,/, '.'))>=threshold);
+}
+
+function setThresholdLI(li, threshold) {
+  var img = li.firstChild;
+  var text = img.nextSibling;
+  var ul = findUlChild(li);
+
+  var visible = aboveThreshold(text.nodeValue, threshold) ? 1 : 0;
+
+  var count = 0;
+  if (ul) {
+    count = setThresholdUL(ul, threshold);
+  }
+  if (count>0) {
+    img.src = 'minus.png';
+  }
+  else {
+    img.src = 'empty.png';
+  }
+  if (visible) {
+    li.style.display = 'block'
+  }
+  else {
+    li.style.display = 'none'
+  }
+  return visible;
+}
+
+function setThresholdUL(node, threshold) {
+  var lis = node.childNodes;
+  var l = lis.length;
+
+  var count = 0;
+  for ( var i = 0; i < l ; i++ ) {
+    count = count + setThresholdLI(lis[i], threshold);
+  }
+
+  var visible = (count > 0) ? 1 : 0;
+  if (visible) {
+    node.style.display = 'block';
+  }
+  else {
+    node.style.display = 'none';
+  }
+  return visible;
+}
+
+function toggleChildren(img, event) {
+  event.cancelBubble=true;
+
+  if (img.src.indexOf('empty.png') > -1)
+    return;
+
+  var minus = (img.src.indexOf('minus.png') > -1);
+
+  if (minus) {
+    img.src = 'plus.png';
+  }
+  else
+    img.src = 'minus.png';
+
+  var li = img.parentNode;
+  var ul = findUlChild(li);
+  if (ul) {
+    if (minus)
+      ul.style.display = 'none';
+    else
+      ul.style.display = 'block';
+  }
+  if (minus)
+    moveSelectionIfNecessary(li);
+}
+
+function showChildren(li) {
+  var img = li.firstChild;
+  if (img.src.indexOf('empty.png') > -1)
+    return;
+  img.src = 'minus.png';
+
+  var ul = findUlChild(li);
+  if (ul) {
+    ul.style.display = 'block';
+  }
+}
+
+function setThreshold() {
+ var tv = document.getElementById("threshold").value;
+ if (tv.match(/[0-9]+([.,][0-9]+)?/)) {
+   var f = parseFloat(tv.replace(/,/, '.'));
+   var threads = document.getElementsByName("thread");
+   var l = threads.length;
+   for ( var i = 0; i < l ; i++ ) {
+     setThresholdUL(threads[i], f);
+   }
+   var p = selectedNode;
+   while (p && p.style.display=='none')
+     p=p.parentNode.parentNode;
+   if (p && p.nodeName=="LI")
+    selectNode(p);
+ }
+ else {
+   alert("Please specify a decimal number as threshold value!");
+ }
+}
+
+function collapseAll(event) {
+  event.cancelBubble=true;
+  var threads = document.getElementsByName("thread");
+  var l = threads.length;
+  for ( var i = 0; i < l ; i++ ) {
+    hideUL(threads[i]);
+  }
+  selectNode(rootNode(), null);
+}
+
+function expandAll(event) {
+  event.cancelBubble=true;
+  var threads = document.getElementsByName("thread");
+  var l = threads.length;
+  for ( var i = 0; i < l ; i++ ) {
+    showUL(threads[i]);
+  }
+}
+
+function toggleHelp(node) {
+  var help = document.getElementById("help");
+  if (node.value == "Show Help") {
+    node.value = "Hide Help";
+    help.style.display = 'block';
+  }
+  else {
+    node.value = "Show Help";
+    help.style.display = 'none';
+  }
+}
+
+var selectedNode = null;
+var selectedColor = null;
+var selectedThread = null;
+
+function descendentOf(a,b){
+  while (a!=b && b!=null)
+    b=b.parentNode;
+  return (a==b);
+}
+
+function moveSelectionIfNecessary(node){
+  if (descendentOf(node, selectedNode))
+    selectNode(node, null);
+}
+
+function selectNode(node, event) {
+  if (event) {
+    event.cancelBubble = true;
+    thread = findThread(node);
+    selectThread(thread);
+  }
+  if (selectedNode) {
+    selectedNode.style.background = selectedColor;
+  }
+  selectedNode = node;
+  selectedColor = node.style.background;
+  selectedNode.style.background = "red";
+  selectedNode.scrollIntoView();
+  window.scrollBy(0,-400);
+}
+
+function moveUp(){
+  var p = selectedNode.previousSibling;
+  while (p && p.style.display == 'none')
+    p = p.previousSibling;
+  if (p && p.nodeName == "LI") {
+    selectNode(p, null);
+  }
+}
+
+function moveDown(){
+  var p = selectedNode.nextSibling;
+  while (p && p.style.display == 'none')
+    p = p.nextSibling;
+  if (p && p.nodeName == "LI") {
+    selectNode(p, null);
+  }
+}
+
+function moveLeft(){
+  var p = selectedNode.parentNode.parentNode;
+  if (p && p.nodeName=="LI") {
+    selectNode(p, null);
+  }
+}
+
+function moveRight(){
+  if (!isLeafNode(selectedNode)) {
+    showChildren(selectedNode);
+    var ul = findUlChild(selectedNode);
+    if (ul) {
+      selectNode(ul.firstChild, null);
+    }
+  }
+}
+
+function moveForward(){
+  if (isLeafNode(selectedNode)) {
+    var p = selectedNode;
+    while ((p.nextSibling == null || p.nextSibling.style.display=='none') && p.nodeName=="LI") {
+      p = p.parentNode.parentNode;
+    }
+    if (p.nodeName=="LI")
+      selectNode(p.nextSibling, null);
+  }
+  else {
+    moveRight();
+  }
+}
+
+function isExpandedNode(li){
+  var img = li.firstChild;
+  return(img.src.indexOf('minus.png')>-1);
+}
+
+function moveBackward(){
+  var p = selectedNode;
+  var q = p.previousSibling;
+  while (q != null && q.style.display=='none')
+    q = q.previousSibling;
+  if (q == null) {
+    p = p.parentNode.parentNode;
+  } else {
+    while (!isLeafNode(q) && isExpandedNode(q)) {
+      q = findUlChild(q).lastChild;
+      while (q.style.display=='none')
+        q = q.previousSibling;
+    }
+    p = q;
+  }
+  if (p.nodeName=="LI")
+    selectNode(p, null);
+}
+
+function moveHome() {
+  selectNode(currentThread);
+}
+
+var currentThreadIndex = null;
+
+function findThread(node){
+  while (node && node.parentNode.nodeName!="BODY") {
+    node = node.parentNode;
+  }
+  return node.firstChild;
+}
+
+function selectThread(node){
+  var threads = document.getElementsByName("thread");
+  currentThread = node;
+  for (var i=0; i<threads.length; i++) {
+    if (threads[i]==currentThread.parentNode)
+      currentThreadIndex = i;
+  }
+}
+
+function nextThread(){
+  var threads = document.getElementsByName("thread");
+  if (currentThreadIndex==threads.length-1)
+    currentThreadIndex = 0;
+  else
+    currentThreadIndex += 1
+  currentThread = threads[currentThreadIndex].firstChild;
+  selectNode(currentThread, null);
+}
+
+function previousThread(){
+  var threads = document.getElementsByName("thread");
+  if (currentThreadIndex==0)
+    currentThreadIndex = threads.length-1;
+  else
+    currentThreadIndex -= 1
+  currentThread = threads[currentThreadIndex].firstChild;
+  selectNode(currentThread, null);
+}
+
+function switchThread(node, event){
+  event.cancelBubble = true;
+  selectThread(node.nextSibling.firstChild);
+  selectNode(currentThread, null);
+}
+
+function handleKeyEvent(event){
+  var code = event.charCode ? event.charCode : event.keyCode;
+  var str = String.fromCharCode(code);
+  switch (str) {
+    case "a": moveLeft();  break;
+    case "s": moveDown();  break;
+    case "d": moveRight(); break;
+    case "w": moveUp();    break;
+    case "f": moveForward(); break;
+    case "b": moveBackward(); break;
+    case "x": toggleChildren(selectedNode.firstChild, event); break;
+    case "*": toggleLI(selectedNode); break;
+    case "n": nextThread(); break;
+    case "h": moveHome(); break;
+    case "p": previousThread(); break;
+  }
+}
+document.onkeypress=function(event){ handleKeyEvent(event) };
+
+window.onload=function(){
+  var images = document.getElementsByTagName("img");
+  for (var i=0; i<images.length; i++) {
+    var img = images[i];
+    if (img.className == "toggle") {
+      img.onclick = function(event){ toggleChildren(this, event); };
+    }
+  }
+  var divs = document.getElementsByTagName("div");
+  for (i=0; i<divs.length; i++) {
+    var div = divs[i];
+    if (div.className == "thread")
+      div.onclick = function(event){ switchThread(this, event) };
+  }
+  var lis = document.getElementsByTagName("li");
+  for (var i=0; i<lis.length; i++) {
+    lis[i].onclick = function(event){ selectNode(this, event); };
+  }
+  var threads = document.getElementsByName("thread");
+  currentThreadIndex = 0;
+  currentThread = threads[0].firstChild;
+  selectNode(currentThread, null);
+}
+</script>
+</head><body>
+<div id="titlebar">
+Call tree for application <b>./profile-parser.rb </b><br/>
+Generated on 2012-12-22 16:13:43 +0000 with options {}<br/>
+</div>
+<div id="commands">
+<span style="font-size: 11pt; font-weight: bold;">Threshold:</span>
+<input value="1.0" size="3" id="threshold" type="text">
+<input value="Apply" onclick="setThreshold();" type="submit">
+<input value="Expand All" onclick="expandAll(event);" type="submit">
+<input value="Collapse All" onclick="collapseAll(event);" type="submit">
+<input value="Show Help" onclick="toggleHelp(this);" type="submit">
+</div>
+<div style="display: none;" id="help">
+<img src="empty.png"> Enter a decimal value <i>d</i> into the threshold field and click "Apply"
+to hide all nodes marked with time values lower than <i>d</i>.<br>
+<img src="empty.png"> Click on "Expand All" for full tree expansion.<br>
+<img src="empty.png"> Click on "Collapse All" to show only top level nodes.<br>
+<img src="empty.png"> Use a, s, d, w as in Quake or Urban Terror to navigate the tree.<br>
+<img src="empty.png"> Use f and b to navigate the tree in preorder forward and backwards.<br>
+<img src="empty.png"> Use x to toggle visibility of a subtree.<br>
+<img src="empty.png"> Use * to expand/collapse a whole subtree.<br>
+<img src="empty.png"> Use h to navigate to thread root.<br>
+<img src="empty.png"> Use n and p to navigate between threads.<br>
+<img src="empty.png"> Click on background to move focus to a subtree.<br>
+</div>
+<div class="thread">Thread: 6221680 (100.00% ~ 0.018441740999999998)</div><ul name="thread"><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 100.00% (100.00%) <a href="file:///home/guy/dev/slim/benchmarks/profile-parser.rb#22">Global#[No method]</a> [1 calls, <a href='pars.graph.html#Global_[No method]_6221680'>1</a> total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 99.81% (99.81%) <a href="file:///home/guy/dev/slim/lib/slim/parser.rb#71">Slim::Parser#call</a> [1 calls, <a href='pars.graph.html#Slim__Parser_call_6221680'>1</a> total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 90.60% (90.77%) <a href="file:///home/guy/dev/slim/lib/slim/parser.rb#173">Slim::Parser#parse_line</a> [94 calls, <a href='pars.graph.html#Slim__Parser_parse_line_6221680'>94</a> total]
+<ul><li class="color7" style="display:block"><img class="toggle" src="minus.png"> 79.74% (88.02%) <a href="file:///home/guy/dev/slim/lib/slim/parser.rb#219">Slim::Parser#parse_line_indicators</a> [89 calls, <a href='pars.graph.html#Slim__Parser_parse_line_indicators_6221680'>89</a> total]
+<ul><li class="color6" style="display:block"><img class="toggle" src="minus.png"> 63.11% (79.14%) <a href="file:///home/guy/dev/slim/lib/slim/parser.rb#337">Slim::Parser#parse_tag</a> [59 calls, <a href='pars.graph.html#Slim__Parser_parse_tag_6221680'>59</a> total]
+<ul><li class="color5" style="display:block"><img class="toggle" src="minus.png"> 56.76% (89.95%) <a href="file:///home/guy/dev/slim/lib/slim/parser.rb#373">Slim::Parser#parse_attributes</a> [59 calls, <a href='pars.graph.html#Slim__Parser_parse_attributes_6221680'>59</a> total]
+<ul><li class="color2" style="display:block"><img class="toggle" src="minus.png"> 24.97% (43.99%) <a href="file:///home/guy/dev/slim/lib/slim/parser.rb#448">Slim::Parser#parse_ruby_code</a> [9 calls, <a href='pars.graph.html#Slim__Parser_parse_ruby_code_6221680'>9</a> total]
+<ul><li class="color01" style="display:block"><img src="empty.png"> 3.60% (14.41%) String#slice! [352 calls, <a href='pars.graph.html#String_slice!_6221680'>726</a> total]
+</li><li class="color01" style="display:block"><img src="empty.png"> 2.31% (9.23%) String#empty? [361 calls, <a href='pars.graph.html#String_empty__6221680'>812</a> total]
+</li><li class="color01" style="display:block"><img src="empty.png"> 2.17% (8.67%) String#=~ [213 calls, <a href='pars.graph.html#String__~_6221680'>359</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.07% (0.28%) &lt;Class::Regexp&gt;#escape [9 calls, <a href='pars.graph.html#_Class__Regexp__escape_6221680'>13</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.04% (0.17%) NilClass#to_s [6 calls, <a href='pars.graph.html#NilClass_to_s_6221680'>6</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.02% (0.10%) String#to_s [3 calls, <a href='pars.graph.html#String_to_s_6221680'>3</a> total]
+</li></ul></li><li class="color2" style="display:block"><img class="toggle" src="minus.png"> 20.70% (36.46%) <a href="file:///home/guy/dev/slim/lib/slim/parser.rb#471">Slim::Parser#parse_quoted_attribute</a> [27 calls, <a href='pars.graph.html#Slim__Parser_parse_quoted_attribute_6221680'>27</a> total]
+<ul><li class="color01" style="display:block"><img src="empty.png"> 3.77% (18.23%) String#slice! [370 calls, <a href='pars.graph.html#String_slice!_6221680'>726</a> total]
+</li><li class="color01" style="display:block"><img src="empty.png"> 2.25% (10.87%) String#empty? [363 calls, <a href='pars.graph.html#String_empty__6221680'>812</a> total]
+</li></ul></li><li class="color01" style="display:block"><img src="empty.png"> 1.72% (3.04%) String#=~ [146 calls, <a href='pars.graph.html#String__~_6221680'>359</a> total]
+</li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.90% (1.59%) <a href="file:///home/guy/.rvm/gems/ruby-1.9.3-p327-fast/gems/temple-0.5.5/lib/temple/hash.rb#15">Temple::ImmutableHash#[]</a> [27 calls, <a href='pars.graph.html#Temple__ImmutableHash_[]_6221680'>29</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.57% (63.65%) Array#each [27 calls, <a href='pars.graph.html#Array_each_6221680'>29</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.18% (30.60%) Hash#include? [27 calls, <a href='pars.graph.html#Hash_include__6221680'>29</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.14% (0.24%) String#empty? [18 calls, <a href='pars.graph.html#String_empty__6221680'>812</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.04% (0.06%) &lt;Class::Regexp&gt;#escape [4 calls, <a href='pars.graph.html#_Class__Regexp__escape_6221680'>13</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.02% (0.04%) String#slice! [2 calls, <a href='pars.graph.html#String_slice!_6221680'>726</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.63% (1.01%) <a href="file:///home/guy/dev/slim/lib/slim/parser.rb#328">Slim::Parser#parse_broken_line</a> [21 calls, <a href='pars.graph.html#Slim__Parser_parse_broken_line_6221680'>47</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.18% (28.44%) String#strip [21 calls, <a href='pars.graph.html#String_strip_6221680'>48</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.36% (0.56%) Array#last [59 calls, <a href='pars.graph.html#Array_last_6221680'>415</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.14% (0.22%) String#empty? [21 calls, <a href='pars.graph.html#String_empty__6221680'>812</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.89% (1.11%) Array#last [119 calls, <a href='pars.graph.html#Array_last_6221680'>415</a> total]
+</li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.80% (1.00%) <a href="file:///home/guy/dev/slim/lib/slim/parser.rb#328">Slim::Parser#parse_broken_line</a> [26 calls, <a href='pars.graph.html#Slim__Parser_parse_broken_line_6221680'>47</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.21% (26.79%) String#strip [26 calls, <a href='pars.graph.html#String_strip_6221680'>48</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.34% (0.42%) String#empty? [48 calls, <a href='pars.graph.html#String_empty__6221680'>812</a> total]
+</li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.18% (0.22%) <a href="file:///home/guy/dev/slim/lib/slim/parser.rb#282">Slim::Parser#parse_text_block</a> [1 calls, <a href='pars.graph.html#Slim__Parser_parse_text_block_6221680'>1</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.03% (16.81%) <a href="file:///home/guy/dev/slim/lib/slim/parser.rb#167">Slim::Parser#get_indent</a> [1 calls, <a href='pars.graph.html#Slim__Parser_get_indent_6221680'>91</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.03% (16.27%) Array#first [2 calls, <a href='pars.graph.html#Array_first_6221680'>4</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (5.29%) Array#empty? [1 calls, <a href='pars.graph.html#Array_empty__6221680'>97</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (4.43%) String#empty? [1 calls, <a href='pars.graph.html#String_empty__6221680'>812</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (4.34%) Array#last [1 calls, <a href='pars.graph.html#Array_last_6221680'>415</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.12% (0.16%) <a href="file:///home/guy/dev/slim/lib/slim/parser.rb#275">Slim::Parser#parse_comment_block</a> [1 calls, <a href='pars.graph.html#Slim__Parser_parse_comment_block_6221680'>1</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.03% (23.92%) <a href="file:///home/guy/dev/slim/lib/slim/parser.rb#167">Slim::Parser#get_indent</a> [1 calls, <a href='pars.graph.html#Slim__Parser_get_indent_6221680'>91</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.02% (12.74%) Array#first [2 calls, <a href='pars.graph.html#Array_first_6221680'>4</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (6.81%) Array#empty? [1 calls, <a href='pars.graph.html#Array_empty__6221680'>97</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (6.81%) Array#last [1 calls, <a href='pars.graph.html#Array_last_6221680'>415</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.02% (0.03%) String#slice! [2 calls, <a href='pars.graph.html#String_slice!_6221680'>726</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.02% (0.02%) String#strip [1 calls, <a href='pars.graph.html#String_strip_6221680'>48</a> total]
+</li></ul></li><li class="color01" style="display:block"><img src="empty.png"> 2.25% (2.48%) <a href="file:///home/guy/dev/slim/lib/slim/parser.rb#167">Slim::Parser#get_indent</a> [89 calls, <a href='pars.graph.html#Slim__Parser_get_indent_6221680'>91</a> total]
+</li><li class="color01" style="display:block"><img src="empty.png"> 1.40% (1.55%) Array#last [235 calls, <a href='pars.graph.html#Array_last_6221680'>415</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.80% (0.88%) String#lstrip! [89 calls, <a href='pars.graph.html#String_lstrip!_6221680'>89</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.67% (0.74%) Array#pop [107 calls, <a href='pars.graph.html#Array_pop_6221680'>107</a> total]
+</li></ul></li><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 7.22% (7.24%) <a href="file:///home/guy/dev/slim/lib/slim/parser.rb#157">Slim::Parser#next_line</a> [95 calls, <a href='pars.graph.html#Slim__Parser_next_line_6221680'>95</a> total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.25% (44.95%) Kernel#dup [94 calls, <a href='pars.graph.html#Kernel_dup_6221680'>94</a> total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.48% (45.65%) Kernel#initialize_dup [94 calls, <a href='pars.graph.html#Kernel_initialize_dup_6221680'>94</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.65% (43.87%) String#initialize_copy [94 calls, <a href='pars.graph.html#String_initialize_copy_6221680'>94</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.58% (17.92%) &lt;Class::String&gt;#allocate [94 calls, <a href='pars.graph.html#_Class__String__allocate_6221680'>94</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.62% (8.59%) Array#shift [94 calls, <a href='pars.graph.html#Array_shift_6221680'>94</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.56% (7.77%) Array#empty? [95 calls, <a href='pars.graph.html#Array_empty__6221680'>97</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.58% (0.59%) String#split [1 calls, <a href='pars.graph.html#String_split_6221680'>1</a> total]
+</li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.24% (0.24%) <a href="file:///home/guy/dev/slim/lib/slim/parser.rb#114">Slim::Parser#remove_bom</a> [1 calls, <a href='pars.graph.html#Slim__Parser_remove_bom_6221680'>1</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.06% (23.35%) Class#new [1 calls, <a href='pars.graph.html#Class_new_6221680'>1</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.03% (48.72%) Regexp#initialize [1 calls, <a href='pars.graph.html#Regexp_initialize_6221680'>1</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (18.22%) &lt;Class::Regexp&gt;#allocate [1 calls, <a href='pars.graph.html#_Class__Regexp__allocate_6221680'>1</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.03% (13.61%) String#encode [1 calls, <a href='pars.graph.html#String_encode_6221680'>1</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.03% (12.60%) String#gsub [1 calls, <a href='pars.graph.html#String_gsub_6221680'>2</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.02% (7.21%) Encoding#name [2 calls, <a href='pars.graph.html#Encoding_name_6221680'>2</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (6.09%) String#encoding [2 calls, <a href='pars.graph.html#String_encoding_6221680'>3</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (3.53%) Kernel#respond_to? [1 calls, <a href='pars.graph.html#Kernel_respond_to__6221680'>2</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.21% (0.21%) <a href="file:///home/guy/dev/slim/lib/slim/parser.rb#102">Slim::Parser#set_encoding</a> [1 calls, <a href='pars.graph.html#Slim__Parser_set_encoding_6221680'>1</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.08% (40.72%) <a href="file:///home/guy/.rvm/gems/ruby-1.9.3-p327-fast/gems/temple-0.5.5/lib/temple/hash.rb#15">Temple::ImmutableHash#[]</a> [2 calls, <a href='pars.graph.html#Temple__ImmutableHash_[]_6221680'>29</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.05% (64.98%) Array#each [2 calls, <a href='pars.graph.html#Array_each_6221680'>29</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.02% (30.50%) Hash#include? [2 calls, <a href='pars.graph.html#Hash_include__6221680'>29</a> total]
+</li></ul></li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (7.28%) Kernel#respond_to? [1 calls, <a href='pars.graph.html#Kernel_respond_to__6221680'>2</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (6.45%) String#force_encoding [1 calls, <a href='pars.graph.html#String_force_encoding_6221680'>1</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (5.88%) String#valid_encoding? [1 calls, <a href='pars.graph.html#String_valid_encoding__6221680'>1</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (5.44%) String#encoding [1 calls, <a href='pars.graph.html#String_encoding_6221680'>3</a> total]
+</li><li class="color01" style="display:none"><img src="empty.png"> 0.01% (4.41%) Kernel#frozen? [1 calls, <a href='pars.graph.html#Kernel_frozen__6221680'>1</a> total]
+</li></ul></li><li class="color01" style="display:none"><img class="toggle" src="empty.png"> 0.18% (0.18%) <a href="file:///home/guy/dev/slim/lib/slim/parser.rb#126">Slim::Parser#replace_tabs</a> [1 calls, <a href='pars.graph.html#Slim__Parser_replace_tabs_6221680'>1</a> total]
+<ul style="display:none"><li class="color01" style="display:none"><img src="empty.png"> 0.16% (89.69%) String#gsub [1 calls, <a href='pars.graph.html#String_gsub_6221680'>2</a> total]
+</li></ul></li><li class="color01" style="display:none"><img src="empty.png"> 0.06% (0.06%) <a href="file:///home/guy/dev/slim/lib/slim/parser.rb#130">Slim::Parser#reset</a> [2 calls, <a href='pars.graph.html#Slim__Parser_reset_6221680'>2</a> total]
+</li></ul></li></ul></li></ul><div id="sentinel"></div></body></html>

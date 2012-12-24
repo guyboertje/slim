@@ -4,7 +4,7 @@ module TagDelimitedAttributes
 
   def try(parser, scanner, memo)
     return if memo[:wrapped_attributes]
-    return unless delim_open = scanner.scan(delim_re)
+    return unless delim_open = scanner.shift_delim
 
     delim_close = delim_map[delim_open]
     end_re = /#{Re.quote(delim_close)}/m
@@ -40,8 +40,5 @@ module TagDelimitedAttributes
     @h1 ||= Hash[?(,?),?[,?],?{,?}]
   end
 
-  def delim_re
-    Re.new( delim_map.keys.map{|k| Re.quote(k)}.join(?|) )
-  end
 end
 end

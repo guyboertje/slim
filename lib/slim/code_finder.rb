@@ -12,8 +12,18 @@ class CodeFinder
   end
 
   def enclosed_by_delim?
-    first.empty? && rest.end_with?(delim_close + ' ')
+    first.empty? && delim_close && rest.end_with?(delim_close + ' ')
   end
+
+  def strip_delim_ws
+    val = @code.strip
+    if val.start_with?(delim) && val.end_with?(delim_close)
+      val[1, val.size - 2]
+    else
+      val
+    end
+  end
+
 
   def first() @parts[0]; end
 

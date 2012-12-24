@@ -20,13 +20,14 @@ module EmbeddedTemplate
         if margin.nil? && (ind = line[/\A */].size) > 0
           margin = ind
         end
-        txt = line.slice(margin || len, len)
+        txt = line.slice(margin || len, len) || ""
         out.push [:newline]
         out.push([:slim, :interpolate, txt.prepend(pre)]) unless txt.empty?
         pre = ?\n if margin && pre.empty?
       end
     end
     parser.last_push [:slim, :embedded, engine, out]
+
     true
   end
 end

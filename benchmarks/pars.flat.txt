@@ -1,0 +1,56 @@
+Thread ID: 6221680
+Total: 0.018442
+Sort by: self_time
+
+ %self     total     self     wait    child    calls   name
+ 16.76      0.00     0.00     0.00     0.00        9   Slim::Parser#parse_ruby_code 
+ 14.67      0.00     0.00     0.00     0.00       27   Slim::Parser#parse_quoted_attribute 
+ 14.27      0.01     0.00     0.00     0.01       89   Slim::Parser#parse_line_indicators 
+  8.27      0.01     0.00     0.00     0.01       59   Slim::Parser#parse_attributes 
+  7.42      0.00     0.00     0.00     0.00      726   String#slice! 
+  5.74      0.02     0.00     0.00     0.02       94   Slim::Parser#parse_line 
+  5.21      0.01     0.00     0.00     0.01       59   Slim::Parser#parse_tag 
+  5.18      0.00     0.00     0.00     0.00      812   String#empty? 
+  3.89      0.00     0.00     0.00     0.00      359   String#=~ 
+  2.79      0.00     0.00     0.00     0.00       95   Slim::Parser#next_line 
+  2.66      0.00     0.00     0.00     0.00      415   Array#last 
+  2.31      0.00     0.00     0.00     0.00       91   Slim::Parser#get_indent 
+  1.18      0.00     0.00     0.00     0.00       94   Kernel#dup 
+  1.04      0.00     0.00     0.00     0.00       47   Slim::Parser#parse_broken_line 
+  0.83      0.00     0.00     0.00     0.00       94   Kernel#initialize_dup 
+  0.80      0.00     0.00     0.00     0.00       89   String#lstrip! 
+  0.72      0.02     0.00     0.00     0.02        1   Slim::Parser#call 
+  0.67      0.00     0.00     0.00     0.00      107   Array#pop 
+  0.65      0.00     0.00     0.00     0.00       94   String#initialize_copy 
+  0.62      0.00     0.00     0.00     0.00       94   Array#shift 
+  0.58      0.00     0.00     0.00     0.00        1   String#split 
+  0.58      0.00     0.00     0.00     0.00       94   <Class::String>#allocate 
+  0.58      0.00     0.00     0.00     0.00       97   Array#empty? 
+  0.44      0.00     0.00     0.00     0.00       29   Array#each 
+  0.41      0.00     0.00     0.00     0.00       48   String#strip 
+  0.36      0.00     0.00     0.00     0.00       29   Temple::ImmutableHash#[] 
+  0.19      0.00     0.00     0.00     0.00        2   String#gsub 
+  0.19      0.00     0.00     0.00     0.00       29   Hash#include? 
+  0.19      0.02     0.00     0.00     0.02        1   Global#[No method] 
+  0.11      0.00     0.00     0.00     0.00       13   <Class::Regexp>#escape 
+  0.09      0.00     0.00     0.00     0.00        1   Slim::Parser#parse_text_block 
+  0.08      0.00     0.00     0.00     0.00        1   Slim::Parser#remove_bom 
+  0.06      0.00     0.00     0.00     0.00        1   Slim::Parser#parse_comment_block 
+  0.06      0.00     0.00     0.00     0.00        1   Slim::Parser#set_encoding 
+  0.06      0.00     0.00     0.00     0.00        2   Slim::Parser#reset 
+  0.04      0.00     0.00     0.00     0.00        4   Array#first 
+  0.04      0.00     0.00     0.00     0.00        6   NilClass#to_s 
+  0.03      0.00     0.00     0.00     0.00        1   String#encode 
+  0.03      0.00     0.00     0.00     0.00        1   Regexp#initialize 
+  0.03      0.00     0.00     0.00     0.00        3   String#encoding 
+  0.02      0.00     0.00     0.00     0.00        3   String#to_s 
+  0.02      0.00     0.00     0.00     0.00        2   Kernel#respond_to? 
+  0.02      0.00     0.00     0.00     0.00        1   Slim::Parser#replace_tabs 
+  0.02      0.00     0.00     0.00     0.00        1   Class#new 
+  0.02      0.00     0.00     0.00     0.00        2   Encoding#name 
+  0.01      0.00     0.00     0.00     0.00        1   String#force_encoding 
+  0.01      0.00     0.00     0.00     0.00        1   String#valid_encoding? 
+  0.01      0.00     0.00     0.00     0.00        1   <Class::Regexp>#allocate 
+  0.01      0.00     0.00     0.00     0.00        1   Kernel#frozen? 
+
+* indicates recursively called methods
