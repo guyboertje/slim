@@ -4,13 +4,9 @@ fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=Array#empty?
 0 2
 
-fl=/home/guy/dev/slim/benchmarks/ruby_runtime
-fn=Array#shift
-0 2
-
 fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 fn=Slim::ScanningParser#result
-62 8
+62 6
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#shift
 calls=1 63
@@ -24,25 +20,9 @@ cfn=Array#empty?
 calls=1 64
 64 2
 
-fl=/home/guy/dev/slim/benchmarks/ruby_runtime
-fn=StringScanner#pos=
-0 5
-
-fl=/home/guy/dev/slim/lib/slim/scanner.rb
-fn=Slim::Scanner#backup
-39 11
-cfl=/home/guy/dev/slim/lib/slim/scanner.rb
-cfn=Slim::Scanner#position
-calls=3 40
-40 10
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=StringScanner#pos=
-calls=3 41
-41 5
-
 fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 fn=Slim::ScanningParser#shortcut_lookup
-24 52
+24 50
 cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 cfn=Slim::ScanningParser#shortcut
 calls=19 25
@@ -50,19 +30,39 @@ calls=19 25
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=String#scan
-0 222
+0 86
 
-fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-fn=Slim::ScanningParser#clear_temp_scanner
-87 5
+fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+fn=Slim::TagProcessor#clear_temp_scanner
+30 6
 
-fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-fn=Slim::ScanningParser#set_temp_scanner
-83 4
+fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+fn=Slim::TagProcessor#boolean_attributes
+255 26
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#scanner
+calls=7 257
+257 11
+cfl=/home/guy/dev/slim/lib/slim/scanner.rb
+cfn=Slim::Scanner#scan
+calls=7 257
+257 29
+
+fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+fn=Slim::TagProcessor#set_temp_scanner
+25 7
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Class#new
+calls=2 26
+26 28
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=String#gsub!
 0 6
+
+fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+fn=Slim::TagProcessor#lf_re
+144 5
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=String#chomp!
@@ -70,19 +70,19 @@ fn=String#chomp!
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=String#squeeze
-0 10
+0 7
 
-fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_delimited_attributes.rb
-fn=Slim::TagDelimitedAttributes#delim_map
-39 7
+fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+fn=Slim::TagProcessor#delim_map
+140 7
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=<Class::Hash>#[]
-calls=1 40
-40 3
+calls=1 141
+141 3
 
 fl=/home/guy/dev/slim/lib/slim/code_finder.rb
 fn=Slim::CodeFinder#add
-38 60
+38 61
 cfl=/home/guy/dev/slim/lib/slim/code_finder.rb
 cfn=Slim::CodeFinder#rest
 calls=12 39
@@ -90,11 +90,11 @@ calls=12 39
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#concat
 calls=12 39
-39 23
+39 20
 cfl=/home/guy/dev/slim/lib/slim/code_finder.rb
 cfn=Slim::CodeFinder#analyse
 calls=12 40
-40 508
+40 510
 cfl=/home/guy/dev/slim/lib/slim/code_finder.rb
 cfn=Slim::CodeFinder#done?
 calls=12 41
@@ -126,11 +126,7 @@ calls=3 15
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#end_with?
 calls=3 15
-15 4
-
-fl=/home/guy/dev/slim/benchmarks/ruby_runtime
-fn=String#end_with?
-0 18
+15 5
 
 fl=/home/guy/dev/slim/lib/slim/code_finder.rb
 fn=Slim::CodeFinder#code
@@ -138,7 +134,7 @@ fn=Slim::CodeFinder#code
 
 fl=/home/guy/dev/slim/lib/slim/code_finder.rb
 fn=Slim::CodeFinder#done?
-34 69
+34 70
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=String#reverse
@@ -146,27 +142,27 @@ fn=String#reverse
 
 fl=/home/guy/dev/slim/lib/slim/code_finder.rb
 fn=Slim::CodeFinder#delim_map
-75 20
+75 4
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=<Class::Hash>#[]
-calls=6 76
-76 13
+calls=1 76
+76 3
 
 fl=/home/guy/dev/slim/lib/slim/code_finder.rb
 fn=Slim::CodeFinder#delim_close
-79 62
+79 55
 cfl=/home/guy/dev/slim/lib/slim/code_finder.rb
 cfn=Slim::CodeFinder#delim_map
-calls=6 80
-80 33
+calls=1 80
+80 7
 cfl=/home/guy/dev/slim/lib/slim/code_finder.rb
 cfn=Slim::CodeFinder#delim
-calls=6 80
-80 10
+calls=1 80
+80 2
 
 fl=/home/guy/dev/slim/lib/slim/code_finder.rb
 fn=Slim::CodeFinder#net_delim_count
-71 91
+71 92
 cfl=/home/guy/dev/slim/lib/slim/code_finder.rb
 cfn=Slim::CodeFinder#rest
 calls=12 72
@@ -182,15 +178,15 @@ calls=12 72
 cfl=/home/guy/dev/slim/lib/slim/code_finder.rb
 cfn=Slim::CodeFinder#delim_close
 calls=6 72
-72 66
+72 23
 cfl=/home/guy/dev/slim/lib/slim/code_finder.rb
 cfn=Slim::CodeFinder#rest
 calls=24 72
-72 38
+72 39
 cfl=/home/guy/dev/slim/lib/slim/code_finder.rb
 cfn=Slim::CodeFinder#delim
 calls=12 72
-72 19
+72 20
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#count
 calls=24 72
@@ -198,19 +194,19 @@ calls=24 72
 cfl=/home/guy/dev/slim/lib/slim/code_finder.rb
 cfn=Slim::CodeFinder#delim_close
 calls=12 72
-72 20
+72 21
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=String#index
-0 32
+0 33
 
 fl=/home/guy/dev/slim/lib/slim/code_finder.rb
 fn=Slim::CodeFinder#rest
-32 140
+32 143
 
 fl=/home/guy/dev/slim/lib/slim/code_finder.rb
 fn=Slim::CodeFinder#analyse
-44 230
+44 250
 cfl=/home/guy/dev/slim/lib/slim/code_finder.rb
 cfn=Slim::CodeFinder#rest
 calls=12 46
@@ -218,15 +214,15 @@ calls=12 46
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#empty?
 calls=20 57
-57 23
+57 24
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#gsub
 calls=12 46
-46 31
+46 41
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#partition
 calls=6 47
-47 18
+47 19
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#index
 calls=10 57
@@ -234,7 +230,7 @@ calls=10 57
 cfl=/home/guy/dev/slim/lib/slim/code_finder.rb
 cfn=Slim::CodeFinder#net_delim_count
 calls=6 57
-57 143
+57 101
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#reverse
 calls=3 59
@@ -246,19 +242,19 @@ calls=3 61
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#join
 calls=3 65
-65 7
+65 6
 cfl=/home/guy/dev/slim/lib/slim/code_finder.rb
 cfn=Slim::CodeFinder#rest
 calls=24 46
-46 38
+46 39
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#empty?
 calls=40 57
-57 45
+57 47
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#gsub
 calls=24 46
-46 53
+46 50
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#partition
 calls=12 47
@@ -266,7 +262,7 @@ calls=12 47
 cfl=/home/guy/dev/slim/lib/slim/code_finder.rb
 cfn=Slim::CodeFinder#net_delim_count
 calls=12 57
-57 169
+57 171
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#join
 calls=3 65
@@ -274,7 +270,7 @@ calls=3 65
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#index
 calls=11 61
-61 16
+61 17
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#reverse
 calls=2 59
@@ -286,19 +282,19 @@ calls=2 61
 
 fl=/home/guy/dev/slim/lib/slim/code_finder.rb
 fn=Slim::CodeFinder#delim
-30 55
+30 49
 
 fl=/home/guy/dev/slim/lib/slim/code_finder.rb
-fn=Slim::CodeFinder#initialize
-4 54
+fn=Slim::CodeFinder#reset
+4 55
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#partition
 calls=9 5
-5 34
+5 35
 cfl=/home/guy/dev/slim/lib/slim/code_finder.rb
 cfn=Slim::CodeFinder#delim
 calls=9 6
-6 16
+6 17
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#empty?
 calls=9 6
@@ -306,47 +302,51 @@ calls=9 6
 cfl=/home/guy/dev/slim/lib/slim/code_finder.rb
 cfn=Slim::CodeFinder#analyse
 calls=6 10
-10 354
+10 347
+
+fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+fn=Slim::TagProcessor#space_scan_re
+148 37
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#shift_lf
-153 4
+152 4
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#lf_re
-calls=1 154
-154 2
+calls=1 153
+153 2
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan
-calls=1 154
-154 5
+calls=1 153
+153 4
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#line_end
-205 5
+204 5
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#shift_lf
-calls=1 206
-206 10
+calls=1 205
+205 10
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Kernel#nil?
-calls=1 207
-207 2
+calls=1 206
+206 2
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#txt_re
-92 3
+91 3
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#shift_text
-161 4
+160 5
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#txt_re
-calls=1 162
-162 3
+calls=1 161
+161 3
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan
-calls=1 162
-162 9
+calls=1 161
+161 7
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=String#start_with?
@@ -357,240 +357,308 @@ fn=Enumerator#each
 0 3
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#lines
-calls=1 38
-38 2
+calls=1 136
+136 2
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=String#lines
-0 15
-
-fl=/home/guy/dev/slim/benchmarks/ruby_runtime
-fn=Fixnum#to_s
-0 4
-
-fl=/home/guy/dev/slim/lib/slim/scanner.rb
-fn=Slim::Scanner#shift_indented_lines
-149 31
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Fixnum#to_s
-calls=1 150
-150 2
-cfl=/home/guy/dev/slim/lib/slim/scanner.rb
-cfn=Slim::Scanner#scan
-calls=1 150
-150 13
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Fixnum#to_s
-calls=1 150
-150 1
-cfl=/home/guy/dev/slim/lib/slim/scanner.rb
-cfn=Slim::Scanner#scan
-calls=1 150
-150 13
+0 7
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=String#partition
-0 90
+0 91
 
-fl=/home/guy/dev/slim/lib/slim/syntaxes/text_block.rb
-fn=Slim::TextBlock#starting_ws_re
-14 3
+fl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+fn=Slim::NontagProcessor#starting_ws_re
+19 3
 
-fl=/home/guy/dev/slim/lib/slim/syntaxes/text_block.rb
-fn=Slim::TextBlock#remove_leading_spaces
-53 8
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/text_block.rb
-cfn=Slim::TextBlock#starting_ws_re
-calls=1 54
-54 3
+fl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+fn=Slim::NontagProcessor#remove_leading_spaces
+152 8
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+cfn=Slim::NontagProcessor#starting_ws_re
+calls=1 153
+153 3
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#partition
-calls=1 54
-54 7
+calls=1 153
+153 7
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Kernel#nil?
-calls=1 56
-56 2
+calls=1 155
+155 2
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#join
-calls=1 61
-61 2
-
-fl=/home/guy/dev/slim/benchmarks/ruby_runtime
-fn=Fixnum#==
-0 253
-
-fl=/home/guy/dev/slim/lib/slim/scanner.rb
-fn=Slim::Scanner#m2
-72 117
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=StringScanner#[]
-calls=24 73
-73 29
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=StringScanner#[]
-calls=1 73
-73 1
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=StringScanner#[]
-calls=9 73
-73 11
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=StringScanner#[]
-calls=21 73
-73 26
-
-fl=/home/guy/dev/slim/benchmarks/ruby_runtime
-fn=String#empty?
-0 211
+calls=1 160
+160 2
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#just_spaces_re
-132 77
+131 81
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=StringScanner#check_until
-0 111
+0 110
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#check_until
-31 101
+30 104
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#check_until
-calls=2 32
-32 11
+calls=2 31
+31 11
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#check_until
-calls=24 32
-32 51
+calls=24 31
+31 51
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#check_until
-calls=21 32
-32 49
+calls=21 31
+31 48
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#lfs_ind_char_re
-104 80
+103 80
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#check_next_indent
-181 367
+180 222
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#lfs_ind_char_re
+calls=2 181
+181 5
+cfl=/home/guy/dev/slim/lib/slim/scanner.rb
+cfn=Slim::Scanner#check_until
+calls=2 181
+181 17
+cfl=/home/guy/dev/slim/lib/slim/scanner.rb
+cfn=Slim::Scanner#just_spaces_re
 calls=2 182
 182 5
-cfl=/home/guy/dev/slim/lib/slim/scanner.rb
-cfn=Slim::Scanner#check_until
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#[]
 calls=2 182
-182 17
-cfl=/home/guy/dev/slim/lib/slim/scanner.rb
-cfn=Slim::Scanner#just_spaces_re
-calls=2 183
-183 4
+182 11
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#lfs_ind_char_re
-calls=24 182
-182 40
+calls=24 181
+181 40
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#check_until
-calls=24 182
-182 102
+calls=24 181
+181 103
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#just_spaces_re
-calls=23 183
-183 38
+calls=23 182
+182 40
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#[]
+calls=23 182
+182 68
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#current_indent
-calls=1 185
-185 7
+calls=1 184
+184 6
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#lfs_ind_char_re
-calls=21 182
-182 35
+calls=21 181
+181 35
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#check_until
-calls=21 182
-182 93
+calls=21 181
+181 94
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#just_spaces_re
-calls=21 183
-183 35
+calls=21 182
+182 37
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#[]
+calls=21 182
+182 57
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#lf_space_plus_re
-112 79
+111 82
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#broken_line_re
-116 80
+115 117
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#shift_broken_lines
-140 245
+139 246
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#broken_line_re
-calls=2 141
-141 6
+calls=2 140
+140 4
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan
-calls=2 141
-141 17
+calls=2 140
+140 17
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#lf_space_plus_re
-calls=2 143
-143 5
+calls=2 142
+142 5
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#gsub
-calls=2 143
-143 10
+calls=2 142
+142 9
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#broken_line_re
-calls=24 141
-141 39
+calls=24 140
+140 60
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan
-calls=24 141
-141 139
+calls=24 140
+140 153
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#lf_space_plus_re
-calls=24 143
-143 40
+calls=24 142
+142 41
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#gsub
-calls=24 143
-143 77
+calls=24 142
+142 61
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#broken_line_re
-calls=21 141
-141 35
+calls=21 140
+140 53
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan
-calls=21 141
-141 107
+calls=21 140
+140 108
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#lf_space_plus_re
-calls=21 143
-143 35
+calls=21 142
+142 36
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#gsub
-calls=21 143
-143 55
+calls=21 142
+142 62
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=Fixnum#==
+0 255
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=StringScanner#pos=
+0 7
+
+fl=/home/guy/dev/slim/lib/slim/scanner.rb
+fn=Slim::Scanner#backup
+38 18
+cfl=/home/guy/dev/slim/lib/slim/scanner.rb
+cfn=Slim::Scanner#position
+calls=1 39
+39 4
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=StringScanner#pos=
+calls=1 40
+40 3
+cfl=/home/guy/dev/slim/lib/slim/scanner.rb
+cfn=Slim::Scanner#position
+calls=3 39
+39 10
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=StringScanner#pos=
+calls=3 40
+40 4
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=String#end_with?
+0 20
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=String#slice
+0 5
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=Array#shift
+0 4
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=String#split
+0 11
+
+fl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+fn=Slim::NontagProcessor#lf_re
+23 3
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=Fixnum#to_s
+0 6
+
+fl=/home/guy/dev/slim/lib/slim/scanner.rb
+fn=Slim::Scanner#shift_indented_lines
+148 43
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Fixnum#to_s
+calls=1 149
+149 2
+cfl=/home/guy/dev/slim/lib/slim/scanner.rb
+cfn=Slim::Scanner#scan
+calls=1 149
+149 23
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Fixnum#to_s
+calls=1 149
+149 2
+cfl=/home/guy/dev/slim/lib/slim/scanner.rb
+cfn=Slim::Scanner#scan
+calls=1 149
+149 13
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Fixnum#to_s
+calls=1 149
+149 2
+cfl=/home/guy/dev/slim/lib/slim/scanner.rb
+cfn=Slim::Scanner#scan
+calls=1 149
+149 13
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=String#empty?
+0 220
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=String#strip!
+0 2
+
+fl=/home/guy/dev/slim/lib/slim/scanner.rb
+fn=Slim::Scanner#m2
+71 101
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=StringScanner#[]
+calls=1 72
+72 2
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=StringScanner#[]
+calls=24 72
+72 30
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=StringScanner#[]
+calls=1 72
+72 2
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=StringScanner#[]
+calls=21 72
+72 26
 
 fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 fn=Slim::ScanningParser#monitor_raise
-111 136
+89 145
 
-fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-fn=Slim::ScanningParser#monitor_tag_raise
-140 94
+fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+fn=Slim::TagProcessor#monitor_tag_raise
+35 98
 
 fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 fn=Slim::ScanningParser#push
-40 98
+40 101
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#push
 calls=38 41
-41 43
+41 44
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#push
 calls=2 41
@@ -604,309 +672,317 @@ cfn=Array#push
 calls=4 41
 41 5
 
-fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_no_content.rb
-fn=Slim::TagNoContent#try
-5 213
+fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+fn=Slim::TagProcessor#no_content
+296 284
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#scanner
+calls=38 298
+298 62
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan
-calls=38 7
-7 162
+calls=38 298
+298 164
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#push
-calls=38 12
-12 47
+calls=38 301
+301 47
 cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 cfn=Slim::ScanningParser#push
-calls=38 13
-13 124
+calls=38 302
+302 128
 
-fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_closed.rb
-fn=Slim::TagClosed#try
-5 102
+fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+fn=Slim::TagProcessor#closed
+286 131
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#scanner
+calls=38 288
+288 63
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan
-calls=38 7
-7 150
+calls=38 288
+288 152
 
-fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_output.rb
-fn=Slim::TagOutput#try
-5 342
+fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+fn=Slim::TagProcessor#output
+263 450
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#scanner
+calls=143 265
+265 267
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan
-calls=59 7
-7 223
+calls=59 265
+265 224
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#m1
-calls=21 11
-11 73
+calls=21 267
+267 73
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#empty?
-calls=42 12
-12 48
+calls=42 268
+268 49
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#m2
-calls=21 12
-12 70
+calls=21 268
+268 70
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#shift_broken_lines
-calls=21 14
-14 340
+calls=21 270
+270 368
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#check_next_indent
-calls=21 15
-15 341
+calls=21 271
+271 320
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#push
-calls=21 23
-23 28
+calls=21 279
+279 28
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=Kernel#nil?
-0 54
+0 52
 
-fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_boolean_attributes.rb
-fn=Slim::TagBooleanAttributes#try
-5 58
+fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+fn=Slim::TagProcessor#code_attributes
+216 407
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#scanner
+calls=82 218
+218 139
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan
-calls=4 7
-7 15
-
-fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_code_attributes.rb
-fn=Slim::TagCodeAttributes#code_re
-5 68
-
-fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_code_attributes.rb
-fn=Slim::TagCodeAttributes#try
-9 357
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_code_attributes.rb
-cfn=Slim::TagCodeAttributes#code_re
-calls=40 11
-11 68
-cfl=/home/guy/dev/slim/lib/slim/scanner.rb
-cfn=Slim::Scanner#scan
-calls=40 11
-11 173
+calls=40 218
+218 176
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#m1
-calls=9 13
-13 32
-cfl=/home/guy/dev/slim/lib/slim/scanner.rb
-cfn=Slim::Scanner#m2
-calls=9 15
-15 30
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Class#new
-calls=18 23
-23 556
+calls=9 220
+220 31
+cfl=/home/guy/dev/slim/lib/slim/progress.rb
+cfn=Slim::Progress#reset
+calls=9 223
+223 20
 cfl=/home/guy/dev/slim/lib/slim/progress.rb
 cfn=Slim::Progress#measure
-calls=21 19
-19 113
+calls=21 224
+224 117
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#space_scan_re
+calls=21 225
+225 37
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan_until
-calls=21 20
-20 114
+calls=21 225
+225 116
+cfl=/home/guy/dev/slim/lib/slim/code_finder.rb
+cfn=Slim::CodeFinder#reset
+calls=9 228
+228 464
 cfl=/home/guy/dev/slim/lib/slim/code_finder.rb
 cfn=Slim::CodeFinder#done?
-calls=30 35
-35 50
+calls=30 240
+240 50
 cfl=/home/guy/dev/slim/lib/slim/code_finder.rb
 cfn=Slim::CodeFinder#code
-calls=9 37
-37 15
+calls=9 242
+242 15
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#end_with?
-calls=9 39
-39 14
+calls=9 244
+244 13
 cfl=/home/guy/dev/slim/lib/slim/code_finder.rb
 cfn=Slim::CodeFinder#enclosed_by_delim?
-calls=9 41
-41 79
+calls=9 246
+246 80
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#strip
-calls=9 41
-41 17
+calls=9 246
+246 17
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#empty?
-calls=9 43
-43 12
+calls=9 248
+248 12
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#push
-calls=9 45
-45 31
+calls=9 250
+250 14
 cfl=/home/guy/dev/slim/lib/slim/progress.rb
 cfn=Slim::Progress#stuck?
-calls=12 29
-29 65
+calls=12 234
+234 69
 cfl=/home/guy/dev/slim/lib/slim/code_finder.rb
 cfn=Slim::CodeFinder#add
-calls=12 29
-29 631
+calls=12 234
+234 630
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#backup
-calls=3 39
-39 27
+calls=3 244
+244 25
 
 fl=/home/guy/dev/slim/lib/slim/progress.rb
 fn=Slim::Progress#stuck?
-12 93
+15 100
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#position
-calls=27 13
-13 87
+calls=27 16
+16 92
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#position
-calls=12 13
-13 39
+calls=12 16
+16 40
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#position
-calls=2 13
-13 7
+calls=2 16
+16 7
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=Fixnum#zero?
-0 36
+0 39
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=String#initialize
-0 38
+0 42
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=<Class::String>#allocate
-0 33
+0 34
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#m3
-76 61
+75 62
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#[]
-calls=27 77
-77 32
+calls=27 76
+76 32
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#[]
-calls=1 77
-77 1
+calls=1 76
+76 1
 
-fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_quoted_attributes.rb
-fn=Slim::TagQuotedAttributes#quoted_re
-5 119
-
-fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_quoted_attributes.rb
-fn=Slim::TagQuotedAttributes#try
-9 899
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_quoted_attributes.rb
-cfn=Slim::TagQuotedAttributes#quoted_re
-calls=67 10
-10 119
+fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+fn=Slim::TagProcessor#quoted_attributes
+179 955
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#scanner
+calls=175 182
+182 303
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan
-calls=67 10
-10 296
+calls=67 182
+182 301
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#m1
-calls=27 12
-12 92
+calls=27 184
+184 93
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#m3
-calls=27 14
-14 91
+calls=27 186
+186 92
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Class#new
-calls=54 19
-19 287
+calls=27 187
+187 143
+cfl=/home/guy/dev/slim/lib/slim/progress.rb
+cfn=Slim::Progress#reset
+calls=27 191
+191 62
 cfl=/home/guy/dev/slim/lib/slim/progress.rb
 cfn=Slim::Progress#measure
-calls=27 21
-21 148
+calls=27 193
+193 174
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan_until
-calls=27 22
-22 226
+calls=27 194
+194 224
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#concat
-calls=27 23
-23 41
+calls=27 195
+195 42
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#count
-calls=27 24
-24 39
+calls=27 196
+196 39
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Fixnum#zero?
-calls=27 24
-24 33
+calls=27 196
+196 36
 cfl=/home/guy/dev/slim/lib/slim/progress.rb
 cfn=Slim::Progress#stuck?
-calls=27 27
-27 148
+calls=27 199
+199 158
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#[]
+calls=27 201
+201 46
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#push
-calls=27 33
-33 37
+calls=27 203
+203 38
 
-fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_quoted_attributes.rb
-fn=Slim::TagQuotedAttributes#try_eagerly
-38 212
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_quoted_attributes.rb
-cfn=Slim::TagQuotedAttributes#try
-calls=67 41
-41 2456
+fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+fn=Slim::TagProcessor#quoted_attributes_eagerly
+208 191
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#quoted_attributes
+calls=67 211
+211 2705
 
-fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-fn=Slim::ScanningParser#escape_quoted_attrs
-91 126
-
-fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_splat_attributes.rb
-fn=Slim::TagSplatAttributes#try
-5 89
+fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+fn=Slim::TagProcessor#splat_attributes
+152 141
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#scanner
+calls=40 154
+154 65
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan
-calls=40 7
-7 152
+calls=40 154
+154 153
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#lf_re
-84 152
+83 130
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#check_lf
-173 207
+172 204
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#lf_re
-calls=76 174
-174 150
+calls=76 173
+173 128
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#check
-calls=76 174
-174 286
+calls=76 173
+173 285
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#eol?
-177 173
+176 169
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#check_lf
-calls=76 178
-178 642
+calls=76 177
+177 617
 
 fl=/home/guy/dev/slim/lib/slim/progress.rb
 fn=Slim::Progress#measure
-8 326
+11 367
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#position
-calls=99 9
-9 332
+calls=99 12
+12 327
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#position
-calls=27 9
-9 88
+calls=27 12
+12 93
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#position
-calls=21 9
-9 67
+calls=21 12
+12 68
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#position
-calls=2 9
-9 7
+calls=2 12
+12 8
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=NilClass#nil?
@@ -914,775 +990,731 @@ fn=NilClass#nil?
 
 fl=/home/guy/dev/slim/lib/slim/progress.rb
 fn=Slim::Progress#progress?
-16 474
+19 461
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=NilClass#nil?
-calls=59 17
-17 66
+calls=59 20
+20 66
 cfl=/home/guy/dev/slim/lib/slim/progress.rb
 cfn=Slim::Progress#measure
-calls=99 18
-18 547
+calls=99 21
+21 560
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Kernel#nil?
-calls=40 17
-17 45
+calls=40 20
+20 46
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#position
-calls=40 23
-23 127
+calls=40 26
+26 130
 
 fl=/home/guy/dev/slim/lib/slim/progress.rb
-fn=Slim::Progress#initialize
-4 173
+fn=Slim::Progress#reset
+6 216
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=<Class::Hash>#[]
-0 19
+0 9
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#delim_map
-124 4
+123 13
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=<Class::Hash>#[]
-calls=1 125
-125 3
+calls=1 124
+124 3
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#delim_re
-128 103
+127 101
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#delim_map
-calls=1 129
-129 7
+calls=1 128
+128 16
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Hash#keys
-calls=1 129
-129 4
+calls=1 128
+128 3
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#map
-calls=1 129
-129 10
+calls=1 128
+128 10
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#join
-calls=1 129
-129 2
+calls=1 128
+128 2
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Class#new
-calls=1 129
-129 10
+calls=1 128
+128 10
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#shift_delim
-136 160
+135 163
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#delim_re
-calls=59 137
-137 137
+calls=59 136
+136 143
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan
-calls=59 137
-137 218
+calls=59 136
+136 212
 
-fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_delimited_attributes.rb
-fn=Slim::TagDelimitedAttributes#try
-5 241
+fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+fn=Slim::TagProcessor#delimited_attributes
+111 219
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#scanner
+calls=63 112
+112 106
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#shift_delim
-calls=59 7
-7 515
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_delimited_attributes.rb
-cfn=Slim::TagDelimitedAttributes#delim_map
-calls=2 9
-9 9
+calls=59 112
+112 518
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#delim_map
+calls=2 114
+114 10
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=<Class::Regexp>#quote
-calls=2 10
-10 4
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Class#new
-calls=4 32
-32 41
+calls=2 115
+115 4
+cfl=/home/guy/dev/slim/lib/slim/progress.rb
+cfn=Slim::Progress#reset
+calls=2 117
+117 5
 cfl=/home/guy/dev/slim/lib/slim/progress.rb
 cfn=Slim::Progress#measure
-calls=2 15
-15 12
+calls=2 119
+119 13
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan_until
-calls=2 16
-16 17
+calls=2 120
+120 15
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Kernel#nil?
-calls=2 17
-17 5
+calls=2 121
+121 3
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#empty?
-calls=4 26
-26 6
+calls=4 130
+130 6
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#squeeze
-calls=2 20
-20 10
+calls=2 124
+124 7
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#concat
-calls=4 30
-30 7
+calls=4 134
+134 7
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#count
-calls=4 22
-22 7
+calls=4 126
+126 6
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Fixnum#zero?
-calls=2 22
-22 3
+calls=2 126
+126 3
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#chomp!
-calls=2 25
-25 4
+calls=2 129
+129 4
 cfl=/home/guy/dev/slim/lib/slim/progress.rb
 cfn=Slim::Progress#stuck?
-calls=2 26
-26 13
+calls=2 130
+130 13
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#lf_re
+calls=2 133
+133 5
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#gsub!
-calls=2 29
-29 6
-cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-cfn=Slim::ScanningParser#set_temp_scanner
-calls=2 33
-33 4
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Hash#[]=
-calls=2 34
-34 4
+calls=2 133
+133 6
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#set_temp_scanner
+calls=2 137
+137 35
 
-fl=/home/guy/dev/slim/benchmarks/ruby_runtime
-fn=String#concat
-0 153
-
-fl=/home/guy/dev/slim/benchmarks/ruby_runtime
-fn=String#prepend
-0 103
-
-fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_shortcut_attributes.rb
-fn=Slim::TagShortcutAttributes#try
-5 1231
-cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-cfn=Slim::ScanningParser#shortcut
-calls=59 7
-7 98
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Hash#keys
-calls=59 7
-7 87
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Array#join
-calls=59 7
-7 113
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=String#prepend
-calls=59 7
-7 103
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=String#concat
-calls=59 7
-7 82
+fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+fn=Slim::TagProcessor#shortcut_attributes
+100 296
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#scanner
+calls=59 103
+103 97
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan
-calls=59 9
-9 713
+calls=59 103
+103 232
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#scan
-calls=16 10
-10 222
+calls=16 104
+104 86
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#each
-calls=16 10
-10 187
+calls=16 104
+104 198
 
-fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-fn=Slim::ScanningParser#parse_attributes
-145 895
-cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-cfn=Slim::ScanningParser#scanner
-calls=406 151
-151 646
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_shortcut_attributes.rb
-cfn=Slim::TagShortcutAttributes#try
-calls=59 146
-146 2837
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_delimited_attributes.rb
-cfn=Slim::TagDelimitedAttributes#try
-calls=59 147
-147 909
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Class#new
-calls=59 149
-149 333
+fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+fn=Slim::TagProcessor#parse_attributes
+80 825
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#shortcut_attributes
+calls=59 81
+81 908
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#delimited_attributes
+calls=59 83
+83 983
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#scanner
+calls=137 87
+87 230
+cfl=/home/guy/dev/slim/lib/slim/progress.rb
+cfn=Slim::Progress#reset
+calls=59 85
+85 129
 cfl=/home/guy/dev/slim/lib/slim/progress.rb
 cfn=Slim::Progress#progress?
-calls=99 150
-150 1259
+calls=99 86
+86 1262
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#eol?
-calls=76 151
-151 815
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_splat_attributes.rb
-cfn=Slim::TagSplatAttributes#try
-calls=40 153
-153 241
-cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-cfn=Slim::ScanningParser#escape_quoted_attrs
-calls=80 153
-153 126
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_quoted_attributes.rb
-cfn=Slim::TagQuotedAttributes#try_eagerly
-calls=40 153
-153 2668
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_code_attributes.rb
-cfn=Slim::TagCodeAttributes#try
-calls=40 153
-153 2382
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_boolean_attributes.rb
-cfn=Slim::TagBooleanAttributes#try
-calls=31 153
-153 73
+calls=76 87
+87 787
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#splat_attributes
+calls=40 88
+88 360
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#quoted_attributes_eagerly
+calls=40 89
+89 2897
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#code_attributes
+calls=40 90
+90 2434
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#boolean_attributes
+calls=7 91
+91 66
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#no_more?
-calls=2 158
-158 27
-cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-cfn=Slim::ScanningParser#clear_temp_scanner
-calls=2 159
-159 5
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Hash#[]=
-calls=2 160
-160 3
+calls=2 94
+94 25
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#clear_temp_scanner
+calls=2 95
+95 6
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=Array#concat
-0 85
+0 82
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=StringScanner#check
-0 205
+0 209
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#check
-27 291
+26 291
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#check
-calls=59 28
-28 81
+calls=59 27
+27 87
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#check
-calls=76 28
-28 124
+calls=76 27
+27 122
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=StringScanner#pos
-0 362
+0 332
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#position
-35 613
+34 641
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#pos
-calls=59 36
-36 85
+calls=59 35
+35 66
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#pos
-calls=99 36
-36 126
+calls=99 35
+35 111
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#pos
-calls=27 36
-36 31
+calls=27 35
+35 33
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#pos
-calls=27 36
-36 31
+calls=27 35
+35 32
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#pos
-calls=40 36
-36 44
+calls=40 35
+35 43
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#pos
-calls=21 36
-36 23
+calls=1 35
+35 2
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#pos
-calls=12 36
-36 14
+calls=21 35
+35 23
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#pos
-calls=2 36
-36 2
+calls=12 35
+35 14
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#pos
-calls=2 36
-36 3
+calls=2 35
+35 3
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#pos
-calls=3 36
-36 4
+calls=2 35
+35 3
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=StringScanner#pos
+calls=3 35
+35 4
 
-fl=/home/guy/dev/slim/benchmarks/ruby_runtime
-fn=Hash#[]=
-0 178
+fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+fn=Slim::TagProcessor#scanner
+21 1720
 
-fl=/home/guy/dev/slim/lib/slim/syntaxes/tag.rb
-fn=Slim::Tag#try
-5 599
+fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+fn=Slim::TagProcessor#find_tag
+60 629
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#scanner
+calls=236 67
+67 378
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#current_indent
-calls=59 6
-6 313
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Hash#[]=
-calls=118 7
-7 171
+calls=59 61
+61 316
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#position
-calls=59 7
-7 210
+calls=59 62
+62 194
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#check
-calls=59 9
-9 210
+calls=59 64
+64 215
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan
-calls=59 12
-12 251
+calls=59 67
+67 243
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#concat
-calls=59 22
-22 85
+calls=59 77
+77 82
 
-fl=/home/guy/dev/slim/benchmarks/ruby_runtime
-fn=Array#join
-0 134
+fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+fn=Slim::TagProcessor#reset
+14 232
 
-fl=/home/guy/dev/slim/benchmarks/ruby_runtime
-fn=<Class::Regexp>#quote
-0 12
-
-fl=/home/guy/dev/slim/benchmarks/ruby_runtime
-fn=Array#map
-0 11
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=<Class::Regexp>#quote
-calls=2 37
-37 4
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=<Class::Regexp>#quote
-calls=3 129
-129 4
-
-fl=/home/guy/dev/slim/benchmarks/ruby_runtime
-fn=Hash#keys
-0 94
-
-fl=/home/guy/dev/slim/lib/slim/parser.rb
-fn=Slim::Parser#shortcut
-63 2
-
-fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-fn=Slim::ScanningParser#shortcut
-16 134
-cfl=/home/guy/dev/slim/lib/slim/parser.rb
-cfn=Slim::Parser#shortcut
-calls=1 17
-17 2
-
-fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-fn=Slim::ScanningParser#shortcuts_quoted_ored
-36 7
-cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-cfn=Slim::ScanningParser#shortcut
-calls=1 37
-37 6
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Hash#keys
-calls=1 37
-37 2
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Array#map
-calls=1 37
-37 9
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Array#join
-calls=1 37
-37 3
-
-fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-fn=Slim::ScanningParser#shortcut_re
-28 106
-cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-cfn=Slim::ScanningParser#shortcuts_quoted_ored
-calls=1 29
-29 26
-
-fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-fn=Slim::ScanningParser#tag_re
-32 97
-
-fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-fn=Slim::ScanningParser#parse_tags
-116 930
-cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-cfn=Slim::ScanningParser#scanner
-calls=194 129
-129 306
-cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-cfn=Slim::ScanningParser#tag_re
-calls=59 125
-125 97
-cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-cfn=Slim::ScanningParser#shortcut_re
-calls=59 125
-125 132
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag.rb
-cfn=Slim::Tag#try
-calls=59 125
-125 1839
-cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-cfn=Slim::ScanningParser#parse_attributes
-calls=59 126
-126 13218
+fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+fn=Slim::TagProcessor#try
+40 753
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#reset
+calls=59 42
+42 232
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#find_tag
+calls=59 45
+45 2056
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#parse_attributes
+calls=59 46
+46 10911
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#push
-calls=59 127
-127 91
+calls=59 47
+47 88
 cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 cfn=Slim::ScanningParser#last_push
-calls=59 128
-128 296
-cfl=/home/guy/dev/slim/lib/slim/indenter.rb
-cfn=Slim::Indenter#current_indent
-calls=59 129
-129 189
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_output.rb
-cfn=Slim::TagOutput#try
-calls=59 129
-129 1464
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_closed.rb
-cfn=Slim::TagClosed#try
-calls=38 129
-129 252
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_no_content.rb
-cfn=Slim::TagNoContent#try
-calls=38 129
-129 546
-cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-cfn=Slim::ScanningParser#monitor_tag_raise
-calls=59 134
-134 94
+calls=59 48
+48 325
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#output
+calls=59 49
+49 1849
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#closed
+calls=38 49
+49 345
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#no_content
+calls=38 49
+49 685
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#monitor_tag_raise
+calls=59 54
+54 98
 
-fl=/home/guy/dev/slim/lib/slim/syntaxes/embedded_template.rb
-fn=Slim::EmbeddedTemplate#try
-5 160
+fl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+fn=Slim::NontagProcessor#embedded_template
+212 167
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan
-calls=59 6
-6 217
+calls=59 214
+214 216
 
-fl=/home/guy/dev/slim/lib/slim/syntaxes/output_block.rb
-fn=Slim::OutputBlock#try
-4 437
+fl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+fn=Slim::NontagProcessor#output_block
+190 460
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan
-calls=83 6
-6 310
+calls=83 192
+192 292
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#m1
-calls=24 10
-10 81
+calls=24 194
+194 83
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#empty?
-calls=48 11
-11 55
+calls=48 195
+195 58
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#m2
-calls=24 11
-11 80
+calls=24 195
+195 81
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#shift_broken_lines
-calls=24 13
-13 419
+calls=24 197
+197 440
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#check_next_indent
-calls=24 14
-14 356
+calls=24 199
+199 371
 cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 cfn=Slim::ScanningParser#last_push
-calls=24 22
-22 123
+calls=24 205
+205 125
 cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 cfn=Slim::ScanningParser#push
-calls=4 20
-20 14
+calls=4 203
+203 14
 
-fl=/home/guy/dev/slim/lib/slim/syntaxes/ruby_code_block.rb
-fn=Slim::RubyCodeBlock#try
-4 238
+fl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+fn=Slim::NontagProcessor#ruby_code_block
+174 266
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan
-calls=85 6
-6 286
+calls=85 176
+176 289
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#shift_broken_lines
-calls=2 9
-9 50
+calls=2 178
+178 48
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#check_next_indent
-calls=2 11
-11 46
+calls=2 180
+180 48
 cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 cfn=Slim::ScanningParser#last_push
-calls=2 13
-13 14
+calls=2 182
+182 13
 cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 cfn=Slim::ScanningParser#push
-calls=2 14
-14 7
+calls=2 183
+183 7
 
-fl=/home/guy/dev/slim/lib/slim/syntaxes/inline_html.rb
-fn=Slim::InlineHtml#try
-5 231
+fl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+fn=Slim::NontagProcessor#inline_html
+163 288
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan
-calls=85 6
-6 288
+calls=85 165
+165 286
 
-fl=/home/guy/dev/slim/lib/slim/syntaxes/text_block.rb
-fn=Slim::TextBlock#text_block_re
-6 166
+fl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+fn=Slim::NontagProcessor#text_block_re
+11 147
 
-fl=/home/guy/dev/slim/lib/slim/syntaxes/text_block.rb
-fn=Slim::TextBlock#try
-18 299
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/text_block.rb
-cfn=Slim::TextBlock#text_block_re
-calls=86 19
-19 166
+fl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+fn=Slim::NontagProcessor#text_block
+117 306
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+cfn=Slim::NontagProcessor#text_block_re
+calls=86 118
+118 147
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan
-calls=86 19
-19 305
+calls=86 118
+118 305
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#m1
-calls=1 25
-25 4
+calls=1 123
+123 4
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#m2
-calls=1 25
-25 4
+calls=1 123
+123 4
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#m3
-calls=1 30
-30 4
+calls=1 128
+128 4
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#empty?
-calls=1 30
-30 1
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/text_block.rb
-cfn=Slim::TextBlock#remove_leading_spaces
-calls=1 31
-31 22
+calls=1 128
+128 2
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+cfn=Slim::NontagProcessor#remove_leading_spaces
+calls=1 129
+129 22
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#push
-calls=1 32
-32 2
+calls=1 130
+130 2
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#shift_indented_lines
-calls=1 37
-37 33
+calls=1 135
+135 29
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#lines
-calls=1 38
-38 13
+calls=1 136
+136 5
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Enumerator#each
-calls=1 38
-38 5
+calls=1 136
+136 5
 cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 cfn=Slim::ScanningParser#last_push
-calls=1 48
-48 6
+calls=1 145
+145 6
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#start_with?
-calls=1 49
-49 2
+calls=1 146
+146 2
 
-fl=/home/guy/dev/slim/lib/slim/syntaxes/slim_comment.rb
-fn=Slim::SlimComment#try
-5 237
+fl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+fn=Slim::NontagProcessor#slim_comment
+104 255
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan
-calls=87 7
-7 295
+calls=87 106
+106 295
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#shift_text
-calls=1 10
-10 16
+calls=1 108
+108 14
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#line_end
-calls=1 11
-11 17
-cfl=/home/guy/dev/slim/lib/slim/scanner.rb
-cfn=Slim::Scanner#current_indent
-calls=1 12
-12 6
+calls=1 109
+109 17
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#shift_indented_lines
-calls=1 14
-14 28
+calls=1 112
+112 27
 
-fl=/home/guy/dev/slim/lib/slim/syntaxes/html_conditional_comment.rb
-fn=Slim::HtmlConditionalComment#try
-5 241
+fl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+fn=Slim::NontagProcessor#html_conditional_comment
+93 259
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan
-calls=88 6
-6 309
+calls=88 95
+95 314
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#m1
-calls=1 9
-9 4
+calls=1 97
+97 4
 cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 cfn=Slim::ScanningParser#last_push
-calls=1 11
-11 6
+calls=1 99
+99 6
 cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 cfn=Slim::ScanningParser#push
-calls=1 12
-12 4
+calls=1 100
+100 4
 
-fl=/home/guy/dev/slim/lib/slim/syntaxes/html_comment.rb
-fn=Slim::HtmlComment#try
-6 241
+fl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+fn=Slim::NontagProcessor#html_comment
+64 288
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan
-calls=88 9
-9 314
+calls=89 66
+66 325
+cfl=/home/guy/dev/slim/lib/slim/scanner.rb
+cfn=Slim::Scanner#m1
+calls=1 70
+70 5
+cfl=/home/guy/dev/slim/lib/slim/scanner.rb
+cfn=Slim::Scanner#m2
+calls=1 72
+72 5
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#strip!
+calls=1 73
+73 2
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#empty?
+calls=1 74
+74 2
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#push
+calls=1 74
+74 2
+cfl=/home/guy/dev/slim/lib/slim/scanner.rb
+cfn=Slim::Scanner#shift_indented_lines
+calls=1 77
+77 41
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+cfn=Slim::NontagProcessor#lf_re
+calls=1 78
+78 3
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#split
+calls=1 78
+78 11
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#shift
+calls=1 79
+79 3
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#each
+calls=1 80
+80 28
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#end_with?
+calls=1 86
+86 2
+cfl=/home/guy/dev/slim/lib/slim/scanner.rb
+cfn=Slim::Scanner#backup
+calls=1 86
+86 14
+cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
+cfn=Slim::ScanningParser#last_push
+calls=1 88
+88 6
 
-fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-fn=Slim::ScanningParser#parse_lines
-95 1782
-cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-cfn=Slim::ScanningParser#scanner
-calls=749 98
-98 1171
-cfl=/home/guy/dev/slim/lib/slim/indenter.rb
-cfn=Slim::Indenter#current_indent
-calls=749 98
-98 2341
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/consume_whitespace.rb
-cfn=Slim::ConsumeWhitespace#try
-calls=88 98
-98 5495
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/html_comment.rb
-cfn=Slim::HtmlComment#try
-calls=88 98
-98 555
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/html_conditional_comment.rb
-cfn=Slim::HtmlConditionalComment#try
-calls=88 98
-98 564
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/slim_comment.rb
-cfn=Slim::SlimComment#try
-calls=87 98
-98 600
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/text_block.rb
-cfn=Slim::TextBlock#try
-calls=86 98
-98 866
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/inline_html.rb
-cfn=Slim::InlineHtml#try
-calls=85 98
-98 519
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/ruby_code_block.rb
-cfn=Slim::RubyCodeBlock#try
-calls=85 98
-98 641
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/output_block.rb
-cfn=Slim::OutputBlock#try
-calls=83 98
-98 1875
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/embedded_template.rb
-cfn=Slim::EmbeddedTemplate#try
-calls=59 98
-98 377
-cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-cfn=Slim::ScanningParser#parse_tags
-calls=59 98
-98 19454
-cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-cfn=Slim::ScanningParser#monitor_raise
-calls=88 107
-107 136
+fl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+fn=Slim::NontagProcessor#try
+27 612
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+cfn=Slim::NontagProcessor#consume_whitespace
+calls=89 30
+30 6280
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+cfn=Slim::NontagProcessor#html_comment
+calls=89 30
+30 737
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+cfn=Slim::NontagProcessor#html_conditional_comment
+calls=88 30
+30 588
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+cfn=Slim::NontagProcessor#slim_comment
+calls=87 30
+30 608
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+cfn=Slim::NontagProcessor#text_block
+calls=86 30
+30 844
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+cfn=Slim::NontagProcessor#inline_html
+calls=85 30
+30 574
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+cfn=Slim::NontagProcessor#ruby_code_block
+calls=85 30
+30 671
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+cfn=Slim::NontagProcessor#output_block
+calls=83 30
+30 1924
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+cfn=Slim::NontagProcessor#embedded_template
+calls=59 30
+30 383
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=StringScanner#exist?
-0 180
+0 182
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#any_char_re
-120 151
+119 157
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=StringScanner#eos?
-0 105
+0 108
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#eos?
-48 192
+47 200
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#eos?
-calls=89 49
-49 103
+calls=90 48
+48 105
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#eos?
-calls=2 49
-49 2
+calls=2 48
+48 2
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#no_more?
-201 315
+200 317
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#eos?
-calls=89 202
-202 290
+calls=90 201
+201 300
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#any_char_re
-calls=89 202
-202 147
+calls=90 201
+201 153
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#exist?
-calls=89 202
-202 171
+calls=90 201
+201 175
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#eos?
-calls=2 202
-202 7
+calls=2 201
+201 7
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#any_char_re
-calls=2 202
-202 4
+calls=2 201
+201 4
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#exist?
-calls=2 202
-202 9
+calls=2 201
+201 7
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=Array#push
-0 528
+0 527
 
 fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 fn=Slim::ScanningParser#last_push
-49 485
+49 507
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#last
+calls=1 50
+50 1
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#push
+calls=1 50
+50 4
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#last
+calls=92 50
+50 103
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#push
+calls=92 50
+50 110
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#last
+calls=59 50
+50 85
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#push
+calls=59 50
+50 75
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#last
 calls=1 50
@@ -1693,32 +1725,16 @@ calls=1 50
 50 2
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#last
-calls=91 50
-50 98
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Array#push
-calls=91 50
-50 110
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Array#last
-calls=59 50
-50 66
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Array#push
-calls=59 50
-50 69
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Array#last
 calls=2 50
 50 3
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#push
 calls=2 50
-50 5
+50 3
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#last
 calls=24 50
-50 27
+50 28
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#push
 calls=24 50
@@ -1738,7 +1754,7 @@ calls=1 50
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#push
 calls=1 50
-50 1
+50 2
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=String#strip
@@ -1746,199 +1762,191 @@ fn=String#strip
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=StringScanner#[]
-0 208
+0 203
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#m1
-68 186
+67 189
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#[]
-calls=1 69
-69 2
+calls=1 68
+68 2
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#[]
-calls=27 69
-69 33
+calls=27 68
+68 34
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#[]
-calls=24 69
-69 30
+calls=1 68
+68 2
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#[]
-calls=1 69
-69 2
+calls=24 68
+68 30
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#[]
-calls=9 69
-69 11
+calls=1 68
+68 2
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#[]
-calls=1 69
-69 1
+calls=9 68
+68 11
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#[]
-calls=21 69
-69 27
+calls=1 68
+68 2
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=StringScanner#[]
+calls=21 68
+68 27
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=StringScanner#scan
-0 2606
+0 2155
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#scan
-19 2516
+18 2530
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=1 20
-20 139
+calls=1 19
+19 136
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=88 20
-20 130
+calls=89 19
+19 133
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=88 20
-20 125
+calls=88 19
+19 128
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=87 20
-20 113
+calls=87 19
+19 113
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=86 20
-20 123
+calls=86 19
+19 121
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=85 20
-20 112
+calls=85 19
+19 108
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=85 20
-20 108
+calls=85 19
+19 109
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=83 20
-20 117
+calls=83 19
+19 115
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=59 20
-20 94
+calls=59 19
+19 91
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=59 20
-20 123
+calls=59 19
+19 117
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=59 20
-20 578
+calls=59 19
+19 103
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=59 20
-20 92
+calls=59 19
+19 86
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=40 20
-20 67
+calls=40 19
+19 67
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=67 20
-20 153
+calls=67 19
+19 157
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=40 20
-20 87
+calls=40 19
+19 89
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=59 20
-20 99
+calls=59 19
+19 97
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=38 20
-20 71
+calls=38 19
+19 70
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=38 20
-20 81
+calls=38 19
+19 83
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=2 20
-20 12
+calls=1 19
+19 19
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=24 20
-20 88
+calls=2 19
+19 13
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=1 20
-20 10
+calls=24 19
+19 100
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=1 20
-20 6
+calls=1 19
+19 10
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=1 20
-20 2
+calls=1 19
+19 4
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=1 20
-20 10
+calls=1 19
+19 2
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=4 20
-20 6
+calls=1 19
+19 10
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan
-calls=21 20
-20 62
-
-fl=/home/guy/dev/slim/lib/slim/syntaxes/doctype.rb
-fn=Slim::Doctype#try
-5 8
-cfl=/home/guy/dev/slim/lib/slim/scanner.rb
-cfn=Slim::Scanner#scan
-calls=1 6
-6 142
-cfl=/home/guy/dev/slim/lib/slim/scanner.rb
-cfn=Slim::Scanner#m1
-calls=1 9
-9 6
+calls=7 19
+19 13
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=String#strip
-calls=1 9
-9 3
-cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-cfn=Slim::ScanningParser#last_push
-calls=1 9
-9 7
+cfn=StringScanner#scan
+calls=21 19
+19 62
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#current_indent
-224 320
+223 523
 cfl=/home/guy/dev/slim/lib/slim/indenter.rb
 cfn=Slim::Indenter#current_indent
-calls=1 225
-225 4
+calls=1 224
+224 4
 cfl=/home/guy/dev/slim/lib/slim/indenter.rb
 cfn=Slim::Indenter#current_indent
-calls=88 225
-225 278
+calls=1 224
+224 4
 cfl=/home/guy/dev/slim/lib/slim/indenter.rb
 cfn=Slim::Indenter#current_indent
-calls=59 225
-225 188
+calls=89 224
+224 284
 cfl=/home/guy/dev/slim/lib/slim/indenter.rb
 cfn=Slim::Indenter#current_indent
-calls=1 225
-225 4
+calls=89 224
+224 280
 cfl=/home/guy/dev/slim/lib/slim/indenter.rb
 cfn=Slim::Indenter#current_indent
-calls=1 225
-225 4
+calls=59 224
+224 188
+cfl=/home/guy/dev/slim/lib/slim/indenter.rb
+cfn=Slim::Indenter#current_indent
+calls=1 224
+224 4
 
 fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 fn=Slim::ScanningParser#pop
-44 186
+44 196
 cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 cfn=Slim::ScanningParser#stack_depth
 calls=1 45
@@ -1946,79 +1954,119 @@ calls=1 45
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#pop
 calls=1 46
-46 15
+46 2
 cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 cfn=Slim::ScanningParser#stack_depth
-calls=56 45
-45 88
+calls=57 45
+45 93
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#pop
-calls=56 46
-46 82
+calls=57 46
+46 70
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=Array#pop
-0 171
+0 147
 
 fl=/home/guy/dev/slim/lib/slim/indenter.rb
 fn=Slim::Indenter#pop
-46 160
+46 161
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#pop
 calls=1 48
 48 2
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#pop
-calls=56 48
-48 72
+calls=57 48
+48 73
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=Array#index
-0 201
+0 204
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Fixnum#==
-calls=231 34
-34 253
+calls=232 34
+34 255
 
 fl=/home/guy/dev/slim/lib/slim/indenter.rb
 fn=Slim::Indenter#depth
-12 181
+12 188
 
 fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 fn=Slim::ScanningParser#stack_depth
-53 181
+53 191
 
 fl=/home/guy/dev/slim/lib/slim/indenter.rb
 fn=Slim::Indenter#indent_expected?
-16 158
+16 162
 cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 cfn=Slim::ScanningParser#stack_depth
 calls=1 17
-17 2
+17 3
 cfl=/home/guy/dev/slim/lib/slim/indenter.rb
 cfn=Slim::Indenter#depth
 calls=1 17
 17 3
 cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 cfn=Slim::ScanningParser#stack_depth
-calls=56 17
-17 89
+calls=57 17
+17 93
 cfl=/home/guy/dev/slim/lib/slim/indenter.rb
 cfn=Slim::Indenter#depth
-calls=56 17
-17 87
+calls=57 17
+17 91
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=Array#last
+0 593
+
+fl=/home/guy/dev/slim/lib/slim/indenter.rb
+fn=Slim::Indenter#current_indent
+20 693
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#last
+calls=1 21
+21 5
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#last
+calls=1 21
+21 1
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#last
+calls=1 21
+21 1
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#last
+calls=89 21
+21 100
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#last
+calls=89 21
+21 97
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#last
+calls=89 21
+21 95
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#last
+calls=59 21
+21 65
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#last
+calls=1 21
+21 1
 
 fl=/home/guy/dev/slim/lib/slim/indenter.rb
 fn=Slim::Indenter#indent
-24 616
+24 611
 cfl=/home/guy/dev/slim/lib/slim/indenter.rb
 cfn=Slim::Indenter#current_indent
 calls=1 28
-28 4
+28 8
 cfl=/home/guy/dev/slim/lib/slim/indenter.rb
 cfn=Slim::Indenter#indent_expected?
 calls=1 33
-33 9
+33 10
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#index
 calls=1 34
@@ -2030,67 +2078,71 @@ calls=1 38
 cfl=/home/guy/dev/slim/lib/slim/indenter.rb
 cfn=Slim::Indenter#pop
 calls=1 42
-42 8
+42 6
 cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 cfn=Slim::ScanningParser#pop
 calls=1 43
-43 21
+43 8
 cfl=/home/guy/dev/slim/lib/slim/indenter.rb
 cfn=Slim::Indenter#current_indent
-calls=88 28
-28 285
+calls=89 28
+28 288
 cfl=/home/guy/dev/slim/lib/slim/indenter.rb
 cfn=Slim::Indenter#indent_expected?
-calls=56 33
-33 330
+calls=57 33
+33 342
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#index
-calls=56 34
-34 453
+calls=57 34
+34 456
 cfl=/home/guy/dev/slim/lib/slim/indenter.rb
 cfn=Slim::Indenter#depth
-calls=56 38
-38 90
+calls=57 38
+38 92
 cfl=/home/guy/dev/slim/lib/slim/indenter.rb
 cfn=Slim::Indenter#pop
-calls=56 42
-42 227
+calls=57 42
+42 230
 cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 cfn=Slim::ScanningParser#pop
-calls=56 43
-43 351
+calls=57 43
+43 355
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#indentation
-218 358
+217 368
 cfl=/home/guy/dev/slim/lib/slim/indenter.rb
 cfn=Slim::Indenter#indent
+calls=1 219
+219 48
+cfl=/home/guy/dev/slim/lib/slim/scanner.rb
+cfn=Slim::Scanner#current_indent
 calls=1 220
-220 57
-cfl=/home/guy/dev/slim/lib/slim/scanner.rb
-cfn=Slim::Scanner#current_indent
-calls=1 221
-221 8
+220 7
 cfl=/home/guy/dev/slim/lib/slim/indenter.rb
 cfn=Slim::Indenter#indent
-calls=88 220
-220 2340
+calls=89 219
+219 2362
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#current_indent
-calls=88 221
-221 464
+calls=89 220
+220 478
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=String#[]
+0 449
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=Integer#times
-0 250
+0 267
 cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 cfn=Slim::ScanningParser#last_push
-calls=91 7
-7 450
+calls=92 43
+43 466
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=String#count
-0 217
+0 218
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=StringScanner#scan_until
@@ -2098,139 +2150,243 @@ fn=StringScanner#scan_until
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#scan_until
-23 302
+22 311
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan_until
-calls=1 24
-24 14
+calls=1 23
+23 12
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan_until
-calls=88 24
-24 164
+calls=89 23
+23 168
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan_until
-calls=27 24
-24 166
+calls=27 23
+23 164
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan_until
-calls=21 24
-24 69
+calls=21 23
+23 69
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#scan_until
-calls=2 24
-24 10
+calls=2 23
+23 10
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#ws_until_first_char_re
-108 148
+107 148
 
 fl=/home/guy/dev/slim/lib/slim/scanner.rb
 fn=Slim::Scanner#shift_until_char
-165 240
+164 246
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#ws_until_first_char_re
-calls=1 166
-166 3
+calls=1 165
+165 3
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan_until
-calls=1 166
-166 18
+calls=1 165
+165 15
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#ws_until_first_char_re
-calls=88 166
-166 146
+calls=89 165
+165 145
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#scan_until
-calls=88 166
-166 350
+calls=89 165
+165 363
 
-fl=/home/guy/dev/slim/lib/slim/syntaxes/consume_whitespace.rb
-fn=Slim::ConsumeWhitespace#try
-4 804
+fl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+fn=Slim::NontagProcessor#consume_whitespace
+39 752
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#shift_until_char
-calls=1 5
-5 24
+calls=1 41
+41 22
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#count
-calls=1 6
-6 3
+calls=1 42
+42 3
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Integer#times
-calls=1 6
-6 2
+calls=1 42
+42 2
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#[]
+calls=1 45
+45 6
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#indentation
-calls=1 9
-9 73
+calls=1 45
+45 61
+cfl=/home/guy/dev/slim/lib/slim/scanner.rb
+cfn=Slim::Scanner#current_indent
+calls=1 46
+46 6
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#shift_until_char
-calls=88 5
-5 732
+calls=89 41
+41 751
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#count
-calls=88 6
-6 121
+calls=89 42
+42 123
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Integer#times
-calls=88 6
-6 698
+calls=89 42
+42 731
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#[]
+calls=89 45
+45 260
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#indentation
-calls=88 9
-9 3155
+calls=89 45
+45 3201
+cfl=/home/guy/dev/slim/lib/slim/scanner.rb
+cfn=Slim::Scanner#current_indent
+calls=89 46
+46 473
 
-fl=/home/guy/dev/slim/benchmarks/ruby_runtime
-fn=Array#last
-0 1341
-
-fl=/home/guy/dev/slim/lib/slim/indenter.rb
-fn=Slim::Indenter#current_indent
-20 2165
+fl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+fn=Slim::NontagProcessor#doctype
+56 10
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+cfn=Slim::NontagProcessor#consume_whitespace
+calls=1 57
+57 112
+cfl=/home/guy/dev/slim/lib/slim/scanner.rb
+cfn=Slim::Scanner#scan
+calls=1 59
+59 139
+cfl=/home/guy/dev/slim/lib/slim/scanner.rb
+cfn=Slim::Scanner#m1
+calls=1 60
+60 6
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Array#last
-calls=2 21
-21 3
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Array#last
-calls=1 21
-21 1
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Array#last
-calls=1 21
-21 2
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Array#last
-calls=749 21
-21 805
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Array#last
-calls=88 21
-21 100
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Array#last
-calls=88 21
-21 95
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Array#last
-calls=59 21
-21 67
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Array#last
-calls=59 21
-21 65
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Array#last
-calls=1 21
-21 1
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=Array#last
-calls=1 21
-21 2
+cfn=String#strip
+calls=1 60
+60 3
+cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
+cfn=Slim::ScanningParser#last_push
+calls=1 60
+60 10
 
 fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 fn=Slim::ScanningParser#scanner
-79 2128
+85 244
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=BasicObject#initialize
+0 3
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=String#concat
+0 71
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=String#prepend
+0 11
+
+fl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+fn=Slim::TagProcessor#initialize
+6 13
+cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
+cfn=Slim::ScanningParser#shortcut
+calls=1 8
+8 2
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Hash#keys
+calls=1 8
+8 2
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#join
+calls=1 8
+8 2
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#prepend
+calls=1 8
+8 5
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#concat
+calls=1 8
+8 2
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Class#new
+calls=2 11
+11 11
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=Array#join
+0 22
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=<Class::Regexp>#quote
+0 12
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=Array#map
+0 11
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=<Class::Regexp>#quote
+calls=2 37
+37 3
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=<Class::Regexp>#quote
+calls=3 128
+128 4
+
+fl=/home/guy/dev/slim/benchmarks/ruby_runtime
+fn=Hash#keys
+0 7
+
+fl=/home/guy/dev/slim/lib/slim/parser.rb
+fn=Slim::Parser#shortcut
+63 2
+
+fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
+fn=Slim::ScanningParser#shortcut
+16 39
+cfl=/home/guy/dev/slim/lib/slim/parser.rb
+cfn=Slim::Parser#shortcut
+calls=1 17
+17 2
+
+fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
+fn=Slim::ScanningParser#shortcuts_quoted_ored
+36 5
+cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
+cfn=Slim::ScanningParser#shortcut
+calls=1 37
+37 6
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Hash#keys
+calls=1 37
+37 2
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#map
+calls=1 37
+37 8
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#join
+calls=1 37
+37 2
+
+fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
+fn=Slim::ScanningParser#shortcut_re
+28 10
+cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
+cfn=Slim::ScanningParser#shortcuts_quoted_ored
+calls=1 29
+29 25
+
+fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
+fn=Slim::ScanningParser#tag_re
+32 3
+
+fl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+fn=Slim::NontagProcessor#initialize
+6 4
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=StringScanner#initialize
@@ -2246,7 +2402,7 @@ fn=Slim::Scanner#initialize
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Class#new
 calls=1 10
-10 12
+10 11
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Class#new
 calls=2 10
@@ -2254,35 +2410,43 @@ calls=2 10
 
 fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 fn=Slim::ScanningParser#parse
-68 174
+68 463
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Class#new
-calls=1 70
-70 23
+calls=3 72
+72 71
+cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
+cfn=Slim::ScanningParser#tag_re
+calls=1 72
+72 3
+cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
+cfn=Slim::ScanningParser#shortcut_re
+calls=1 72
+72 35
 cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 cfn=Slim::ScanningParser#scanner
-calls=2 72
-72 4
-cfl=/home/guy/dev/slim/lib/slim/indenter.rb
-cfn=Slim::Indenter#current_indent
-calls=2 72
-72 8
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/consume_whitespace.rb
-cfn=Slim::ConsumeWhitespace#try
-calls=1 72
-72 116
-cfl=/home/guy/dev/slim/lib/slim/syntaxes/doctype.rb
-cfn=Slim::Doctype#try
-calls=1 72
-72 167
+calls=149 77
+77 244
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+cfn=Slim::NontagProcessor#doctype
+calls=1 73
+73 279
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#no_more?
-calls=89 75
-75 916
+calls=90 80
+80 939
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+cfn=Slim::NontagProcessor#try
+calls=89 77
+77 13221
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#try
+calls=59 77
+77 17342
 cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-cfn=Slim::ScanningParser#parse_lines
-calls=88 75
-75 36377
+cfn=Slim::ScanningParser#monitor_raise
+calls=89 79
+79 145
 
 fl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 fn=Slim::ScanningParser#reset
@@ -2318,7 +2482,7 @@ calls=1 13
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=<Class::BasicObject>#allocate
-0 140
+0 13
 
 fl=/home/guy/dev/slim/lib/slim/parser.rb
 fn=Slim::Parser#replace_tabs
@@ -2326,11 +2490,11 @@ fn=Slim::Parser#replace_tabs
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#gsub
 calls=1 127
-127 33
+127 30
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=String#gsub
-0 261
+0 257
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=Regexp#initialize
@@ -2338,11 +2502,11 @@ fn=Regexp#initialize
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=<Class::Regexp>#allocate
-0 3
+0 4
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=Class#new
-0 361
+0 92
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=<Class::Regexp>#allocate
 calls=1 117
@@ -2358,7 +2522,7 @@ calls=1 82
 cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 cfn=Slim::ScanningParser#initialize
 calls=1 82
-82 34
+82 33
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=<Class::BasicObject>#allocate
 calls=1 11
@@ -2369,12 +2533,20 @@ calls=1 11
 11 7
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=<Class::BasicObject>#allocate
-calls=1 70
-70 2
+calls=3 72
+72 4
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#initialize
 calls=1 70
-70 18
+70 17
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/nontag_processor.rb
+cfn=Slim::NontagProcessor#initialize
+calls=1 71
+71 4
+cfl=/home/guy/dev/slim/lib/slim/syntaxes/tag_processor.rb
+cfn=Slim::TagProcessor#initialize
+calls=1 72
+72 37
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=<Class::StringScanner>#allocate
 calls=1 10
@@ -2382,63 +2554,39 @@ calls=1 10
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=StringScanner#initialize
 calls=1 10
-10 3
+10 4
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=<Class::BasicObject>#allocate
+calls=2 11
+11 3
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=BasicObject#initialize
+calls=2 11
+11 3
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=<Class::Regexp>#allocate
-calls=1 129
-129 2
+calls=1 128
+128 2
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Regexp#initialize
-calls=1 129
-129 5
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=<Class::BasicObject>#allocate
-calls=59 149
-149 73
-cfl=/home/guy/dev/slim/lib/slim/progress.rb
-cfn=Slim::Progress#initialize
-calls=59 149
-149 105
+calls=1 128
+128 6
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=<Class::String>#allocate
-calls=27 15
-15 33
+calls=27 187
+187 34
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#initialize
-calls=27 15
-15 38
+calls=27 187
+187 42
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=<Class::BasicObject>#allocate
-calls=27 19
-19 34
-cfl=/home/guy/dev/slim/lib/slim/progress.rb
-cfn=Slim::Progress#initialize
-calls=27 19
-19 48
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=<Class::BasicObject>#allocate
-calls=18 23
-23 23
-cfl=/home/guy/dev/slim/lib/slim/progress.rb
-cfn=Slim::Progress#initialize
-calls=9 18
-18 16
-cfl=/home/guy/dev/slim/lib/slim/code_finder.rb
-cfn=Slim::CodeFinder#initialize
-calls=9 23
-23 469
-cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
-cfn=<Class::BasicObject>#allocate
-calls=4 32
-32 5
-cfl=/home/guy/dev/slim/lib/slim/progress.rb
-cfn=Slim::Progress#initialize
-calls=2 13
-13 4
+calls=2 26
+26 3
 cfl=/home/guy/dev/slim/lib/slim/scanner.rb
 cfn=Slim::Scanner#initialize
-calls=2 32
-32 20
+calls=2 26
+26 19
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=<Class::StringScanner>#allocate
 calls=2 10
@@ -2458,7 +2606,7 @@ fn=Encoding#name
 
 fl=/home/guy/dev/slim/lib/slim/parser.rb
 fn=Slim::Parser#remove_bom
-114 15
+114 14
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Kernel#respond_to?
 calls=1 115
@@ -2490,7 +2638,7 @@ fn=String#valid_encoding?
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=String#force_encoding
-0 2
+0 3
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=Kernel#frozen?
@@ -2510,7 +2658,7 @@ fn=Hash#include?
 
 fl=/home/guy/dev/slim/benchmarks/ruby_runtime
 fn=Array#each
-0 90
+0 114
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Hash#include?
 calls=2 16
@@ -2519,14 +2667,26 @@ cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Hash#include?
 calls=1 16
 16 1
-cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
-cfn=Slim::ScanningParser#shortcut_lookup
-calls=19 11
-11 84
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#slice
+calls=3 81
+81 5
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=String#prepend
+calls=3 82
+82 6
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#push
-calls=19 12
-12 24
+calls=3 82
+82 5
+cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
+cfn=Slim::ScanningParser#shortcut_lookup
+calls=19 105
+105 83
+cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
+cfn=Array#push
+calls=19 106
+106 24
 
 fl=/home/guy/.rvm/gems/ruby-1.9.3-p327-fast/gems/temple-0.5.5/lib/temple/hash.rb
 fn=Temple::ImmutableHash#[]
@@ -2538,7 +2698,7 @@ calls=2 16
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Array#each
 calls=1 16
-16 5
+16 4
 
 fl=/home/guy/dev/slim/lib/slim/parser.rb
 fn=Slim::Parser#set_encoding
@@ -2562,7 +2722,7 @@ calls=1 105
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#force_encoding
 calls=1 106
-106 2
+106 3
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=String#valid_encoding?
 calls=1 108
@@ -2574,7 +2734,7 @@ fn=Slim::Parser#call
 cfl=/home/guy/dev/slim/lib/slim/parser.rb
 cfn=Slim::Parser#set_encoding
 calls=1 81
-81 39
+81 40
 cfl=/home/guy/dev/slim/lib/slim/parser.rb
 cfn=Slim::Parser#remove_bom
 calls=1 81
@@ -2582,25 +2742,25 @@ calls=1 81
 cfl=/home/guy/dev/slim/lib/slim/parser.rb
 cfn=Slim::Parser#replace_tabs
 calls=1 81
-81 36
+81 34
 cfl=/home/guy/dev/slim/benchmarks/ruby_runtime
 cfn=Class#new
 calls=1 82
-82 39
+82 38
 cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 cfn=Slim::ScanningParser#parse
 calls=1 83
-83 37785
+83 32742
 cfl=/home/guy/dev/slim/lib/slim/scanning_parser.rb
 cfn=Slim::ScanningParser#result
 calls=1 84
-84 14
+84 11
 
 fl=/home/guy/dev/slim/benchmarks/profile-parser.rb
 fn=Global#[No method]
-22 38
+24 35
 cfl=/home/guy/dev/slim/lib/slim/parser.rb
 cfn=Slim::Parser#call
-calls=1 22
-22 37967
+calls=1 24
+24 32920
 

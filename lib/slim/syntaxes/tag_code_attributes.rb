@@ -2,13 +2,9 @@ module Slim
 module TagCodeAttributes
   extend self
 
-  def code_re
-    @cre ||= %r~\s*(\w[:\w-]*)(==?)~
-  end
-
   def try(parser, scanner, attributes, escape_quoted_attrs)
-
-    return false unless scanner.scan(code_re)
+    @cre ||= %r~\s*(\w[:\w-]*)(==?)~
+    return false unless scanner.scan(@cre)
 
     atbe = scanner.m1
     esc = !!escape_quoted_attrs || true
@@ -20,7 +16,8 @@ module TagCodeAttributes
     part = scanner.scan_until(scan_re)
     raise "No part" unless part
 
-    finder = CodeFinder.new(part)
+    finder = CodeFinder.new
+    finder.reset(part)
     until finder.done? || monitor.stuck? do
 
       monitor.measure

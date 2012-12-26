@@ -2,7 +2,7 @@ module Slim
 module TagText
   extend self
 
-  def try(parser, scanner, tags, memo)
+  def try(parser, scanner, tags, tag_indent, tag_pos)
     pos = scanner.position
 
     # unless scanner.scan(%r{\s(.*)(?=\r?\n)})
@@ -13,7 +13,6 @@ module TagText
 
     tag_txt = scanner.m1
 
-    tag_indent, tag_pos = memo.values_at(:tag_indent, :tag_position)
     min_indent = tag_indent + 1 + (pos - tag_pos)
 
     out = [:multi]

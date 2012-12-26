@@ -1,7 +1,7 @@
 module Slim
 class CodeFinder
 
-  def initialize(line)
+  def reset(line)
     @parts = line.partition(/[\{\[\(]/)
     if delim.empty?
       @code = line

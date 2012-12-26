@@ -13,7 +13,6 @@ module Slim
 
     def reset
       @indenter.reset
-      @liner.reset
     end
 
     def scan(re)
@@ -97,7 +96,7 @@ module Slim
       @re4 ||= %r{\r?\n +}
     end
 
-    def lfs_ind_re
+    def lf_only_re
       @re5 ||= %r{\r?\n +}
     end
 

@@ -68,97 +68,27 @@ module Slim
     def parse(str)
       @temp_scanner = nil
       @scanner = Scanner.new(str, self)
-      ConsumeWhitespace.try( self, scanner, indenter.current_indent ) &&
-      Doctype.try( self, scanner, indenter.current_indent )
+      @nontag_processor = NontagProcessor.new(self)
+      @tag_processor = TagProcessor.new(self, tag_re, shortcut_re, @eqa)
+      @nontag_processor.doctype(scanner)
       i = 0
       until @scanner.no_more?
-        i = parse_lines(i)
+        @nontag_processor.try(scanner) ||
+        @tag_processor.try(scanner)
+
+        monitor_raise(i)
+        i = i.succ
+
       end
     end
 
     def scanner
-      @temp_scanner || @scanner
-    end
-
-    def set_temp_scanner(alt)
-      @temp_scanner = alt
-    end
-
-    def clear_temp_scanner
-      @temp_scanner = nil
-    end
-
-    def escape_quoted_attrs
-      @eqa
-    end
-
-    def parse_lines(i)
-      ConsumeWhitespace.try( self, scanner, indenter.current_indent ) &&
-      HtmlComment.try( self, scanner, indenter.current_indent ) ||
-      HtmlConditionalComment.try( self, scanner, indenter.current_indent ) ||
-      SlimComment.try( self, scanner, indenter.current_indent ) ||
-      TextBlock.try( self, scanner, indenter.current_indent ) ||
-      InlineHtml.try( self, scanner, indenter.current_indent ) ||
-      RubyCodeBlock.try( self, scanner, indenter.current_indent ) ||
-      OutputBlock.try( self, scanner, indenter.current_indent ) ||
-      EmbeddedTemplate.try( self, scanner, indenter.current_indent ) ||
-      parse_tags
-
-      monitor_raise(i)
-      i.succ
+      @scanner
     end
 
     def monitor_raise(i)
       return if i < 113
       syntax_error! "line loop limit reached" 
-    end
-
-    def parse_tags
-
-      # ap ["parse_tags", scanner.rest]
-
-      done, i = false, 0
-      tags, memo, attributes = [], {}, [:html, :attrs]
-
-      begin
-        i += 1
-        Tag.try( self, scanner, tag_re, shortcut_re, tags, attributes, memo )
-        parse_attributes(memo, attributes)
-        tags.push attributes
-        last_push tags
-        done =  TagOutput.try( self, scanner, indenter.current_indent, tags ) ||
-                TagClosed.try( self, scanner, tags ) ||
-                TagNoContent.try( self, scanner, tags ) ||
-                TagText.try( self, scanner, tags, memo )
-
-        monitor_tag_raise(i)
-
-      end until done
-      done
-    end
-
-    def monitor_tag_raise(i)
-      return if i < 13
-      syntax_error! "tag loop limit reached" 
-    end
-
-    def parse_attributes(memo, attributes)
-      TagShortcutAttributes.try( self, scanner, attributes )
-      TagDelimitedAttributes.try( self, scanner, memo )
-
-      monitor = Progress.new(scanner)
-      while monitor.progress? do
-        break if scanner.eol?
-        TagSplatAttributes.try( self, scanner, attributes ) ||
-        TagQuotedAttributes.try_eagerly( self, scanner, attributes, escape_quoted_attrs ) ||
-        TagCodeAttributes.try( self, scanner, attributes, escape_quoted_attrs ) ||
-        TagBooleanAttributes.try( self, scanner, attributes, memo[:wrapped_attributes] )
-      end
-
-      if memo[:wrapped_attributes] && scanner.no_more?
-        clear_temp_scanner
-        memo[:wrapped_attributes] = false
-      end
     end
 
     def syntax_error!(message)

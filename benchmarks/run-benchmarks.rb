@@ -118,8 +118,11 @@ class SlimBenchmarks
 
   def run
     puts "#{@iterations} Iterations"
+    @benches.each do |name, block|
+      50.times { block.call }
+    end
     GC.disable
-    Benchmark.bmbm do |x|
+    Benchmark.bm do |x|
       @benches.each do |name, block|
         x.report name.to_s do
           @iterations.to_i.times { block.call }
@@ -127,6 +130,7 @@ class SlimBenchmarks
       end
     end
     GC.enable
+
 #     puts "
 # (1) Compiled benchmark. Template is parsed before the benchmark and
 #     generated ruby code is compiled into a method.

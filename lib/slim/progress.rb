@@ -1,16 +1,19 @@
 module Slim
   class Progress
 
-    def initialize(scanner)
+    attr_reader :scanner
+
+    def reset(scanner)
       @scanner = scanner
+      @pos = nil
     end
 
     def measure
-      @pos = @scanner.position
+      @pos = scanner.position
     end
 
     def stuck?
-      @scanner.position == @pos
+      scanner.position == @pos
     end
 
     def progress?
@@ -20,7 +23,7 @@ module Slim
       else
         was = @pos
         measure
-        @scanner.position > was
+        scanner.position > was
       end
     end
 

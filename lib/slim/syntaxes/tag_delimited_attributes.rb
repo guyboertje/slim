@@ -29,8 +29,7 @@ module TagDelimitedAttributes
     line.gsub!(/\r?\n/, ' ') # behave like a single line
     line.concat(' ')
 
-    temp_scanner = Scanner.new(line, parser)
-    parser.set_temp_scanner(temp_scanner)
+    parser.set_temp_scanner(line)
     memo[:wrapped_attributes] = true
     
     false

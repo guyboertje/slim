@@ -2,15 +2,15 @@ require 'helper'
 
 class TestSlimHtmlStructureT < TestSlim
 
-  def test_invalid_empty_attribute2
+
+  def test_hash_call_in_delimited_attribute_with_ruby_evaluation_3
     source = %q{
-p
-  img{src=}
+p(id=[hash[:a] + hash[:a]]) Test it
 }
 
-    assert_syntax_error "Invalid empty attribute\n  (__TEMPLATE__), Line 3, Column 10\n    img{src=}\n            ^\n", source
+    assert_html '<p id="The letter aThe letter a">Test it</p>', source
   end
 
-# ruby -I"lib:lib:test/core" test/core/test_html_structure.rb --seed 27793
+# ruby -I"lib:lib:test/core" test/core/test_html_structure_t.rb --seed 27793
 
 end
