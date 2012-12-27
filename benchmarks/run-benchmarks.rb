@@ -121,6 +121,7 @@ class SlimBenchmarks
     @benches.each do |name, block|
       50.times { block.call }
     end
+    
     GC.disable
     Benchmark.bm do |x|
       @benches.each do |name, block|

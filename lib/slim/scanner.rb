@@ -9,6 +9,21 @@ module Slim
       @parser = parser
       @input = StringScanner.new(src)
       @indenter = parser.indenter
+      @qe_lf_re = %r{(?=\r?\n)}
+      @lf_re = %r{\r?\n}
+      @ind_re = %r{ +}
+      @txt_re= %r{.*}
+      @lf_ind_re = %r{\r?\n +}
+      @lf_only_re = %r{\r?\n +}
+      @lfs_ind_char_re = %r{(\r?\n)* +(?=\S)}
+      @ws_until_first_char_re = %r{\s*(?=\S)}
+      @lf_space_plus_re = %r{(\r?)\n +}
+      @broken_line_re = %r{(.*[,\\]\r?\n)*.*(?=\r?\n)}
+      @any_char_re = %r~\S~
+      @delim_map = Hash[?(,?),?[,?],?{,?}]
+      @delim_re = Re.new( @delim_map.keys.map{|k| Re.quote(k)}.join(?|) )
+      @just_spaces_re = %r~ +\z~
+      @indent_re_cache = {}
     end
 
     def reset
@@ -76,101 +91,46 @@ module Slim
       @input[3]
     end
 
-    def qe_lf_re
-      @re0 ||= %r{(?=\r?\n)}
-    end
-
-    def lf_re
-      @re1 ||= %r{\r?\n}
-    end
-
-    def ind_re
-      @re2 ||= %r{ +}
-    end
-
-    def txt_re
-      @re3 ||= %r{.*}
-    end
-
-    def lf_ind_re
-      @re4 ||= %r{\r?\n +}
-    end
-
-    def lf_only_re
-      @re5 ||= %r{\r?\n +}
-    end
-
-    def lfs_ind_char_re
-      @re6 ||= %r{(\r?\n)* +(?=\S)}
-    end
-
-    def ws_until_first_char_re
-      @re7 ||= %r{\s*(?=\S)}
-    end
-
-    def lf_space_plus_re
-      @re8 ||= %r{(\r?)\n +}
-    end
-
-    def broken_line_re
-      @re9 ||= %r{(.*[,\\]\r?\n)*.*(?=\r?\n)}
-    end
-
-    def any_char_re
-      @re10 ||= %r~\S~
-    end
-
-    def delim_map
-      @h1 ||= Hash[?(,?),?[,?],?{,?}]
-    end
-
-    def delim_re
-      @re11 ||= Re.new( delim_map.keys.map{|k| Re.quote(k)}.join(?|) )
-    end
-
-    def just_spaces_re
-      @re13 ||= %r~ +\z~
-    end
-
     def shift_delim
-      scan(delim_re)
+      scan(@delim_re)
     end
 
     def shift_broken_lines
-      bls = scan(broken_line_re)
+      bls = scan(@broken_line_re)
       if bls
-        bls.gsub(lf_space_plus_re, ?\n)
+        bls.gsub(@lf_space_plus_re, ?\n)
       else
         shift_text
       end
     end
 
     def shift_indented_lines(indent)
-      scan(%r~((\r?\n)* {#{indent},}.*(\r?\n)+)*~)
+      re = @indent_re_cache[indent] ||= %r~((\r?\n)* {#{indent},}.*(\r?\n)+)*~
+      scan(re)
     end
 
     def shift_lf
-      scan(lf_re)
+      scan(@lf_re)
     end
 
     def shift_indent
-      scan(ind_re)
+      scan(@ind_re)
     end
 
     def shift_text
-      scan(txt_re)
+      scan(@txt_re)
     end
 
     def shift_until_char
-      scan_until(ws_until_first_char_re)
+      scan_until(@ws_until_first_char_re)
     end
 
     def shift_upto_lf
-      scan_until(qe_lf_re)
+      scan_until(@qe_lf_re)
     end
 
     def check_lf
-      check(lf_re)
+      check(@lf_re)
     end
 
     def eol?
@@ -178,15 +138,15 @@ module Slim
     end
 
     def check_next_indent
-      if f = check_until(lfs_ind_char_re)
-        f[just_spaces_re].size
+      if f = check_until(@lfs_ind_char_re)
+        f[@just_spaces_re].size
       else
         current_indent
       end
     end
 
     def check_indent
-      if f = check(ind_re)
+      if f = check(@ind_re)
         f.size
       else
         current_indent
@@ -194,11 +154,11 @@ module Slim
     end
 
     def check_text
-      check(txt_re)
+      check(@txt_re)
     end
 
     def no_more?
-      eos? || !@input.exist?(any_char_re)
+      eos? || !@input.exist?(@any_char_re)
     end
 
     def line_end(interim = nil)

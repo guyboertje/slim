@@ -1,190 +1,167 @@
-Thread ID: 12570480
-Total: 0.032955
+Thread ID: 18009960
+Total: 0.029952
 Sort by: self_time
 
  %self     total     self     wait    child    calls   name
-  7.68      0.00     0.00     0.00     0.00     1181   Slim::Scanner#scan 
-  6.54      0.00     0.00     0.00     0.00     1181   StringScanner#scan 
-  5.22      0.00     0.00     0.00     0.00     1018   Slim::TagProcessor#scanner 
-  2.90      0.00     0.00     0.00     0.00       67   Slim::TagProcessor#quoted_attributes 
-  2.50      0.01     0.00     0.00     0.01       59   Slim::TagProcessor#parse_attributes 
-  2.28      0.02     0.00     0.00     0.02       59   Slim::TagProcessor#try 
-  2.28      0.01     0.00     0.00     0.01       90   Slim::NontagProcessor#consume_whitespace 
-  2.10      0.00     0.00     0.00     0.00      330   Slim::Indenter#current_indent 
-  1.95      0.00     0.00     0.00     0.00      293   Slim::Scanner#position 
-  1.91      0.00     0.00     0.00     0.00       59   Slim::TagProcessor#find_tag 
-  1.86      0.01     0.00     0.00     0.01       89   Slim::NontagProcessor#try 
-  1.85      0.00     0.00     0.00     0.00       90   Slim::Indenter#indent 
-  1.80      0.00     0.00     0.00     0.00      512   Array#last 
-  1.60      0.00     0.00     0.00     0.00      404   Array#push 
-  1.59      0.00     0.00     0.00     0.00      240   Slim::Scanner#current_indent 
-  1.54      0.00     0.00     0.00     0.00      181   Slim::ScanningParser#last_push 
-  1.40      0.03     0.00     0.00     0.03        1   Slim::ScanningParser#parse 
-  1.40      0.00     0.00     0.00     0.00       99   Slim::Progress#progress? 
-  1.39      0.00     0.00     0.00     0.00       83   Slim::NontagProcessor#output_block 
-  1.36      0.00     0.00     0.00     0.00       59   Slim::TagProcessor#output 
-  1.36      0.00     0.00     0.00     0.00      163   String#[] 
-  1.28      0.00     0.00     0.00     0.00      140   StringScanner#scan_until 
-  1.23      0.00     0.00     0.00     0.00       40   Slim::TagProcessor#code_attributes 
-  1.12      0.00     0.00     0.00     0.00       90   Slim::Scanner#indentation 
-  1.12      0.00     0.00     0.00     0.00      149   Slim::Progress#measure 
-  1.01      0.00     0.00     0.00     0.00      293   StringScanner#pos 
-  0.96      0.00     0.00     0.00     0.00       92   Slim::Scanner#no_more? 
-  0.94      0.00     0.00     0.00     0.00      140   Slim::Scanner#scan_until 
-  0.93      0.00     0.00     0.00     0.00       86   Slim::NontagProcessor#text_block 
-  0.90      0.00     0.00     0.00     0.00       59   Slim::TagProcessor#shortcut_attributes 
-  0.88      0.00     0.00     0.00     0.00      135   Slim::Scanner#check 
-  0.88      0.00     0.00     0.00     0.00       85   Slim::NontagProcessor#inline_html 
-  0.87      0.00     0.00     0.00     0.00       89   Slim::NontagProcessor#html_comment 
-  0.86      0.00     0.00     0.00     0.00       38   Slim::TagProcessor#no_content 
-  0.81      0.00     0.00     0.00     0.00       90   Integer#times 
-  0.81      0.00     0.00     0.00     0.00       85   Slim::NontagProcessor#ruby_code_block 
-  0.79      0.00     0.00     0.00     0.00       88   Slim::NontagProcessor#html_conditional_comment 
-  0.78      0.00     0.00     0.00     0.00       85   String#gsub 
-  0.77      0.00     0.00     0.00     0.00       87   Slim::NontagProcessor#slim_comment 
-  0.77      0.00     0.00     0.00     0.00      232   Fixnum#== 
-  0.76      0.00     0.00     0.00     0.00       18   Slim::CodeFinder#analyse 
-  0.75      0.00     0.00     0.00     0.00       47   Slim::Scanner#shift_broken_lines 
-  0.75      0.00     0.00     0.00     0.00       90   Slim::Scanner#shift_until_char 
-  0.74      0.00     0.00     0.00     0.00      149   Slim::ScanningParser#scanner 
-  0.71      0.00     0.00     0.00     0.00       59   Slim::TagProcessor#reset 
-  0.67      0.00     0.00     0.00     0.00       47   Slim::Scanner#check_next_indent 
-  0.67      0.00     0.00     0.00     0.00      183   String#empty? 
-  0.66      0.00     0.00     0.00     0.00       59   Slim::TagProcessor#delimited_attributes 
-  0.66      0.00     0.00     0.00     0.00      157   String#count 
-  0.66      0.00     0.00     0.00     0.00       97   Slim::Progress#reset 
-  0.63      0.00     0.00     0.00     0.00      135   StringScanner#check 
-  0.62      0.00     0.00     0.00     0.00       76   Slim::Scanner#check_lf 
-  0.62      0.00     0.00     0.00     0.00       58   Array#index 
-  0.62      0.00     0.00     0.00     0.00      160   StringScanner#[] 
-  0.61      0.00     0.00     0.00     0.00       92   Slim::Scanner#eos? 
-  0.59      0.00     0.00     0.00     0.00       58   Slim::ScanningParser#pop 
-  0.58      0.00     0.00     0.00     0.00       40   Slim::TagProcessor#quoted_attributes_eagerly 
-  0.58      0.00     0.00     0.00     0.00      116   Slim::ScanningParser#stack_depth 
-  0.57      0.00     0.00     0.00     0.00       85   Slim::Scanner#m1 
-  0.57      0.00     0.00     0.00     0.00      116   Slim::Indenter#depth 
-  0.55      0.00     0.00     0.00     0.00       92   StringScanner#exist? 
-  0.51      0.00     0.00     0.00     0.00       76   Slim::Scanner#eol? 
-  0.51      0.00     0.00     0.00     0.00       59   Slim::NontagProcessor#embedded_template 
-  0.49      0.00     0.00     0.00     0.00       59   Slim::Scanner#shift_delim 
-  0.49      0.00     0.00     0.00     0.00       58   Slim::Indenter#indent_expected? 
-  0.49      0.00     0.00     0.00     0.00       58   Slim::Indenter#pop 
-  0.48      0.00     0.00     0.00     0.00       92   Slim::Scanner#any_char_re 
-  0.45      0.00     0.00     0.00     0.00       90   Slim::Scanner#ws_until_first_char_re 
-  0.45      0.00     0.00     0.00     0.00       86   Slim::NontagProcessor#text_block_re 
-  0.45      0.00     0.00     0.00     0.00      116   Array#pop 
-  0.44      0.00     0.00     0.00     0.00       89   Slim::ScanningParser#monitor_raise 
-  0.43      0.00     0.00     0.00     0.00       87   Slim::CodeFinder#rest 
-  0.43      0.00     0.00     0.00     0.00       40   Slim::TagProcessor#splat_attributes 
-  0.40      0.00     0.00     0.00     0.00       38   Slim::TagProcessor#closed 
-  0.39      0.00     0.00     0.00     0.00       77   Slim::Scanner#lf_re 
-  0.36      0.00     0.00     0.00     0.00       47   Slim::Scanner#broken_line_re 
-  0.35      0.00     0.00     0.00     0.00       20   Array#each 
-  0.33      0.00     0.00     0.00     0.00       47   StringScanner#check_until 
-  0.33      0.00     0.00     0.00     0.00       92   StringScanner#eos? 
-  0.32      0.00     0.00     0.00     0.00       47   Slim::Scanner#check_until 
-  0.31      0.00     0.00     0.00     0.00       47   Slim::Scanner#m2 
-  0.31      0.00     0.00     0.00     0.00       59   Slim::Scanner#delim_re 
-  0.31      0.00     0.00     0.00     0.00       45   Slim::ScanningParser#push 
-  0.30      0.00     0.00     0.00     0.00       41   Slim::Progress#stuck? 
-  0.30      0.00     0.00     0.00     0.00       59   Slim::TagProcessor#monitor_tag_raise 
-  0.28      0.00     0.00     0.00     0.00       18   Slim::CodeFinder#net_delim_count 
-  0.28      0.00     0.00     0.00     0.00       41  *Class#new 
-  0.28      0.00     0.00     0.00     0.00       28   String#partition 
-  0.26      0.00     0.00     0.00     0.00       16   String#scan 
-  0.25      0.00     0.00     0.00     0.00       59   Array#concat 
-  0.25      0.00     0.00     0.00     0.00       47   Slim::Scanner#lf_space_plus_re 
-  0.25      0.00     0.00     0.00     0.00       46   Slim::Scanner#just_spaces_re 
-  0.24      0.00     0.00     0.00     0.00       47   Slim::Scanner#lfs_ind_char_re 
-  0.22      0.00     0.00     0.00     0.00       44   String#concat 
-  0.21      0.00     0.00     0.00     0.00       42   Slim::CodeFinder#done? 
-  0.20      0.00     0.00     0.00     0.00       59   NilClass#nil? 
-  0.19      0.00     0.00     0.00     0.00       28   Slim::Scanner#m3 
+  8.61      0.00     0.00     0.00     0.00     1181   Slim::Scanner#scan 
+  7.02      0.00     0.00     0.00     0.00     1181   StringScanner#scan 
+  5.71      0.00     0.00     0.00     0.00     1018   Slim::TagProcessor#scanner 
+  2.56      0.01     0.00     0.00     0.01       59   Slim::TagProcessor#parse_attributes 
+  2.43      0.02     0.00     0.00     0.01       59   Slim::TagProcessor#try 
+  2.34      0.00     0.00     0.00     0.00       67   Slim::TagProcessor#quoted_attributes 
+  2.30      0.00     0.00     0.00     0.00      330   Slim::Indenter#current_indent 
+  2.24      0.01     0.00     0.00     0.01       90   Slim::NontagProcessor#consume_whitespace 
+  2.09      0.00     0.00     0.00     0.00      293   Slim::Scanner#position 
+  2.04      0.00     0.00     0.00     0.00       59   Slim::TagProcessor#find_tag 
+  2.03      0.01     0.00     0.00     0.01       89   Slim::NontagProcessor#try 
+  2.01      0.00     0.00     0.00     0.00       90   Slim::Indenter#indent 
+  1.90      0.00     0.00     0.00     0.00      512   Array#last 
+  1.75      0.00     0.00     0.00     0.00      240   Slim::Scanner#current_indent 
+  1.74      0.00     0.00     0.00     0.00      404   Array#push 
+  1.67      0.00     0.00     0.00     0.00      181   Slim::ScanningParser#last_push 
+  1.51      0.00     0.00     0.00     0.00       99   Slim::Progress#progress? 
+  1.51      0.03     0.00     0.00     0.03        1   Slim::ScanningParser#parse 
+  1.44      0.00     0.00     0.00     0.00      163   String#[] 
+  1.34      0.00     0.00     0.00     0.00       83   Slim::NontagProcessor#output_block 
+  1.34      0.00     0.00     0.00     0.00       59   Slim::TagProcessor#output 
+  1.21      0.00     0.00     0.00     0.00      293   StringScanner#pos 
+  1.21      0.00     0.00     0.00     0.00       40   Slim::TagProcessor#code_attributes 
+  1.19      0.00     0.00     0.00     0.00       90   Slim::Scanner#indentation 
+  1.17      0.00     0.00     0.00     0.00      149   Slim::Progress#measure 
+  1.03      0.00     0.00     0.00     0.00      140   StringScanner#scan_until 
+  1.02      0.00     0.00     0.00     0.00      140   Slim::Scanner#scan_until 
+  0.95      0.00     0.00     0.00     0.00      135   Slim::Scanner#check 
+  0.94      0.00     0.00     0.00     0.00       86   Slim::NontagProcessor#text_block 
+  0.91      0.00     0.00     0.00     0.00       90   Integer#times 
+  0.87      0.00     0.00     0.00     0.00       92   Slim::Scanner#no_more? 
+  0.85      0.00     0.00     0.00     0.00      232   Fixnum#== 
+  0.82      0.00     0.00     0.00     0.00       85   String#gsub 
+  0.82      0.00     0.00     0.00     0.00       38   Slim::TagProcessor#no_content 
+  0.82      0.00     0.00     0.00     0.00      149   Slim::ScanningParser#scanner 
+  0.77      0.00     0.00     0.00     0.00       85   Slim::NontagProcessor#inline_html 
+  0.76      0.00     0.00     0.00     0.00       59   Slim::TagProcessor#delimited_attributes 
+  0.75      0.00     0.00     0.00     0.00       18   Slim::CodeFinder#analyse 
+  0.74      0.00     0.00     0.00     0.00       59   Slim::TagProcessor#reset 
+  0.73      0.00     0.00     0.00     0.00       58   Array#index 
+  0.73      0.00     0.00     0.00     0.00       97   Slim::Progress#reset 
+  0.72      0.00     0.00     0.00     0.00      157   String#count 
+  0.72      0.00     0.00     0.00     0.00      183   String#empty? 
+  0.71      0.00     0.00     0.00     0.00       89   Slim::NontagProcessor#html_comment 
+  0.68      0.00     0.00     0.00     0.00      116   Slim::Indenter#depth 
+  0.67      0.00     0.00     0.00     0.00       87   Slim::NontagProcessor#slim_comment 
+  0.66      0.00     0.00     0.00     0.00      135   StringScanner#check 
+  0.66      0.00     0.00     0.00     0.00       85   Slim::NontagProcessor#ruby_code_block 
+  0.66      0.00     0.00     0.00     0.00      160   StringScanner#[] 
+  0.66      0.00     0.00     0.00     0.00       88   Slim::NontagProcessor#html_conditional_comment 
+  0.65      0.00     0.00     0.00     0.00       92   Slim::Scanner#eos? 
+  0.64      0.00     0.00     0.00     0.00       90   Slim::Scanner#shift_until_char 
+  0.63      0.00     0.00     0.00     0.00      116   Slim::ScanningParser#stack_depth 
+  0.63      0.00     0.00     0.00     0.00       40   Slim::TagProcessor#quoted_attributes_eagerly 
+  0.63      0.00     0.00     0.00     0.00       58   Slim::ScanningParser#pop 
+  0.63      0.00     0.00     0.00     0.00       59   Slim::TagProcessor#shortcut_attributes 
+  0.62      0.00     0.00     0.00     0.00       85   Slim::Scanner#m1 
+  0.62      0.00     0.00     0.00     0.00       47   Slim::Scanner#shift_broken_lines 
+  0.60      0.00     0.00     0.00     0.00       89   Slim::ScanningParser#monitor_raise 
+  0.57      0.00     0.00     0.00     0.00       92   StringScanner#exist? 
+  0.57      0.00     0.00     0.00     0.00       76   Slim::Scanner#eol? 
+  0.56      0.00     0.00     0.00     0.00       47   Slim::Scanner#check_next_indent 
+  0.54      0.00     0.00     0.00     0.00       76   Slim::Scanner#check_lf 
+  0.53      0.00     0.00     0.00     0.00       58   Slim::Indenter#indent_expected? 
+  0.53      0.00     0.00     0.00     0.00       58   Slim::Indenter#pop 
+  0.50      0.00     0.00     0.00     0.00      116   Array#pop 
+  0.45      0.00     0.00     0.00     0.00       38   Slim::TagProcessor#closed 
+  0.43      0.00     0.00     0.00     0.00       59   Slim::Scanner#shift_delim 
+  0.43      0.00     0.00     0.00     0.00       59   Slim::NontagProcessor#embedded_template 
+  0.40      0.00     0.00     0.00     0.00       20   Array#each 
+  0.37      0.00     0.00     0.00     0.00       92   StringScanner#eos? 
+  0.37      0.00     0.00     0.00     0.00       47   StringScanner#check_until 
+  0.36      0.00     0.00     0.00     0.00       40   Slim::TagProcessor#splat_attributes 
+  0.34      0.00     0.00     0.00     0.00       41   Slim::Progress#stuck? 
+  0.34      0.00     0.00     0.00     0.00       47   Slim::Scanner#m2 
+  0.34      0.00     0.00     0.00     0.00       47   Slim::Scanner#check_until 
+  0.33      0.00     0.00     0.00     0.00       45   Slim::ScanningParser#push 
+  0.33      0.00     0.00     0.00     0.00       59   Slim::TagProcessor#monitor_tag_raise 
+  0.32      0.00     0.00     0.00     0.00       16   String#scan 
+  0.30      0.00     0.00     0.00     0.00       28   String#partition 
+  0.29      0.00     0.00     0.00     0.00        9   Slim::CodeFinder#reset 
+  0.29      0.00     0.00     0.00     0.00       43  *Class#new 
+  0.28      0.00     0.00     0.00     0.00       59   Array#concat 
+  0.24      0.00     0.00     0.00     0.00       42   Slim::CodeFinder#done? 
+  0.23      0.00     0.00     0.00     0.00       44   String#concat 
+  0.22      0.00     0.00     0.00     0.00       59   NilClass#nil? 
+  0.20      0.00     0.00     0.00     0.00       28   Slim::Scanner#m3 
+  0.20      0.00     0.00     0.00     0.00        3   Slim::Scanner#initialize 
   0.18      0.00     0.00     0.00     0.00       12   Slim::CodeFinder#add 
-  0.17      0.00     0.00     0.00     0.00       29   Slim::CodeFinder#delim_close 
-  0.17      0.00     0.00     0.00     0.00        9   Slim::CodeFinder#reset 
-  0.16      0.00     0.00     0.00     0.00       44   Kernel#nil? 
-  0.15      0.00     0.00     0.00     0.00       19   Slim::ScanningParser#shortcut_lookup 
-  0.15      0.00     0.00     0.00     0.00       28   Slim::CodeFinder#delim 
+  0.18      0.00     0.00     0.00     0.00        1   Slim::TagProcessor#initialize 
+  0.17      0.00     0.00     0.00     0.00       44   Kernel#nil? 
+  0.17      0.00     0.00     0.00     0.00       27   <Class::String>#allocate 
   0.13      0.00     0.00     0.00     0.00        3   Slim::Scanner#shift_indented_lines 
+  0.13      0.00     0.00     0.00     0.00       19   Slim::ScanningParser#shortcut_lookup 
   0.13      0.00     0.00     0.00     0.00       27   String#initialize 
-  0.12      0.00     0.00     0.00     0.00       21   Slim::ScanningParser#shortcut 
   0.12      0.00     0.00     0.00     0.00       29   Fixnum#zero? 
-  0.11      0.00     0.00     0.00     0.00       21   Slim::TagProcessor#space_scan_re 
+  0.12      0.00     0.00     0.00     0.00        2   Hash#each 
   0.11      0.03     0.00     0.00     0.03        1   Global#[No method] 
-  0.10      0.00     0.00     0.00     0.00       27   <Class::String>#allocate 
-  0.10      0.00     0.00     0.00     0.00        9   Slim::CodeFinder#enclosed_by_delim? 
-  0.10      0.00     0.00     0.00     0.00       21   String#index 
-  0.08      0.00     0.00     0.00     0.00        7   Slim::TagProcessor#boolean_attributes 
-  0.07      0.00     0.00     0.00     0.00       10   Array#join 
-  0.06      0.00     0.00     0.00     0.00       13   String#end_with? 
-  0.06      0.00     0.00     0.00     0.00       10   String#strip 
+  0.11      0.00     0.00     0.00     0.00       21   String#index 
+  0.10      0.00     0.00     0.00     0.00       12   Array#join 
+  0.09      0.00     0.00     0.00     0.00       17   <Class::Regexp>#quote 
+  0.08      0.00     0.00     0.00     0.00        9   Slim::CodeFinder#enclosed_by_delim? 
+  0.08      0.00     0.00     0.00     0.00        4   Regexp#initialize 
+  0.07      0.00     0.00     0.00     0.00        4   Array#map 
+  0.07      0.00     0.00     0.00     0.00        1   Slim::ScanningParser#initialize 
+  0.07      0.00     0.00     0.00     0.00        7   Slim::TagProcessor#boolean_attributes 
+  0.07      0.00     0.00     0.00     0.00       13   String#end_with? 
+  0.07      0.00     0.00     0.00     0.00       10   String#strip 
+  0.05      0.00     0.00     0.00     0.00        8   Hash#[]= 
+  0.05      0.00     0.00     0.00     0.00        1   Slim::Parser#remove_bom 
   0.05      0.00     0.00     0.00     0.00        4   Slim::Scanner#backup 
-  0.05      0.00     0.00     0.00     0.00        9   Slim::CodeFinder#first 
-  0.05      0.00     0.00     0.00     0.00        9   Slim::CodeFinder#code 
-  0.04      0.00     0.00     0.00     0.00        3   Slim::Scanner#initialize 
-  0.04      0.00     0.00     0.00     0.00        1   Slim::Parser#remove_bom 
-  0.04      0.00     0.00     0.00     0.00        1   Slim::Scanner#delim_map 
-  0.04      0.00     0.00     0.00     0.00        1   Slim::TagProcessor#initialize 
+  0.05      0.00     0.00     0.00     0.00        1   Slim::NontagProcessor#initialize 
+  0.04      0.00     0.00     0.00     0.00        5   <Class::Hash>#[] 
   0.04      0.00     0.00     0.00     0.00        9   <Class::BasicObject>#allocate 
   0.04      0.03     0.00     0.00     0.03        1   Slim::Parser#call 
   0.04      0.00     0.00     0.00     0.00        1   Slim::Parser#set_encoding 
-  0.04      0.00     0.00     0.00     0.00        7   <Class::Regexp>#quote 
-  0.03      0.00     0.00     0.00     0.00        1   String#split 
+  0.04      0.00     0.00     0.00     0.00        1   Slim::CodeFinder#initialize 
+  0.04      0.00     0.00     0.00     0.00        3   Temple::ImmutableHash#[] 
+  0.04      0.00     0.00     0.00     0.00        1   String#split 
+  0.04      0.00     0.00     0.00     0.00        1   Slim::NontagProcessor#remove_leading_spaces 
+  0.03      0.00     0.00     0.00     0.00        5   Hash#keys 
+  0.03      0.00     0.00     0.00     0.00        2   Slim::TagProcessor#set_temp_scanner 
   0.03      0.00     0.00     0.00     0.00        4   String#prepend 
-  0.03      0.00     0.00     0.00     0.00        2   Array#map 
-  0.03      0.00     0.00     0.00     0.00        2   Regexp#initialize 
-  0.03      0.00     0.00     0.00     0.00        1   Slim::ScanningParser#shortcut_re 
+  0.03      0.00     0.00     0.00     0.00        3   <Class::StringScanner>#allocate 
   0.03      0.00     0.00     0.00     0.00        1   Slim::NontagProcessor#doctype 
-  0.03      0.00     0.00     0.00     0.00        1   Slim::ScanningParser#initialize 
-  0.03      0.00     0.00     0.00     0.00        3   <Class::Hash>#[] 
   0.03      0.00     0.00     0.00     0.00        5   String#reverse 
-  0.03      0.00     0.00     0.00     0.00        3   Temple::ImmutableHash#[] 
-  0.02      0.00     0.00     0.00     0.00        1   Slim::NontagProcessor#remove_leading_spaces 
-  0.02      0.00     0.00     0.00     0.00        2   Slim::TagProcessor#set_temp_scanner 
   0.02      0.00     0.00     0.00     0.00        2   String#lines 
   0.02      0.00     0.00     0.00     0.00        2   String#squeeze 
-  0.02      0.00     0.00     0.00     0.00        3   <Class::StringScanner>#allocate 
-  0.02      0.00     0.00     0.00     0.00        3   Hash#keys 
-  0.02      0.00     0.00     0.00     0.00        4   StringScanner#pos= 
-  0.02      0.00     0.00     0.00     0.00        2   Slim::TagProcessor#delim_map 
+  0.02      0.00     0.00     0.00     0.00        4   <Class::Regexp>#allocate 
   0.02      0.00     0.00     0.00     0.00        3   StringScanner#initialize 
-  0.02      0.00     0.00     0.00     0.00        1   Slim::ScanningParser#result 
-  0.02      0.00     0.00     0.00     0.00        2   String#gsub! 
+  0.02      0.00     0.00     0.00     0.00        4   StringScanner#pos= 
   0.02      0.00     0.00     0.00     0.00        1   String#encode 
-  0.02      0.00     0.00     0.00     0.00        3   Fixnum#to_s 
+  0.02      0.00     0.00     0.00     0.00        1   Slim::ScanningParser#result 
   0.02      0.00     0.00     0.00     0.00        2   Slim::TagProcessor#clear_temp_scanner 
+  0.02      0.00     0.00     0.00     0.00        2   String#gsub! 
   0.02      0.00     0.00     0.00     0.00        1   Slim::Scanner#line_end 
-  0.02      0.00     0.00     0.00     0.00        1   Slim::ScanningParser#shortcuts_quoted_ored 
-  0.02      0.00     0.00     0.00     0.00        3   String#slice 
   0.02      0.00     0.00     0.00     0.00        3   String#encoding 
-  0.01      0.00     0.00     0.00     0.00        2   Slim::TagProcessor#lf_re 
-  0.01      0.00     0.00     0.00     0.00        1   Slim::Scanner#shift_text 
-  0.01      0.00     0.00     0.00     0.00        3   Hash#include? 
-  0.01      0.00     0.00     0.00     0.00        2   Kernel#respond_to? 
-  0.01      0.00     0.00     0.00     0.00        1   Slim::CodeFinder#delim_map 
+  0.02      0.00     0.00     0.00     0.00        3   String#slice 
+  0.02      0.00     0.00     0.00     0.00        2   Kernel#respond_to? 
+  0.02      0.00     0.00     0.00     0.00        3   Hash#include? 
+  0.01      0.00     0.00     0.00     0.00        1   Slim::Indenter#initialize 
+  0.01      0.00     0.00     0.00     0.00        2   Fixnum#to_s 
   0.01      0.00     0.00     0.00     0.00        2   String#chomp! 
   0.01      0.00     0.00     0.00     0.00        1   Slim::ScanningParser#reset 
+  0.01      0.00     0.00     0.00     0.00        1   Slim::Scanner#shift_text 
   0.01      0.00     0.00     0.00     0.00        2   Array#shift 
-  0.01      0.00     0.00     0.00     0.00        1   Slim::Indenter#initialize 
-  0.01      0.00     0.00     0.00     0.00        1   Slim::NontagProcessor#initialize 
-  0.01      0.00     0.00     0.00     0.00        1   Slim::Scanner#shift_lf 
   0.01      0.00     0.00     0.00     0.00        1   Slim::Parser#replace_tabs 
-  0.01      0.00     0.00     0.00     0.00        2   <Class::Regexp>#allocate 
-  0.01      0.00     0.00     0.00     0.00        1   Slim::NontagProcessor#starting_ws_re 
-  0.01      0.00     0.00     0.00     0.00        1   Slim::NontagProcessor#lf_re 
   0.01      0.00     0.00     0.00     0.00        2   Encoding#name 
-  0.01      0.00     0.00     0.00     0.00        1   Enumerator#each 
-  0.01      0.00     0.00     0.00     0.00        1   Slim::ScanningParser#tag_re 
-  0.01      0.00     0.00     0.00     0.00        2   BasicObject#initialize 
-  0.01      0.00     0.00     0.00     0.00        1   Slim::Indenter#reset 
-  0.01      0.00     0.00     0.00     0.00        1   Slim::Scanner#txt_re 
-  0.01      0.00     0.00     0.00     0.00        1   String#force_encoding 
-  0.01      0.00     0.00     0.00     0.00        1   String#valid_encoding? 
-  0.01      0.00     0.00     0.00     0.00        1   String#start_with? 
   0.01      0.00     0.00     0.00     0.00        1   Slim::Parser#shortcut 
+  0.01      0.00     0.00     0.00     0.00        1   Enumerator#each 
+  0.01      0.00     0.00     0.00     0.00        1   Slim::Scanner#shift_lf 
+  0.01      0.00     0.00     0.00     0.00        1   String#force_encoding 
+  0.01      0.00     0.00     0.00     0.00        1   Slim::Indenter#reset 
+  0.01      0.00     0.00     0.00     0.00        1   String#valid_encoding? 
+  0.01      0.00     0.00     0.00     0.00        1   Slim::ScanningParser#shortcut 
+  0.01      0.00     0.00     0.00     0.00        1   String#start_with? 
   0.01      0.00     0.00     0.00     0.00        1   String#strip! 
   0.01      0.00     0.00     0.00     0.00        1   Array#empty? 
+  0.01      0.00     0.00     0.00     0.00        1   BasicObject#initialize 
   0.01      0.00     0.00     0.00     0.00        1   Kernel#frozen? 
 
 * indicates recursively called methods

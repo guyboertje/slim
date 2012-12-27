@@ -6,22 +6,19 @@ module Slim
     def initialize(parser)
       @parser = parser
       @current_indent = 0
-    end
-
-    def text_block_re
-      @re1 ||= %r~(\||')( ?)(.*)~
-    end
-
-    def lf_only
-      @re2 ||= %r~\A\r?\n\z~
-    end
-
-    def starting_ws_re
-      @re3 ||= %r~\A\s+~
-    end
-
-    def lf_re
-      @re4 ||= %r~\r?\n~
+      @re_consume = / *\z/
+      @re_doctype = %r~doctype(.*)(?=\r?\n)~i
+      @re_html_comment = %r~/!( ?)(.*)~
+      @re_html_cond = %r~/\[\s*(.*?) *\].*(?=\r?\n)~
+      @re_slim_comment = %r~/~
+      @re_inline_html = %r~<.+>~
+      @re_ruby_code = %r~- ?~
+      @re_output_block = %r~=(=?)('?)~
+      @re_embedded = %r~(\w+):(?=\r?\n)~
+      @re_text_block = %r~(\||')( ?)(.*)~
+      @re_lf_only = %r~\A\r?\n\z~
+      @re_starting_ws = %r~\A\s+~
+      @re_lf = %r~\r?\n~
     end
 
     def try(scanner)
@@ -37,7 +34,6 @@ module Slim
     end
 
     def consume_whitespace(scanner)
-      @re_consume ||= / *\z/
       if lines = scanner.shift_until_char
         lines.count(?\n).times do
           parser.last_push [:newline]
@@ -55,14 +51,12 @@ module Slim
 
     def doctype(scanner)
       consume_whitespace(scanner)
-      @re_doctype ||= %r~doctype(.*)(?=\r?\n)~i
       if scanner.scan(@re_doctype)
         parser.last_push [:html, :doctype, scanner.m1.strip]
       end
     end
 
     def html_comment(scanner)
-      @re_html_comment ||= %r~/!( ?)(.*)~
       return false unless scanner.scan(@re_html_comment)
 
       out = [:multi]
@@ -75,7 +69,7 @@ module Slim
       end
 
       if block = scanner.shift_indented_lines(offset)
-        lines = block.split(lf_re)
+        lines = block.split(@re_lf)
         lines.shift
         lines.each do |line|
           txt = line.slice(offset, line.size) || ""
@@ -91,7 +85,6 @@ module Slim
     end
 
     def html_conditional_comment(scanner)
-      @re_html_cond ||= %r~/\[\s*(.*?) *\].*(?=\r?\n)~
       return false unless scanner.scan(@re_html_cond)
 
       txt = scanner.m1
@@ -102,7 +95,6 @@ module Slim
     end
 
     def slim_comment(scanner)
-      @re_slim_comment ||= %r~/~
       return false unless comment = scanner.scan(@re_slim_comment)
 
       scanner.shift_text
@@ -115,7 +107,7 @@ module Slim
     end
 
     def text_block(scanner)
-      unless indicator = scanner.scan(text_block_re)
+      unless indicator = scanner.scan(@re_text_block)
         return false
       end
       out = [:multi]
@@ -134,7 +126,8 @@ module Slim
 
       if block = scanner.shift_indented_lines(min_indent)
         block.lines.each do |line|
-          next if line =~ lf_only
+          next if line =~ @re_lf_only
+
           indent, txt = remove_leading_spaces(line, first_indent)
           first_indent ||= indent
           txt.prepend(?\n) if txt.chomp! && do_prepend
@@ -150,7 +143,7 @@ module Slim
     end
 
     def remove_leading_spaces(line, amount)
-      pieces = line.partition(starting_ws_re)
+      pieces = line.partition(@re_starting_ws)
       count = pieces[1].size
       if amount.nil?
         pieces[1].clear
@@ -161,7 +154,6 @@ module Slim
     end
 
     def inline_html(scanner)
-      @re_inline_html ||= %r~<.+>~
       unless line = scanner.scan(@re_inline_html)
         return false
       end
@@ -172,7 +164,6 @@ module Slim
     end
 
     def ruby_code_block(scanner)
-      @re_ruby_code ||= %r~- ?~
       return false unless scanner.scan(@re_ruby_code)
 
       lines = scanner.shift_broken_lines
@@ -188,7 +179,6 @@ module Slim
     end
 
     def output_block(scanner)
-      @re_output_block ||= %r~=(=?)('?)~
       return false unless scanner.scan(@re_output_block)
  
       single = scanner.m1.empty?
@@ -210,7 +200,6 @@ module Slim
     end
 
     def embedded_template(scanner)
-      @re_embedded ||= %r~(\w+):(?=\r?\n)~
       return false unless scanner.scan(@re_embedded)
 
       out = [:multi]
@@ -219,7 +208,7 @@ module Slim
 
       if block = scanner.shift_indented_lines(min_indent)
         margin, pre = nil, ""
-        lines = block.split(lf_re)
+        lines = block.split(@re_lf)
         lines.shift
         lines.each do |line|
           len = line.size

@@ -10,31 +10,23 @@ module Slim
       @parser = parser
       @indenter = Indenter.new(self)
       @eqa = !!@options[:escape_quoted_attrs]
+      @tag_re = %r~(\*(?=\S+))|(\w[\w:-]*\w|\w+)~
+      @sc = parser.shortcut
+      @shortcuts_quoted_ored = @sc.keys.map{ |k| Re.quote(k) }.join(?|)
+      @sc_re = %r~#{@shortcuts_quoted_ored}~
       reset
     end
 
     def shortcut
-      @sc ||= parser.shortcut
+      @sc
     end
 
     def shortcut_sub(tag)
-      shortcut[tag] ? shortcut[tag][0] : tag
+      @sc[tag] ? @sc[tag][0] : tag
     end
 
     def shortcut_lookup(tag)
-      shortcut[tag][1]
-    end
-
-    def shortcut_re
-      @scre ||= %r~#{shortcuts_quoted_ored}~
-    end
-
-    def tag_re
-      @tagre ||= %r~(\*(?=\S+))|(\w[\w:-]*\w|\w+)~
-    end
-
-    def shortcuts_quoted_ored
-      shortcut.keys.map{ |k| Re.quote(k) }.join(?|)
+      @sc[tag][1]
     end
 
     def push(object)
@@ -66,10 +58,9 @@ module Slim
     end
 
     def parse(str)
-      @temp_scanner = nil
       @scanner = Scanner.new(str, self)
       @nontag_processor = NontagProcessor.new(self)
-      @tag_processor = TagProcessor.new(self, tag_re, shortcut_re, @eqa)
+      @tag_processor = TagProcessor.new(self, @tag_re, @sc_re, @eqa)
       @nontag_processor.doctype(scanner)
       i = 0
       until @scanner.no_more?
@@ -82,17 +73,12 @@ module Slim
       end
     end
 
-    def scanner
-      @scanner
-    end
-
     def monitor_raise(i)
       return if i < 113
       syntax_error! "line loop limit reached" 
     end
 
     def syntax_error!(message)
-      clear_temp_scanner
       err_pos = scanner.position
       next_lf_pos = scanner.delegate('exist?', /\n/) || 1
       context = scanner.delegate('string')[0, err_pos + next_lf_pos - 1]

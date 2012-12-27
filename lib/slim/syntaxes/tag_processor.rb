@@ -9,6 +9,27 @@ module Slim
       @eqa = escape_quoted_attrs
       @code_finder = CodeFinder.new
       @progress = Progress.new
+      @re_sc  = %r~(#{@shortcut_part}\w[\w-]*\w)+~
+      @re_sc1 = %r~(#{@shortcut_part})(\w[\w-]*\w)~
+      @re_splat = %r~\s*\*~
+      @re_qa = %r~\s*(\w[:\w-]*)(==?)("|')~
+      @hash_re_qa = {?" => %r~"(?=(=| |\r?\n))~, ?' => %r~'(?=(=| |\r?\n))~}
+      @re_ca = %r~\s*(\w[:\w-]*)(==?)~
+      @re_bool = %r~\s*(\w[:\w-]*)(?=\s|\r?\n)~
+      @re_output = %r~ *=(=?)('?)\s?~
+      @re_closed = %r~\s*/(?=(\s|\r?\n))~
+      @re_no_content = %r~\s*(?=\r?\n)~
+      @re_text = %r~\s(.*)~
+      @re_lf = %r~\r?\n~
+      @re_space_scan = %r~ |(?=\r?\n)~
+      @delim_map = Hash[?(,?),?[,?],?{,?}]
+      @delim_close_map = {}
+      @delim_map.each do |k,v|
+        @delim_close_map[k] = /#{Re.quote(v)}/m
+      end
+      @re_lf_only = %r~\A\r?\n\z~
+      @re_starting_ws = %r~\A\s+~
+      @re_until_lf = %r~(?=\r?\n)~
     end
 
     def reset
@@ -98,8 +119,6 @@ module Slim
     end
 
     def shortcut_attributes
-      @re_sc  ||= %r~(#{@shortcut_part}\w[\w-]*\w)+~
-      @re_sc1 ||= %r~(#{@shortcut_part})(\w[\w-]*\w)~
       if scs = scanner.scan(@re_sc)
         scs.scan(@re_sc1).each do |dot, val|
           sub = parser.shortcut_lookup(dot)
@@ -111,13 +130,12 @@ module Slim
     def delimited_attributes
       return unless delim_open = scanner.shift_delim
 
-      delim_close = delim_map[delim_open]
-      end_re = /#{Re.quote(delim_close)}/m
+      delim_close = @delim_map[delim_open]
       part, line, expect = "", " ", 1
       @progress.reset(scanner)
       begin
         @progress.measure
-        part = scanner.scan_until(end_re)
+        part = scanner.scan_until(@delim_close_map[delim_open])
         if (part.nil? || part.empty?) && !expect.zero?
           raise "expecting closing ]"
         end
@@ -130,39 +148,26 @@ module Slim
       if line.empty? || @progress.stuck?
         raise "expected to have delimited attributes"
       end
-      line.gsub!(lf_re, ' ') # behave like a single line
+      line.gsub!(@re_lf, ' ') # behave like a single line
       line.concat(' ')
 
       @wrapped_attributes = true
       set_temp_scanner(line)
     end
 
-    def delim_map
-      @h1 ||= Hash[?(,?),?[,?],?{,?}]
-    end
-
-    def lf_re
-      @re4 ||= %r~\r?\n~
-    end
-
-    def space_scan_re
-      @re_space_scan ||= %r~ |(?=\r?\n)~
-    end
-
     def splat_attributes
-      @re_splat ||= %r~\s*\*~
       return false unless splat = scanner.scan(@re_splat)
 
       @progress.reset(scanner)
       @progress.measure
-      part = scanner.scan_until(space_scan_re)
+      part = scanner.scan_until(@re_space_scan)
       raise "No part" unless part
 
       @code_finder.reset(part)
       until @code_finder.done? || @progress.stuck? do
 
         @progress.measure
-        part = scanner.scan_until(space_scan_re) or break
+        part = scanner.scan_until(@re_space_scan) or break
         @code_finder.add(part)
       end
 
@@ -177,16 +182,14 @@ module Slim
     end
 
     def quoted_attributes
-      @qre ||= %r~\s*(\w[:\w-]*)(==?)("|')~
-
-      return false unless scanner.scan(@qre)
+      return false unless scanner.scan(@re_qa)
 
       atbe = scanner.m1
       esc = @eqa && scanner.m2 == ?=
       qc = scanner.m3
       value = String.new(qc)
 
-      scan_re = %r~#{qc}(?=(=| |\r?\n))~
+      scan_re = @hash_re_qa[qc]
 
       @progress.reset(scanner)
       begin
@@ -214,7 +217,6 @@ module Slim
     end
 
     def code_attributes
-      @re_ca ||= %r~\s*(\w[:\w-]*)(==?)~
       return false unless scanner.scan(@re_ca)
 
       atbe = scanner.m1
@@ -222,14 +224,14 @@ module Slim
 
       @progress.reset(scanner)
       @progress.measure
-      part = scanner.scan_until(space_scan_re)
+      part = scanner.scan_until(@re_space_scan)
       raise "No part" unless part
 
       @code_finder.reset(part)
       until @code_finder.done? || @progress.stuck? do
 
         @progress.measure
-        part = scanner.scan_until(space_scan_re)
+        part = scanner.scan_until(@re_space_scan)
         if part
           @code_finder.add(part)
         else
@@ -253,7 +255,6 @@ module Slim
     end
 
     def boolean_attributes
-      @re_bool ||= %r~\s*(\w[:\w-]*)(?=\s|\r?\n)~
       return false unless atbe = scanner.scan(@re_bool)
 
       @attributes.push [:html, :attr, atbe.strip, [:slim, :attrvalue, false, 'true']]
@@ -261,7 +262,6 @@ module Slim
     end
 
     def output
-      @re_output ||= %r~ *=(=?)('?)\s?~
       return false unless scanner.scan(@re_output)
 
       single = scanner.m1.empty?
@@ -284,7 +284,6 @@ module Slim
     end
 
     def closed
-      @re_closed ||= %r~\s*/(?=(\s|\r?\n))~
       return false unless scanner.scan(@re_closed)
 
       # add nothing - consume to eol
@@ -294,7 +293,6 @@ module Slim
     end
 
     def no_content
-      @re_no_content ||= %r~\s*(?=\r?\n)~
       return false unless scanner.scan(@re_no_content)
 
       content = [:multi]
@@ -306,22 +304,21 @@ module Slim
 
     def text
       # %r~\s(.*)(?=\r?\n)~
-      @re_text ||= %r~\s(.*)~
       pos = scanner.position
       unless scanner.scan(@re_text)
-        scanner.scan_until(/(?=\r?\n)/)
+        scanner.scan_until(@re_until_lf)
         return true
       end
 
       tag_txt = scanner.m1
 
-      min_indent = @tag_indent + 1 + (pos - @tag_position)
+      min_indent = @tag_indent.succ + (pos - @tag_position)
 
       out = [:multi, [:slim, :interpolate, tag_txt]]
 
       if block = scanner.shift_indented_lines(min_indent)
         block.lines.each do |line|
-          next if line =~ /\A\r?\n\z/
+          next if line =~ @re_lf_only
           txt = remove_leading_spaces(line, min_indent)
           txt.prepend(?\n) if txt.chomp!
           out.push [:newline], [:slim, :interpolate, txt]
@@ -336,7 +333,7 @@ module Slim
     end
 
     def remove_leading_spaces(line, amount)
-      pieces = line.partition(/\A\s+/)
+      pieces = line.partition(@re_starting_ws)
       count = pieces[1].size
       if count > amount
         pieces[1] = " " * (count - amount)
