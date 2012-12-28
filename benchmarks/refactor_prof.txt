@@ -1,11 +1,12 @@
 
-theirs
+theirs 1000
                     user     system      total        real
 (4) slim ugly   2.870000   0.230000   3.100000 (  3.107391)
 (4) slim ugly   2.930000   0.180000   3.110000 (  3.105807)
+(4) slim ugly   2.960000   0.150000   3.110000 (  3.116634)
 
 
-mine
+mine 1000 GC off
                     user     system      total        real
 (4) slim ugly   5.580000   0.250000   5.830000 (  5.831937)
 
@@ -32,5 +33,18 @@ mine
 (4) slim ugly   3.030000   0.090000   3.120000 (  3.127094)
 (4) slim ugly   2.970000   0.080000   3.050000 (  3.050689)
 (4) slim ugly   2.880000   0.140000   3.020000 (  3.017730)
+(4) slim ugly   2.900000   0.100000   3.000000 (  3.000927)
+(4) slim ugly   2.870000   0.090000   2.960000 (  2.957812)
+
+
+
+
+theirs 10000 Iterations GC on
+       user     system      total        real
+(4) slim ugly 36.920000   0.000000  36.920000 ( 36.930743)
+
+mine
+       user     system      total        real
+(4) slim ugly 32.340000   0.000000  32.340000 ( 32.349093)
 
 

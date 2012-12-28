@@ -1,8 +1,6 @@
 module Slim
 class CodeFinder
 
-  attr_reader :code
-
   def initialize
     @part_re = /[\{\[\(]/
     @delim_map = Hash[?(,?),?[,?],?{,?}]
@@ -16,6 +14,8 @@ class CodeFinder
   end
 
   def reset(line)
+    @found = false
+    @code = nil
     @parts = line.partition(@part_re)
 
     @first = @parts[0]
@@ -24,9 +24,9 @@ class CodeFinder
 
     if @delim.empty?
       @code = line
+      @found = true
     else
       @delim_close = @delim_map[@delim]
-      @code = nil
       analyse
     end
   end
@@ -36,7 +36,7 @@ class CodeFinder
   end
 
   def strip_delim_ws
-    val = @code.strip
+    val = code.strip
     if val.start_with?(@delim) && val.end_with?(@delim_close)
       val[1, val.size - 2]
     else
@@ -45,39 +45,41 @@ class CodeFinder
   end
 
   def done?
-    !!@code
+    @found
+  end
+
+  def code
+    @code ||= @parts.join
   end
 
   def add(part)
     @rest.concat(part)
     analyse
-    done?
+    @found
   end
 
   def analyse
     return if @rest.empty?
     net_delims = (1 + @rest.count(@delim) - @rest.count(@delim_close)) == 0
-    
-    temp = @rest.gsub(@esc_double_re,'').gsub(@esc_single_re, '')
-    b, m, e = temp.partition(@dbl_single)
+
+    # temp = @rest.gsub(@esc_double_re,'').gsub(@esc_single_re, '')
+    # b, m, e = temp.partition(@dbl_single)
+    b, m, e = @rest.partition(@dbl_single)
     
     # ap from: "CodeFinder analyse", delim_close: delim_close, rest: rest, temp: temp, b: b, m: m, e: e
 
     if m.empty? && e.empty? && net_delims
       # no opening quotes and there is a net match of delims
-      @code = @parts.join
+      @found = true
       return
     end     
 
     if !m.empty? && e.index(m) && net_delims
-      # there is an opening quote, a closing quote and a net match of delims 
-      tmp = e.reverse
-      qpos = tmp.index(m)
-      dpos = tmp.index(@delim_close)
-      # ap from: "CodeFinder analyse", tmp: tmp, dpos: dpos, qpos: qpos
-      if dpos < qpos
+      # there is an opening quote, a closing quote and a net match of delims
+      e.reverse!
+      if e.index(@delim_close) < e.index(m)
         # the closing delim occurs after the closing quote (e is reversed)
-        @code = @parts.join
+        @found = true
         return
       end
     end

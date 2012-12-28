@@ -8,7 +8,6 @@ module Slim
       @shortcut_part = parser.shortcut.keys.join.prepend('[').concat(']')
       @eqa = escape_quoted_attrs
       @code_finder = CodeFinder.new
-      @progress = Progress.new
       @re_sc  = %r~(#{@shortcut_part}\w[\w-]*\w)+~
       @re_sc1 = %r~(#{@shortcut_part})(\w[\w-]*\w)~
       @re_splat = %r~\s*\*~
@@ -103,14 +102,14 @@ module Slim
       unless @wrapped_attributes
         delimited_attributes
       end
-      @progress.reset(scanner)
-      while @progress.progress? do
+      scanner.rec_position(:parse_attributes)
+      begin
         break if scanner.eol?
         splat_attributes
         quoted_attributes_eagerly
         code_attributes
         boolean_attributes if @wrapped_attributes
-      end
+      end until scanner.stuck?(:parse_attributes)
 
       if @wrapped_attributes && scanner.no_more?
         clear_temp_scanner
@@ -132,9 +131,9 @@ module Slim
 
       delim_close = @delim_map[delim_open]
       part, line, expect = "", " ", 1
-      @progress.reset(scanner)
+      scanner.rec_position(:delimited_attributes)
+      stuck_scanner = false
       begin
-        @progress.measure
         part = scanner.scan_until(@delim_close_map[delim_open])
         if (part.nil? || part.empty?) && !expect.zero?
           raise "expecting closing ]"
@@ -142,10 +141,11 @@ module Slim
         line.concat(part.squeeze(' '))
         expect += line.count(delim_open)
         expect -= line.count(delim_close)
-      end until expect.zero? || @progress.stuck?
+        stuck_scanner = scanner.stuck?(:delimited_attributes)
+      end until expect.zero? || stuck_scanner
 
       line.chomp!(delim_close) # ignore last closing delimiter
-      if line.empty? || @progress.stuck?
+      if line.empty? || stuck_scanner
         raise "expected to have delimited attributes"
       end
       line.gsub!(@re_lf, ' ') # behave like a single line
@@ -158,17 +158,15 @@ module Slim
     def splat_attributes
       return false unless splat = scanner.scan(@re_splat)
 
-      @progress.reset(scanner)
-      @progress.measure
       part = scanner.scan_until(@re_space_scan)
       raise "No part" unless part
 
+      scanner.rec_position(:splat_attributes)
       @code_finder.reset(part)
-      until @code_finder.done? || @progress.stuck? do
-
-        @progress.measure
+      until @code_finder.done? do
         part = scanner.scan_until(@re_space_scan) or break
         @code_finder.add(part)
+        break if scanner.stuck?(:splat_attributes)
       end
 
       raise "No code found" unless @code_finder.done?
@@ -188,18 +186,14 @@ module Slim
       esc = @eqa && scanner.m2 == ?=
       qc = scanner.m3
       value = String.new(qc)
-
+      scanner.rec_position(:quoted_attributes)
       scan_re = @hash_re_qa[qc]
-
-      @progress.reset(scanner)
       begin
-        @progress.measure
         part = scanner.scan_until(scan_re)
         value.concat(part) if part
         expect = value.count(qc) % 2
-      end until expect.zero? || @progress.stuck?
-
-      raise "quoted_attributes is stuck" if @progress.stuck?
+        raise "quoted_attributes is stuck" if scanner.stuck?(:quoted_attributes)
+      end until expect.zero?
 
       value = value[1..-2]
 
@@ -222,35 +216,24 @@ module Slim
       atbe = scanner.m1
       esc = @eqa && scanner.m2 == ?=
 
-      @progress.reset(scanner)
-      @progress.measure
       part = scanner.scan_until(@re_space_scan)
       raise "No part" unless part
 
+      scanner.rec_position(:code_attributes)
       @code_finder.reset(part)
-      until @code_finder.done? || @progress.stuck? do
-
-        @progress.measure
+      until part.nil? || @code_finder.done? do
         part = scanner.scan_until(@re_space_scan)
-        if part
-          @code_finder.add(part)
-        else
-          break
-        end
+        @code_finder.add(part) if part
+        break if scanner.stuck?(:code_attributes)
       end
 
-      raise "No code found" unless @code_finder.done?
-
-      value = @code_finder.code
-      
+      value = @code_finder.code || ""
       scanner.backup if value.end_with?(' ')
-
-      value = @code_finder.enclosed_by_delim? ? value[1,value.size - 3] : value.strip
+      value = @code_finder.enclosed_by_delim? ? value[1, value.size - 3] : value.strip
 
       parser.syntax_error!('Invalid empty attribute') if value.empty?
 
       @attributes.push [:html, :attr, atbe, [:slim, :attrvalue, esc, value]]
-
       true
     end
 
@@ -324,8 +307,6 @@ module Slim
           out.push [:newline], [:slim, :interpolate, txt]
         end
       end
-
-      # ap from: "tag text", lines: out, dollarslash: $/
 
       @tags.push [:slim, :text, out]
 

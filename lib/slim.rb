@@ -1,7 +1,6 @@
 require 'temple'
 
 require 'slim/indenter'
-require 'slim/progress'
 require 'slim/scanning_parser'
 require 'slim/scanner'
 require 'slim/code_finder'

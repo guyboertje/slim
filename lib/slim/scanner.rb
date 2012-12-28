@@ -24,10 +24,20 @@ module Slim
       @delim_re = Re.new( @delim_map.keys.map{|k| Re.quote(k)}.join(?|) )
       @just_spaces_re = %r~ +\z~
       @indent_re_cache = {}
+      @progress = {}
     end
 
     def reset
       @indenter.reset
+    end
+
+    def rec_position(key = :overall)
+      @progress[key] = @input.pos
+    end
+
+    def stuck?(key = :overall)
+      before = @progress[key]
+      before == @progress.store(key, @input.pos)
     end
 
     def scan(re)

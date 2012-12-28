@@ -119,7 +119,7 @@ class SlimBenchmarks
   def run
     puts "#{@iterations} Iterations"
     @benches.each do |name, block|
-      50.times { block.call }
+      5.times { block.call }
     end
     
     GC.disable

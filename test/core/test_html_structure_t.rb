@@ -3,12 +3,12 @@ require 'helper'
 class TestSlimHtmlStructureT < TestSlim
 
 
-  def test_hash_call_in_delimited_attribute_with_ruby_evaluation_3
+  def test_splat_with_other_attributes
     source = %q{
-p(id=[hash[:a] + hash[:a]]) Test it
+h1 data-id="123" *hash This is my title
 }
 
-    assert_html '<p id="The letter aThe letter a">Test it</p>', source
+    assert_html '<h1 a="The letter a" b="The letter b" data-id="123">This is my title</h1>', source
   end
 
 # ruby -I"lib:lib:test/core" test/core/test_html_structure_t.rb --seed 27793
