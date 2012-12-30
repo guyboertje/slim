@@ -66,10 +66,8 @@ module Slim
       until @scanner.no_more?
         @nontag_processor.try(scanner) ||
         @tag_processor.try(scanner)
-
         monitor_raise(i)
         i = i.succ
-
       end
     end
 
@@ -88,10 +86,7 @@ module Slim
       column = err_pos - b.size - lf.size
       column = 1 if column < 1
       column = line.size if column > line.size
-
-
       # ap from: "syntax_error", rest: scanner.rest, err_pos: err_pos, next_lf_pos: next_lf_pos, context: context, b:b, lf:lf, line: line, lineno: lineno, column: column
-
       raise Parser::SyntaxError.new(message, @options[:file], line.strip, lineno, column)
     end
   end

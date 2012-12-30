@@ -14,7 +14,7 @@ module Slim
       @re_inline_html = %r~<.+>~
       @re_ruby_code = %r~- ?~
       @re_output_block = %r~=(=?)('?)~
-      @re_embedded = %r~(\w+):(?=\r?\n)~
+      @re_embedded = %r~(\w+):\s*(?=\r?\n)~
       @re_text_block = %r~(\||')( ?)(.*)~
       @re_lf_only = %r~\A\r?\n\z~
       @re_starting_ws = %r~\A\s+~
@@ -216,11 +216,7 @@ module Slim
             margin = ind
           end
           txt = line.slice(margin || len, len) || ""
-          unless txt.empty?
-            out.push [:newline], [:slim, :interpolate, txt.prepend(pre)]
-          else
-            out.push [:newline]
-          end
+          out.push [:newline], [:slim, :interpolate, txt.prepend(pre)]
           pre = ?\n if margin && pre.empty?
         end
       end

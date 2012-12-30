@@ -214,7 +214,7 @@ module Slim
       return false unless scanner.scan(@re_ca)
 
       atbe = scanner.m1
-      esc = @eqa && scanner.m2 == ?=
+      esc = scanner.m2 == ?=
 
       part = scanner.scan_until(@re_space_scan)
       raise "No part" unless part
