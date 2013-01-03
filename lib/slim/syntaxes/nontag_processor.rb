@@ -77,7 +77,7 @@ module Slim
         end
       end
 
-      scanner.backup if block.end_with?(?\n)
+      scanner.backup if block && block.end_with?(?\n)
 
       parser.last_push [:html, :comment, [:slim, :text, out]]
 
@@ -101,8 +101,8 @@ module Slim
       scanner.line_end(false)
       min_indent = @current_indent.succ
 
-      scanner.shift_indented_lines(min_indent)
-
+      block = scanner.shift_indented_lines(min_indent)
+      scanner.backup if block && block.end_with?(?\n)
       true
     end
 
@@ -139,6 +139,7 @@ module Slim
       if indicator.start_with? ?'
         parser.last_push [:static, ' ']
       end
+      scanner.backup if block && block.end_with?(?\n)
       true
     end
 
@@ -195,7 +196,7 @@ module Slim
         parser.last_push [:slim, :output, single, lines, [:multi, [:newline]]]
         parser.last_push [:static, ' '] if add_ws
       end
-
+# , [:multi, [:newline]]
       true
     end
 
@@ -220,8 +221,8 @@ module Slim
           pre = ?\n if margin && pre.empty?
         end
       end
+      scanner.backup if block && block.end_with?(?\n)
       parser.last_push [:slim, :embedded, engine, out]
-
       true
     end
   end

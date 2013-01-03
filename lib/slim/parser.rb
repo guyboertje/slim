@@ -74,7 +74,7 @@ module Slim
       reset(str.split(/\r?\n/), [result])
       parse_line while next_line
       reset
-      result
+      result.tap{|o| ap result: o}
     end
 
     def call(str)

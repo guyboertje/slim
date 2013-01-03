@@ -148,6 +148,7 @@ module Slim
       if line.empty? || stuck_scanner
         raise "expected to have delimited attributes"
       end
+      line.count(?\n).times { parser.last_push [:newline] }
       line.gsub!(@re_lf, ' ') # behave like a single line
       line.concat(' ')
 
@@ -307,7 +308,7 @@ module Slim
           out.push [:newline], [:slim, :interpolate, txt]
         end
       end
-
+      scanner.backup if block && block.end_with?(?\n)
       @tags.push [:slim, :text, out]
 
       true

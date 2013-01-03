@@ -66,6 +66,7 @@ module Slim
       until @scanner.no_more?
         @nontag_processor.try(scanner) ||
         @tag_processor.try(scanner)
+        
         monitor_raise(i)
         i = i.succ
       end
