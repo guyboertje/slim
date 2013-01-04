@@ -1,10 +1,11 @@
 module Slim
   class NontagProcessor
 
-    attr_reader :parser
+    attr_reader :parser, :line_end_count
 
-    def initialize(parser)
+    def initialize(parser, tag_processor)
       @parser = parser
+      @tag_processor = tag_processor
       @current_indent = 0
       @re_consume = / *\z/
       @re_doctype = %r~doctype(.*)(?=\r?\n)~i
@@ -19,6 +20,7 @@ module Slim
       @re_lf_only = %r~\A\r?\n\z~
       @re_starting_ws = %r~\A\s+~
       @re_lf = %r~\r?\n~
+      @line_end_count = 0
     end
 
     def try(scanner)
@@ -30,16 +32,23 @@ module Slim
       inline_html(scanner) ||
       ruby_code_block(scanner) ||
       output_block(scanner) ||
-      embedded_template(scanner)
+      embedded_template(scanner) ||
+      @tag_processor.try(scanner)
+    end
+
+    def new_lines
+      return unless @line_end_count > 0
+      @line_end_count.times do
+        parser.last_push [:newline]
+      end
+      @line_end_count = 0
     end
 
     def consume_whitespace(scanner)
       if lines = scanner.shift_until_char
-        lines.count(?\n).times do
-          parser.last_push [:newline]
-        end
         scanner.indentation lines[@re_consume]
         @current_indent = scanner.current_indent
+        @line_end_count = lines.count(?\n)
         true
       else
         while scanner.shift_lf do
@@ -51,6 +60,7 @@ module Slim
 
     def doctype(scanner)
       consume_whitespace(scanner)
+      new_lines
       if scanner.scan(@re_doctype)
         parser.last_push [:html, :doctype, scanner.m1.strip]
       end
@@ -58,6 +68,7 @@ module Slim
 
     def html_comment(scanner)
       return false unless scanner.scan(@re_html_comment)
+      new_lines
 
       out = [:multi]
 
@@ -86,6 +97,7 @@ module Slim
 
     def html_conditional_comment(scanner)
       return false unless scanner.scan(@re_html_cond)
+      new_lines
 
       txt = scanner.m1
       block = [:multi]
@@ -96,6 +108,7 @@ module Slim
 
     def slim_comment(scanner)
       return false unless comment = scanner.scan(@re_slim_comment)
+      new_lines
 
       scanner.shift_text
       scanner.line_end(false)
@@ -107,9 +120,9 @@ module Slim
     end
 
     def text_block(scanner)
-      unless indicator = scanner.scan(@re_text_block)
-        return false
-      end
+      return false unless indicator = scanner.scan(@re_text_block)
+      new_lines
+
       out = [:multi]
 
       ind_size, ws_size = scanner.m1.size, scanner.m2.size
@@ -155,9 +168,9 @@ module Slim
     end
 
     def inline_html(scanner)
-      unless line = scanner.scan(@re_inline_html)
-        return false
-      end
+      return false unless line = scanner.scan(@re_inline_html)
+      new_lines
+
       block = [:multi]
       parser.last_push [:multi, [:slim, :interpolate, line], block]
       parser.push block
@@ -166,6 +179,7 @@ module Slim
 
     def ruby_code_block(scanner)
       return false unless scanner.scan(@re_ruby_code)
+      new_lines
 
       lines = scanner.shift_broken_lines
       
@@ -181,7 +195,8 @@ module Slim
 
     def output_block(scanner)
       return false unless scanner.scan(@re_output_block)
- 
+      new_lines
+
       single = scanner.m1.empty?
       add_ws = !scanner.m2.empty?
 
@@ -196,12 +211,12 @@ module Slim
         parser.last_push [:slim, :output, single, lines, [:multi, [:newline]]]
         parser.last_push [:static, ' '] if add_ws
       end
-# , [:multi, [:newline]]
       true
     end
 
     def embedded_template(scanner)
       return false unless scanner.scan(@re_embedded)
+      new_lines
 
       out = [:multi]
       min_indent = @current_indent.succ

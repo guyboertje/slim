@@ -34,10 +34,10 @@ module Slim
       idx = @indents.index(amount)
       # unless idx
 
-      raise "Malformed indentation, amount: #{amount}, current: #{current_indent}" unless idx
+      @parser.syntax_error!("Malformed indentation, amount: #{amount}, current: #{current_indent}") unless idx
       popped = depth - idx.succ
       
-      # ap from: "Indenter indent", popped: popped, unwind: unwind, indents: @indents
+      # ap from: "Indenter indent", popped: popped, unwind: unwind, indents: @indents, stacks: @parser.stacks
 
       self.pop(popped)
       @parser.pop(unwind + popped)

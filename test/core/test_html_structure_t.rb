@@ -2,15 +2,20 @@ require 'helper'
 
 class TestSlimHtmlStructureT < TestSlim
   
-  def test_output_block2
+  def test_embedded_erb
     source = %q{
-p = hello_world "Hello Ruby" do
-  = "Hello from block"
-p Hello
+erb:
+  <%= 123 %>
+  Hello from ERB!
+  <%#
+    comment block
+  %>
+  <% if true %>
+  Text
+  <% end %>
 = unknown_ruby_method
 }
-
-    assert_ruby_error NameError, "(__TEMPLATE__):5", source
+    assert_ruby_error NameError,"(__TEMPLATE__):11", source
   end
 
 # ruby -I"lib:lib:test/core" test/core/test_html_structure_t.rb --seed 27793

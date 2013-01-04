@@ -59,14 +59,11 @@ module Slim
 
     def parse(str)
       @scanner = Scanner.new(str, self)
-      @nontag_processor = NontagProcessor.new(self)
-      @tag_processor = TagProcessor.new(self, @tag_re, @sc_re, @eqa)
-      @nontag_processor.doctype(scanner)
+      @line_processor = NontagProcessor.new(self, TagProcessor.new(self, @tag_re, @sc_re, @eqa))
+      @line_processor.doctype(scanner)
       i = 0
       until @scanner.no_more?
-        @nontag_processor.try(scanner) ||
-        @tag_processor.try(scanner)
-        
+        @line_processor.try(scanner)
         monitor_raise(i)
         i = i.succ
       end
