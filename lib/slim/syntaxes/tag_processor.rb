@@ -69,6 +69,7 @@ module Slim
         done =  output ||
                 closed ||
                 no_content ||
+                end_of_template ||
                 text
 
         monitor_tag_raise
@@ -151,7 +152,6 @@ module Slim
       line.count(?\n).times { parser.last_push [:newline] }
       line.gsub!(@re_lf, ' ') # behave like a single line
       line.concat(' ')
-
       @wrapped_attributes = true
       set_temp_scanner(line)
     end
@@ -260,6 +260,7 @@ module Slim
         parser.last_push [:static, ' '] if add_ws
         parser.push block
       else
+        scanner.shift_lf
         @tags.push [:slim, :output, single, lines, [:multi, [:newline]]]
         parser.last_push [:static, ' '] if add_ws
       end
@@ -272,8 +273,8 @@ module Slim
 
       # add nothing - consume to eol
       scanner.shift_text
-      true
 
+      true
     end
 
     def no_content
@@ -286,8 +287,17 @@ module Slim
       true
     end
 
+    def end_of_template
+      return false unless scanner.eos?
+
+      content = [:multi, [:newline]]
+      @tags.push content
+      parser.push content
+
+      true
+    end
+
     def text
-      # %r~\s(.*)(?=\r?\n)~
       pos = scanner.position
       unless scanner.scan(@re_text)
         scanner.scan_until(@re_until_lf)
@@ -327,7 +337,3 @@ module Slim
 
   end
 end
-
-
-
-

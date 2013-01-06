@@ -9,20 +9,18 @@ module Slim
       @parser = parser
       @input = StringScanner.new(src)
       @indenter = parser.indenter
-      @qe_lf_re = %r{(?=\r?\n)}
-      @lf_re = %r{\r?\n}
-      @ind_re = %r{ +}
-      @txt_re= %r{.*}
-      @lf_ind_re = %r{\r?\n +}
-      @lf_only_re = %r{\r?\n +}
-      @lfs_ind_char_re = %r{(\r?\n)* +(?=\S)}
-      @ws_until_first_char_re = %r{\s*(?=\S)}
-      @lf_space_plus_re = %r{(\r?)\n +}
-      @broken_line_re = %r{(.*[,\\]\r?\n)*.*(?=\r?\n)}
+      @qe_lf_re = %r~(?=\r?\n)~
+      @lf_re = %r~\r?\n~
+      @ind_re = %r~ +~
+      @txt_re= %r~.*~
+      @lfs_ind_char_re = %r~(\r?\n)* +(?=\S)~
+      @ws_until_first_char_re = %r~\s*(?=\S)~
+      @lf_space_plus_re = %r~(\r?)\n +~
+      @broken_line_re = %r~(.*[,\\]\r?\n)*.*(?=\r?\n)~
       @any_char_re = %r~\S~
       @delim_map = Hash[?(,?),?[,?],?{,?}]
       @delim_re = Re.new( @delim_map.keys.map{|k| Re.quote(k)}.join(?|) )
-      @just_spaces_re = %r~ +\z~
+      @spaces_before_char = %r~ *(?=\S|\Z)~
       @indent_re_cache = {}
       @progress = {}
     end
@@ -149,7 +147,7 @@ module Slim
 
     def check_next_indent
       if f = check_until(@lfs_ind_char_re)
-        f[@just_spaces_re].size
+        f[@spaces_before_char].size
       else
         current_indent
       end
@@ -169,19 +167,6 @@ module Slim
 
     def no_more?
       eos? || !@input.exist?(@any_char_re)
-    end
-
-    def line_end(interim = nil)
-      if shift_lf
-        if interim.nil?
-          @parser.build [:newline]
-        elsif interim
-          interim << [:newline]
-        end
-        true
-      else
-        false
-      end
     end
 
     def indentation(ind = shift_indent)

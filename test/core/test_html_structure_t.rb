@@ -2,22 +2,20 @@ require 'helper'
 
 class TestSlimHtmlStructureT < TestSlim
   
-  def test_embedded_erb
-    source = %q{
-erb:
-  <%= 123 %>
-  Hello from ERB!
-  <%#
-    comment block
-  %>
-  <% if true %>
-  Text
-  <% end %>
-= unknown_ruby_method
-}
-    assert_ruby_error NameError,"(__TEMPLATE__):11", source
-  end
+  def test_thread_options
+    source = %q{p.test}
 
+    assert_html '<p class="test"></p>', source
+    assert_html "<p class='test'></p>", source, :attr_wrapper => "'"
+
+    Slim::Engine.with_options(:attr_wrapper => "'") do
+      assert_html "<p class='test'></p>", source
+      assert_html '<p class="test"></p>', source, :attr_wrapper => '"'
+    end
+
+    assert_html '<p class="test"></p>', source
+    assert_html "<p class='test'></p>", source, :attr_wrapper => "'"
+  end
 # ruby -I"lib:lib:test/core" test/core/test_html_structure_t.rb --seed 27793
 
 end

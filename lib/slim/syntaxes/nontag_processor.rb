@@ -33,6 +33,11 @@ module Slim
       ruby_code_block(scanner) ||
       output_block(scanner) ||
       embedded_template(scanner) ||
+      tags(scanner)
+    end
+
+    def tags(scanner)
+      new_lines
       @tag_processor.try(scanner)
     end
 
@@ -111,11 +116,14 @@ module Slim
       new_lines
 
       scanner.shift_text
-      scanner.line_end(false)
       min_indent = @current_indent.succ
 
       block = scanner.shift_indented_lines(min_indent)
-      scanner.backup if block && block.end_with?(?\n)
+      if block
+        block.count(?\n).times do
+          parser.last_push [:newline]
+        end
+      end
       true
     end
 
@@ -182,12 +190,13 @@ module Slim
       new_lines
 
       lines = scanner.shift_broken_lines
-      
+
       if scanner.check_next_indent > @current_indent
         block = [:multi]
         parser.last_push [:slim, :control, lines, block]
         parser.push block
       else
+        scanner.shift_lf
         parser.last_push [:slim, :control, lines, [:multi, [:newline]]]
       end
       true
@@ -208,6 +217,7 @@ module Slim
         parser.last_push [:static, ' '] if add_ws
         parser.push block
       else
+        scanner.shift_lf
         parser.last_push [:slim, :output, single, lines, [:multi, [:newline]]]
         parser.last_push [:static, ' '] if add_ws
       end

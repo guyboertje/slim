@@ -61,18 +61,19 @@ module Slim
       @scanner = Scanner.new(str, self)
       @line_processor = NontagProcessor.new(self, TagProcessor.new(self, @tag_re, @sc_re, @eqa))
       @line_processor.doctype(scanner)
-      i = 0
-      until @scanner.no_more?
-        @line_processor.try(scanner)
-        monitor_raise(i)
-        i = i.succ
-      end
+      @line_processor.try(scanner) until @scanner.no_more?
+      # i = 0
+      # until @scanner.no_more?
+      #   @line_processor.try(scanner)
+      #   monitor_raise(i)
+      #   i = i.succ
+      # end
     end
 
-    def monitor_raise(i)
-      return if i < 113
-      syntax_error! "line loop limit reached" 
-    end
+    # def monitor_raise(i)
+    #   return if i < 113
+    #   syntax_error! "line loop limit reached" 
+    # end
 
     def syntax_error!(message)
       err_pos = scanner.position
