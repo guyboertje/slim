@@ -52,16 +52,16 @@ module Slim
       @scanner
     end
 
-    def monitor_tag_raise
-      return if @i < 13
-      parser.syntax_error! "tag loop limit reached" 
-    end
+    # def monitor_tag_raise
+    #   return if @i < 13
+    #   parser.syntax_error! "tag loop limit reached" 
+    # end
 
     def try(scanner)
       @scanner = scanner
       reset
       begin
-        @i += 1
+        # @i += 1
         find_tag
         parse_attributes
         @tags.push @attributes
@@ -72,7 +72,7 @@ module Slim
                 end_of_template ||
                 text
 
-        monitor_tag_raise
+        # monitor_tag_raise
 
       end until done
       done
