@@ -74,14 +74,14 @@ module Slim
       reset(str.split(/\r?\n/), [result])
       parse_line while next_line
       reset
-      result
+      result.tap{|o| ap result: o}
     end
 
     def call(str)
       str = replace_tabs(remove_bom(set_encoding(str)))
       scanner = ScanningParser.new(self, options)
-      scanner.parse(str)
-      scanner.result
+      scanner.parse(str.gsub(/\r/, ''))
+      scanner.result.tap{|o| ap result: o}
     end
       # .tap{|o| ap result: o}
 

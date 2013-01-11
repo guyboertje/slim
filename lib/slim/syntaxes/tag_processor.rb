@@ -12,23 +12,23 @@ module Slim
       @re_sc1 = %r~(#{@shortcut_part})(\w[\w-]*\w)~
       @re_splat = %r~\s*\*~
       @re_qa = %r~\s*(\w[:\w-]*)(==?)("|')~
-      @hash_re_qa = {?" => %r~"(?=(=| |\r?\n))~, ?' => %r~'(?=(=| |\r?\n))~}
+      @hash_re_qa = {?" => %r~"(?=(=| |/|\n|\z))~, ?' => %r~'(?=(=| |/|\n|\z))~}
       @re_ca = %r~\s*(\w[:\w-]*)(==?)~
-      @re_bool = %r~\s*(\w[:\w-]*)(?=\s|\r?\n)~
+      @re_bool = %r~\s*(\w[:\w-]*)(?=\s|\n|\z)~
       @re_output = %r~ *=(=?)('?)\s?~
-      @re_closed = %r~\s*/(?=(\s|\r?\n))~
-      @re_no_content = %r~\s*(?=\r?\n)~
+      @re_closed = %r~\s*/(?=(\s|\n|\z))~
+      @re_no_content = %r~\s*(?=(\n|\z))~
       @re_text = %r~\s(.*)~
-      @re_lf = %r~\r?\n~
-      @re_space_scan = %r~ |(?=\r?\n)~
+      @re_lf = %r~\n~
+      @re_space_scan = %r~ |(?=(\n|\z))~
       @delim_map = Hash[?(,?),?[,?],?{,?}]
       @delim_close_map = {}
       @delim_map.each do |k,v|
         @delim_close_map[k] = /#{Re.quote(v)}/m
       end
-      @re_lf_only = %r~\A\r?\n\z~
+      @re_lf_only = %r~\A\n\z~
       @re_starting_ws = %r~\A\s+~
-      @re_until_lf = %r~(?=\r?\n)~
+      @re_until_lf = %r~(?=(\n|\z))~
     end
 
     def reset
@@ -189,6 +189,7 @@ module Slim
       value = String.new(qc)
       scanner.rec_position(:quoted_attributes)
       scan_re = @hash_re_qa[qc]
+      # ap from: "quoted_attributes", rest: scanner.rest, scan_re: scan_re
       begin
         part = scanner.scan_until(scan_re)
         value.concat(part) if part
@@ -240,7 +241,6 @@ module Slim
 
     def boolean_attributes
       return false unless atbe = scanner.scan(@re_bool)
-
       @attributes.push [:html, :attr, atbe.strip, [:slim, :attrvalue, false, 'true']]
       true
     end

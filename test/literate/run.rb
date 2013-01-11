@@ -1,4 +1,5 @@
 require 'temple'
+require 'awesome_print'
 
 class LiterateTest < Temple::Engine
   class Parser < Temple::Parser

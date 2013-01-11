@@ -2,19 +2,30 @@ require 'helper'
 
 class TestSlimHtmlStructureT < TestSlim
   
-  def test_thread_options
-    source = %q{p.test}
+  def test_render_html_comments
+    source = %q{/! Comment
+body
+  /! Another comment
+     with multiple lines
+  p Hello!
+  /!
+      First line determines indentation
 
-    assert_html '<p class="test"></p>', source
-    assert_html "<p class='test'></p>", source, :attr_wrapper => "'"
+      of the comment
+}
 
-    Slim::Engine.with_options(:attr_wrapper => "'") do
-      assert_html "<p class='test'></p>", source
-      assert_html '<p class="test"></p>', source, :attr_wrapper => '"'
-    end
-
-    assert_html '<p class="test"></p>', source
-    assert_html "<p class='test'></p>", source, :attr_wrapper => "'"
+    html = 
+%q{<!--Comment-->
+<body>
+  <!--Another comment
+  with multiple lines-->
+  <p>Hello!</p>
+  <!--First line determines indentation
+  
+  of the comment-->
+</body>
+}
+    assert_html html, source
   end
 # ruby -I"lib:lib:test/core" test/core/test_html_structure_t.rb --seed 27793
 

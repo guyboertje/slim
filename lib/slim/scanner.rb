@@ -9,14 +9,14 @@ module Slim
       @parser = parser
       @input = StringScanner.new(src)
       @indenter = parser.indenter
-      @qe_lf_re = %r~(?=\r?\n)~
-      @lf_re = %r~\r?\n~
+      @qe_lf_re = %r~(?=\n)~
+      @lf_re = %r~\n~
       @ind_re = %r~ +~
       @txt_re= %r~.*~
-      @lfs_ind_char_re = %r~(\r?\n)* +(?=\S)~
+      @lfs_ind_char_re = %r~(\n)* +(?=\S)~
       @ws_until_first_char_re = %r~\s*(?=\S)~
-      @lf_space_plus_re = %r~(\r?)\n +~
-      @broken_line_re = %r~(.*[,\\]\r?\n)*.*(?=\r?\n)~
+      @lf_space_plus_re = %r~()\n +~
+      @broken_line_re = %r~(.*[,\\]\n)*.*(?=(\n|\z))~
       @any_char_re = %r~\S~
       @delim_map = Hash[?(,?),?[,?],?{,?}]
       @delim_re = Re.new( @delim_map.keys.map{|k| Re.quote(k)}.join(?|) )
@@ -113,7 +113,7 @@ module Slim
     end
 
     def shift_indented_lines(indent)
-      re = @indent_re_cache[indent] ||= %r~((\r?\n)* {#{indent},}.*(\r?\n)+)*~
+      re = @indent_re_cache[indent] ||= %r~((\n)* {#{indent},}.*(\n)?)*~
       scan(re)
     end
 

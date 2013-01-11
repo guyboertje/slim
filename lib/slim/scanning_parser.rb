@@ -61,25 +61,29 @@ module Slim
       @scanner = Scanner.new(str, self)
       @line_processor = NontagProcessor.new(self, TagProcessor.new(self, @tag_re, @sc_re, @eqa))
       @line_processor.doctype(scanner)
-      @line_processor.try(scanner) until @scanner.no_more?
-      # i = 0
-      # until @scanner.no_more?
-      #   @line_processor.try(scanner)
-      #   monitor_raise(i)
-      #   i = i.succ
-      # end
+
+      # @line_processor.try(scanner) until @scanner.no_more?
+    # end
+    
+      # ap from: "parse", rest: @scanner.rest
+      i = 0
+      until @scanner.no_more?
+        @line_processor.try(scanner)
+        monitor_raise(i)
+        i = i.succ
+      end
     end
 
-    # def monitor_raise(i)
-    #   return if i < 113
-    #   syntax_error! "line loop limit reached" 
-    # end
+    def monitor_raise(i)
+      return if i < 113
+      syntax_error! "line loop limit reached" 
+    end
 
     def syntax_error!(message)
       err_pos = scanner.position
       next_lf_pos = scanner.delegate('exist?', /\n/) || 1
       context = scanner.delegate('string')[0, err_pos + next_lf_pos - 1]
-      b, lf, line = context.rpartition(/\r?\n/)
+      b, lf, line = context.rpartition(/\n/)
       line.strip!
       lineno = b.count(?\n) + 2
       column = err_pos - b.size - lf.size
