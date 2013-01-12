@@ -9,15 +9,9 @@ module Slim
       @current_indent = 0
       @re_consume = / *\z/
       @re_html_comment = %r~/!( ?)(.*)~
-
       @re_doctype = %r~doctype(.*)(?=(\n|\z))~i
       @re_html_cond = %r~/\[\s*(.*?) *\].*(?=(\n|\z))~
       @re_embedded = %r~(\w+):\s*(?=(\n|\z))~
-
-      # @re_doctype = %r~doctype(.*)(?=\n)~i
-      # @re_html_cond = %r~/\[\s*(.*?) *\].*(?=\n)~
-      # @re_embedded = %r~(\w+):\s*(?=\n)~
-
       @re_slim_comment = %r~/~
       @re_inline_html = %r~<.+>~
       @re_ruby_code = %r~- ?~
@@ -29,6 +23,7 @@ module Slim
       @re_block_split = %r~\n.*~
       @re_lf = %r~\n~
       @line_end_count = 0
+      @lf = ?\n
     end
 
     def try(scanner)
@@ -61,7 +56,7 @@ module Slim
       if lines = scanner.shift_until_char
         scanner.indentation lines[@re_consume]
         @current_indent = scanner.current_indent
-        @line_end_count = lines.count(?\n)
+        @line_end_count = lines.count(@lf)
         true
       else
         while scanner.shift_lf do
@@ -77,38 +72,6 @@ module Slim
       if scanner.scan(@re_doctype)
         parser.last_push [:html, :doctype, scanner.m1.strip]
       end
-    end
-
-    def html_comment(scanner)
-      return false unless scanner.scan(@re_html_comment)
-      new_lines
-
-      out = [:multi]
-
-      offset = @current_indent + 2 + scanner.m1.size
-
-      if part = scanner.m2
-        part.strip!
-        out.push [:slim, :interpolate, part] unless part.empty?
-      end
-
-      if block = scanner.shift_indented_lines(offset)
-        lines = block.scan(@re_block_split)
-        # lines.shift
-        ap from: "html_comment", block: block, lines: lines, offset: offset
-        lines.each do |line|
-          txt = line.slice(offset, line.size) || ""
-          ap from: "html_comment", line: line
-          txt.prepend(?\n)
-          out.push [:newline], [:slim, :interpolate, txt]
-        end
-      end
-
-      scanner.backup if block && block.end_with?(?\n)
-
-      parser.last_push [:html, :comment, [:slim, :text, out]]
-
-      true
     end
 
     def html_conditional_comment(scanner)
@@ -131,10 +94,34 @@ module Slim
 
       block = scanner.shift_indented_lines(min_indent)
       if block
-        block.count(?\n).times do
+        block.count(@lf).times do
           parser.last_push [:newline]
         end
       end
+      true
+    end
+
+    def html_comment(scanner)
+      return false unless scanner.scan(@re_html_comment)
+      new_lines
+
+      out, first_indent = [:multi], nil
+
+      offset = @current_indent + 2 + scanner.m1.size
+
+      if part = scanner.m2
+        part.strip!
+        unless part.empty?
+          out.push [:slim, :interpolate, part] unless part.empty?
+          first_indent = offset
+        end
+      end
+
+      if block = scanner.shift_indented_lines(offset)
+        common_block(out, part, block, first_indent)
+      end
+      scanner.backup if block && block.end_with?(@lf)
+      parser.last_push [:html, :comment, [:slim, :text, out]]
       true
     end
 
@@ -142,12 +129,10 @@ module Slim
       return false unless indicator = scanner.scan(@re_text_block)
       new_lines
 
-      out = [:multi]
+      out, first_indent = [:multi], nil
 
       ind_size, ws_size = scanner.m1.size, scanner.m2.size
       min_indent = @current_indent + ind_size + ws_size
-
-      first_indent = nil
 
       if part = scanner.m3 and !part.empty?
         _, txt = remove_leading_spaces(part, min_indent)
@@ -156,34 +141,38 @@ module Slim
       end
 
       if block = scanner.shift_indented_lines(min_indent)
-        lines = block.scan(@re_block_split)
-        if part.empty?
-          lines.first.sub!(?\n, '')
-        end
-        lines.pop if lines.last == ?\n
-        lines.each do |line|
-          if line.empty?
-            out.push [:newline]
-          else
-            unless first_indent
-              line.sub!(?\n, '')
-            end
-            indent, txt = remove_leading_spaces(line, first_indent)
-            first_indent ||= indent
-            out.push [:newline], [:slim, :interpolate, txt]
-          end
-        end
+        common_block(out, part, block, first_indent)
       end
       parser.last_push [:slim, :text, out]
       if indicator.start_with? ?'
         parser.last_push [:static, ' ']
       end
-      scanner.backup if block && block.end_with?(?\n)
+      scanner.backup if block && block.end_with?(@lf)
       true
     end
 
+    def common_block(out, part, block, first_indent)
+      lines = block.scan(@re_block_split)
+      if part.empty?
+        lines.first.sub!(@lf, '')
+      end
+      lines.pop if lines.last == @lf
+      lines.each do |line|
+        if line.empty?
+          out.push [:newline]
+        else
+          unless first_indent
+            line.sub!(@lf, '')
+          end
+          indent, txt = remove_leading_spaces(line, first_indent)
+          first_indent ||= indent
+          out.push [:newline], [:slim, :interpolate, txt]
+        end
+      end
+    end
+
     def remove_leading_spaces(line, amount)
-      pieces = if line.start_with?(?\n)
+      pieces = if line.start_with?(@lf)
         line.partition(@re_starting_lf)
       else
         line.partition(@re_starting_ws)
@@ -267,7 +256,7 @@ module Slim
           pre = ?\n if margin && pre.empty?
         end
       end
-      scanner.backup if block && block.end_with?(?\n)
+      scanner.backup if block && block.end_with?(@lf)
       parser.last_push [:slim, :embedded, engine, out]
       true
     end

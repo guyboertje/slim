@@ -12,12 +12,19 @@ module Slim
       @re_sc1 = %r~(#{@shortcut_part})(\w[\w-]*\w)~
       @re_splat = %r~\s*\*~
       @re_qa = %r~\s*(\w[:\w-]*)(==?)("|')~
-      @hash_re_qa = {?" => %r~"(?=(=| |/|\n|\z))~, ?' => %r~'(?=(=| |/|\n|\z))~}
+
+      @re_qa_dq = %r~"(?=(=|/|\s|\z))~
+      @re_qa_sq = %r~'(?=(=| |/|\n|\z))~
+
+      @hash_re_qa = {?" => @re_qa_dq, ?' => @re_qa_sq}
       @re_ca = %r~\s*(\w[:\w-]*)(==?)~
       @re_bool = %r~\s*(\w[:\w-]*)(?=\s|\n|\z)~
-      @re_output = %r~ *=(=?)('?)\s?~
-      @re_closed = %r~\s*/(?=(\s|\n|\z))~
-      @re_no_content = %r~\s*(?=(\n|\z))~
+      @re_output = %r~[[:blank:]]*=(=?)('?)\s?~
+
+      @re_closed = %r~[[:blank:]]*/~
+      # @re_closed = %r~\s*/(?=.*(\n|\z))~
+
+      @re_no_content = %r~[[:blank:]]*(?=(\n|\z))~
       @re_text = %r~\s(.*)~
       @re_lf = %r~\n~
       @re_space_scan = %r~ |(?=(\n|\z))~
@@ -29,6 +36,9 @@ module Slim
       @re_lf_only = %r~\A\n\z~
       @re_starting_ws = %r~\A\s+~
       @re_until_lf = %r~(?=(\n|\z))~
+      @lf = ?\n
+      @eq = ?=
+      @sp = " "
     end
 
     def reset
@@ -139,7 +149,7 @@ module Slim
         if (part.nil? || part.empty?) && !expect.zero?
           raise "expecting closing ]"
         end
-        line.concat(part.squeeze(' '))
+        line.concat(part.squeeze(@sp))
         expect += line.count(delim_open)
         expect -= line.count(delim_close)
         stuck_scanner = scanner.stuck?(:delimited_attributes)
@@ -149,7 +159,7 @@ module Slim
       if line.empty? || stuck_scanner
         raise "expected to have delimited attributes"
       end
-      line.count(?\n).times { parser.last_push [:newline] }
+      line.count(@lf).times { parser.last_push [:newline] }
       line.gsub!(@re_lf, ' ') # behave like a single line
       line.concat(' ')
       @wrapped_attributes = true
@@ -174,7 +184,7 @@ module Slim
 
       code = @code_finder.code
       
-      scanner.backup if code.end_with?(' ')
+      scanner.backup if code.end_with?(@sp)
 
       @attributes.push [:slim, :splat, code.strip]
       true
@@ -184,12 +194,11 @@ module Slim
       return false unless scanner.scan(@re_qa)
 
       atbe = scanner.m1
-      esc = @eqa && scanner.m2 == ?=
+      esc = @eqa && scanner.m2 == @eq
       qc = scanner.m3
       value = String.new(qc)
       scanner.rec_position(:quoted_attributes)
       scan_re = @hash_re_qa[qc]
-      # ap from: "quoted_attributes", rest: scanner.rest, scan_re: scan_re
       begin
         part = scanner.scan_until(scan_re)
         value.concat(part) if part
@@ -200,7 +209,6 @@ module Slim
       value = value[1..-2]
 
       @attributes.push [:html, :attr, atbe, [:escape, esc, [:slim, :interpolate, value]]]
-
       true
     end
 
@@ -216,7 +224,7 @@ module Slim
       return false unless scanner.scan(@re_ca)
 
       atbe = scanner.m1
-      esc = scanner.m2 == ?=
+      esc = scanner.m2 == @eq
 
       part = scanner.scan_until(@re_space_scan)
       raise "No part" unless part
@@ -230,7 +238,7 @@ module Slim
       end
 
       value = @code_finder.code || ""
-      scanner.backup if value.end_with?(' ')
+      scanner.backup if value.end_with?(@sp)
       value = @code_finder.enclosed_by_delim? ? value[1, value.size - 3] : value.strip
 
       parser.syntax_error!('Invalid empty attribute') if value.empty?
@@ -270,30 +278,23 @@ module Slim
 
     def closed
       return false unless scanner.scan(@re_closed)
-
-      # add nothing - consume to eol
-      scanner.shift_text
-
+      scanner.shift_text # add nothing - consume to eol
       true
     end
 
     def no_content
       return false unless scanner.scan(@re_no_content)
-
       content = [:multi]
       @tags.push content
       parser.push content
-
       true
     end
 
     def end_of_template
       return false unless scanner.eos?
-
       content = [:multi, [:newline]]
       @tags.push content
       parser.push content
-
       true
     end
 
@@ -318,9 +319,8 @@ module Slim
           out.push [:newline], [:slim, :interpolate, txt]
         end
       end
-      scanner.backup if block && block.end_with?(?\n)
+      scanner.backup if block && block.end_with?(@lf)
       @tags.push [:slim, :text, out]
-
       true
     end
 

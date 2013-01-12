@@ -171,6 +171,7 @@ module Slim
 
     def indentation(ind = shift_indent)
       indent = ind || ""
+      # ap from: "indentation", indent: indent, rest: self.rest
       @indenter.indent(indent.size)
       current_indent
     end

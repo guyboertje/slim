@@ -14,6 +14,7 @@ module Slim
       @sc = parser.shortcut
       @shortcuts_quoted_ored = @sc.keys.map{ |k| Re.quote(k) }.join(?|)
       @sc_re = %r~#{@shortcuts_quoted_ored}~
+      @re_lf = %r~\n~
       reset
     end
 
@@ -64,7 +65,7 @@ module Slim
 
       # @line_processor.try(scanner) until @scanner.no_more?
     # end
-    
+
       # ap from: "parse", rest: @scanner.rest
       i = 0
       until @scanner.no_more?
@@ -81,14 +82,15 @@ module Slim
 
     def syntax_error!(message)
       err_pos = scanner.position
-      next_lf_pos = scanner.delegate('exist?', /\n/) || 1
+      next_lf_pos = scanner.delegate('exist?', @re_lf) || 1
       context = scanner.delegate('string')[0, err_pos + next_lf_pos - 1]
-      b, lf, line = context.rpartition(/\n/)
+      b, lf, line = context.rpartition(@re_lf)
       line.strip!
       lineno = b.count(?\n) + 2
       column = err_pos - b.size - lf.size
       column = 1 if column < 1
       column = line.size if column > line.size
+      ap from: "syntax_error", stacks: stacks
       # ap from: "syntax_error", rest: scanner.rest, err_pos: err_pos, next_lf_pos: next_lf_pos, context: context, b:b, lf:lf, line: line, lineno: lineno, column: column
       raise Parser::SyntaxError.new(message, @options[:file], line.strip, lineno, column)
     end
