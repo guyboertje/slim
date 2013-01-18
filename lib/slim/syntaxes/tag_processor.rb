@@ -5,11 +5,12 @@ module Slim
 
     def initialize(parser, tag_re, shortcut_re, escape_quoted_attrs)
       @parser, @tag_re, @shortcut_re = parser, tag_re, shortcut_re
-      @shortcut_part = parser.shortcut.keys.join.prepend('[').concat(']')
+      @shortcut_part = Re.quote(parser.shortcut.keys.join).prepend('[').concat(']')
       @eqa = escape_quoted_attrs
       @code_finder = CodeFinder.new
       @re_sc  = %r~(#{@shortcut_part}\w[\w-]*\w)+~
       @re_sc1 = %r~(#{@shortcut_part})(\w[\w-]*\w)~
+
       @re_splat = %r~\s*\*~
       @re_qa = %r~\s*(\w[:\w-]*)(==?)("|')~
 
@@ -22,7 +23,6 @@ module Slim
       @re_output = %r~[[:blank:]]*=(=?)('?)\s?~
 
       @re_closed = %r~[[:blank:]]*/~
-      # @re_closed = %r~\s*/(?=.*(\n|\z))~
 
       @re_no_content = %r~[[:blank:]]*(?=(\n|\z))~
       @re_text = %r~\s(.*)~
@@ -36,6 +36,7 @@ module Slim
       @re_lf_only = %r~\A\n\z~
       @re_starting_ws = %r~\A\s+~
       @re_until_lf = %r~(?=(\n|\z))~
+      @re_colon = %r~:[[:blank:]]*~
       @lf = ?\n
       @eq = ?=
       @sp = " "
@@ -76,12 +77,12 @@ module Slim
         parse_attributes
         @tags.push @attributes
         parser.last_push @tags
-        done =  output ||
+        done =  inline_tag ||
+                output ||
                 closed ||
                 no_content ||
                 end_of_template ||
                 text
-
         # monitor_tag_raise
 
       end until done
@@ -251,6 +252,20 @@ module Slim
       return false unless atbe = scanner.scan(@re_bool)
       @attributes.push [:html, :attr, atbe.strip, [:slim, :attrvalue, false, 'true']]
       true
+    end
+
+    def inline_tag
+      return false unless scanner.scan(@re_colon)
+      
+      parser.syntax_error!('Expected tag') unless scanner.check(@tag_re) || scanner.check(@re_sc)
+
+      content = [:multi]
+      @tags.push content
+      i = parser.stacks.size
+      parser.push content
+      flag = try(scanner)
+      parser.stacks.delete_at(i)
+      flag
     end
 
     def output
