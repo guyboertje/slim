@@ -8,8 +8,8 @@ module Slim
       @shortcut_part = Re.quote(parser.shortcut.keys.join).prepend('[').concat(']')
       @eqa = escape_quoted_attrs
       @code_finder = CodeFinder.new
-      @re_sc  = %r~(#{@shortcut_part}\w[\w-]*\w)+~
-      @re_sc1 = %r~(#{@shortcut_part})(\w[\w-]*\w)~
+      @re_sc  = %r~(#{@shortcut_part}\w[\w-]*)+(?=(\W|\n|\z))~
+      @re_sc1 = %r~(#{@shortcut_part})(\w[\w-]*)~
 
       @re_splat = %r~\s*\*~
       @re_qa = %r~\s*(\w[:\w-]*)(==?)("|')~
