@@ -118,19 +118,23 @@ class SlimBenchmarks
 
   def run
     puts "#{@iterations} Iterations"
+    jrb = defined?(JRUBY_VERSION)
+    pre_it = jrb ? 2500 : 3
     @benches.each do |name, block|
-      5.times { block.call }
+      pre_it.times { block.call }
     end
-    
-    GC.disable
-    Benchmark.bm do |x|
+    mark_method = Benchmark.method(:bm)
+    if jrb
+      sleep 1
+      mark_method = Benchmark.method(:bmbm)
+    end
+    mark_method.call do |x|
       @benches.each do |name, block|
         x.report name.to_s do
           @iterations.to_i.times { block.call }
         end
       end
     end
-    GC.enable
 
 #     puts "
 # (1) Compiled benchmark. Template is parsed before the benchmark and
