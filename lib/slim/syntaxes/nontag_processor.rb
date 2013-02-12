@@ -252,7 +252,7 @@ module Slim
             margin = ind
           end
           txt = line.slice(margin || len, len) || ""
-          out.push [:newline], [:slim, :interpolate, txt.prepend(pre)]
+          out.push [:newline], [:slim, :interpolate, pre+txt)]
           pre = ?\n if margin && pre.empty?
         end
       end
