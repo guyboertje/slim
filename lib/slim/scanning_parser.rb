@@ -3,11 +3,12 @@ module Slim
 
   class ScanningParser
 
-    attr_reader :parser, :scanner, :indenter, :stacks
+    attr_reader :parser, :indenter, :stacks, :line_processor
 
     def initialize(parser, opts)\
       @options = opts
       @parser = parser
+      @scanners = []
       @indenter = Indenter.new(self)
       @eqa = !!@options[:escape_quoted_attrs]
       @tag_re = %r~(\*(?=\S+))|(\w[\w:-]*\w|\w+)~
@@ -58,18 +59,29 @@ module Slim
       res
     end
 
+    def scanner
+      @scanners.last
+    end
+
+    def push_scanner(scanr)
+      @scanners.push scanr
+    end
+
+    def pop_scanner
+      @scanners.pop
+    end
+
     def parse(str)
-      @scanner = Scanner.new(str, self)
+      push_scanner Scanner.new(str, self)
       @line_processor = NontagProcessor.new(self, TagProcessor.new(self, @tag_re, @sc_re, @eqa))
-      @line_processor.doctype(scanner)
+      line_processor.doctype(scanner)
+      sub_parse
+    end
 
-      # @line_processor.try(scanner) until @scanner.no_more?
-    # end
-
-      # ap from: "parse", rest: @scanner.rest
+    def sub_parse
       i = 0
-      until @scanner.no_more?
-        @line_processor.try(scanner)
+      until scanner.no_more?
+        line_processor.try(scanner)
         monitor_raise(i)
         i = i.succ
       end
@@ -77,7 +89,7 @@ module Slim
 
     def monitor_raise(i)
       return if i < 113
-      syntax_error! "line loop limit reached" 
+      syntax_error! "line loop limit reached"
     end
 
     def syntax_error!(message)

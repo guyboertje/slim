@@ -87,6 +87,10 @@ class Env
     @x = 0
   end
 
+  def self.inlined_slim
+    %q{ p.blue }
+  end
+
   def id_helper
     "notice"
   end

@@ -15,6 +15,7 @@ module Slim
       @re_slim_comment = %r~/~
       @re_inline_html = %r~<.+>~
       @re_ruby_code = %r~- ?~
+      @re_inline_slim = %r~\+ ?~
       @re_output_block = %r~=(=?)('?)~
       @re_text_block = %r~(\||')( ?)(.*)~
       @re_lf_only = %r~\A\n\z~
@@ -34,6 +35,7 @@ module Slim
       text_block(scanner) ||
       inline_html(scanner) ||
       ruby_code_block(scanner) ||
+      inline_slim(scanner) ||
       output_block(scanner) ||
       embedded_template(scanner) ||
       tags(scanner)
@@ -213,6 +215,18 @@ module Slim
       true
     end
 
+    def inline_slim(scanner)
+      return false unless scanner.scan(@re_inline_slim)
+      new_lines
+
+      line_to_eval = scanner.shift_upto_lf
+      template_string = eval(line_to_eval)
+      parser.push_scanner Scanner.new(template_string, parser)
+      parser.sub_parse
+      parser.pop_scanner
+      true
+    end
+
     def output_block(scanner)
       return false unless scanner.scan(@re_output_block)
       new_lines
@@ -252,7 +266,7 @@ module Slim
             margin = ind
           end
           txt = line.slice(margin || len, len) || ""
-          out.push [:newline], [:slim, :interpolate, pre+txt)]
+          out.push [:newline], [:slim, :interpolate, pre+txt]
           pre = ?\n if margin && pre.empty?
         end
       end
